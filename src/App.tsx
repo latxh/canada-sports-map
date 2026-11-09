@@ -3,21 +3,21 @@ import {Theme} from '@astryxdesign/core/theme';
 import {neutralTheme} from '@astryxdesign/theme-neutral/built';
 import {TopNav, TopNavHeading} from '@astryxdesign/core/TopNav';
 import {Button} from '@astryxdesign/core/Button';
-import {IconButton} from '@astryxdesign/core/IconButton';
 import {Icon} from '@astryxdesign/core/Icon';
 import {HStack} from '@astryxdesign/core/HStack';
 import {BottomSheet} from '@astryxdesign/core/BottomSheet';
 import {VisuallyHidden} from '@astryxdesign/core/VisuallyHidden';
-import {LEAGUE_ORDER, TEAM_BY_ID, citiesWithTeams, type EraFilter, type LeagueId, type TeamFilter} from './data';
+import {CITY_BY_ID, LEAGUE_ORDER, TEAM_BY_ID, citiesWithTeams, type LeagueFilter, type LeagueId} from './data';
 import {SportsMap} from './components/SportsMap';
-import {FilterBar} from './components/FilterBar';
-import {CityPanel, OverviewPanel, TeamPanel} from './components/Panels';
+import {CityPanel, OverviewPanel, PanelFrame, TeamPanel} from './components/Panels';
 import {CreditsDialog} from './components/CreditsDialog';
-import {MapleLeafIcon, MoonIcon, SunIcon} from './components/icons';
+import {LeagueSelect, SiteMenu, type Appearance} from './components/HeaderControls';
+import {ListIcon, MapleLeafIcon} from './components/icons';
 import {DESKTOP_QUERY, useMediaQuery} from './hooks/useMediaQuery';
 import {useHashRoute} from './hooks/useHashRoute';
 
-type Mode = 'light' | 'dark';
+const PANEL_WIDTH = 400;
+const PANEL_GUTTER = 12;
 
 /** Storage and history can throw inside sandboxed frames (e.g. embedded previews); fail soft. */
 function safely<T>(fn: () => T, fallback: T): T {
@@ -28,51 +28,39 @@ function safely<T>(fn: () => T, fallback: T): T {
   }
 }
 
-function initialMode(): Mode {
-  const stored = safely(() => localStorage.getItem('csa-mode'), null);
-  if (stored === 'light' || stored === 'dark') return stored;
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+function initialAppearance(): Appearance {
+  const stored = safely(() => localStorage.getItem('csa-appearance'), null);
+  return stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'system';
 }
 
-function initialLeagues(): Set<LeagueId> {
-  const param = new URLSearchParams(window.location.search).get('leagues');
-  if (!param) return new Set(LEAGUE_ORDER);
-  const picked = param.split(',').filter((l): l is LeagueId => (LEAGUE_ORDER as string[]).includes(l));
-  return new Set(picked.length ? picked : LEAGUE_ORDER);
-}
-
-function initialEra(): EraFilter {
-  const param = new URLSearchParams(window.location.search).get('era');
-  return param === 'current' || param === 'defunct' ? param : 'all';
+function initialLeague(): LeagueFilter {
+  const param = new URLSearchParams(window.location.search).get('league');
+  return param && (LEAGUE_ORDER as string[]).includes(param) ? (param as LeagueId) : 'all';
 }
 
 export function App() {
-  const [mode, setMode] = useState<Mode>(initialMode);
-  const [leagues, setLeagues] = useState<Set<LeagueId>>(initialLeagues);
-  const [era, setEra] = useState<EraFilter>(initialEra);
+  const [appearance, setAppearance] = useState<Appearance>(initialAppearance);
+  const [league, setLeague] = useState<LeagueFilter>(initialLeague);
   const [isCreditsOpen, setIsCreditsOpen] = useState(false);
-  const [isBrowsing, setIsBrowsing] = useState(false);
-  const [route, navigate] = useHashRoute();
   const isDesktop = useMediaQuery(DESKTOP_QUERY);
+  const [isOverviewOpen, setIsOverviewOpen] = useState(() => window.matchMedia(DESKTOP_QUERY).matches);
+  const [route, navigate] = useHashRoute();
 
   useEffect(() => {
-    safely(() => localStorage.setItem('csa-mode', mode), undefined);
-    document.documentElement.style.colorScheme = mode;
-  }, [mode]);
+    safely(() => localStorage.setItem('csa-appearance', appearance), undefined);
+    document.documentElement.style.colorScheme = appearance === 'system' ? 'light dark' : appearance;
+  }, [appearance]);
 
-  // Keep filters in the query string so views are shareable.
+  // Keep the league in the query string so a view can be shared.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (leagues.size === LEAGUE_ORDER.length) params.delete('leagues');
-    else params.set('leagues', LEAGUE_ORDER.filter((l) => leagues.has(l)).join(','));
-    if (era === 'all') params.delete('era');
-    else params.set('era', era);
+    if (league === 'all') params.delete('league');
+    else params.set('league', league);
     const qs = params.toString();
     safely(() => history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}${window.location.hash}`), undefined);
-  }, [leagues, era]);
+  }, [league]);
 
-  const filter: TeamFilter = useMemo(() => ({leagues, era}), [leagues, era]);
-  const mapCities = useMemo(() => citiesWithTeams(filter), [filter]);
+  const mapCities = useMemo(() => citiesWithTeams(league), [league]);
 
   const selectedCityId =
     route.kind === 'city' ? route.id : route.kind === 'team' ? (TEAM_BY_ID[route.id]?.cityId ?? null) : null;
@@ -80,95 +68,105 @@ export function App() {
   const openCity = useCallback((id: string) => navigate({kind: 'city', id}), [navigate]);
   const openTeam = useCallback((id: string) => navigate({kind: 'team', id}), [navigate]);
   const goHome = useCallback(() => {
-    setIsBrowsing(false);
+    setIsOverviewOpen(true);
+    navigate({kind: 'home'});
+  }, [navigate]);
+  const closePanel = useCallback(() => {
+    setIsOverviewOpen(false);
     navigate({kind: 'home'});
   }, [navigate]);
 
-  const panel = (() => {
-    if (route.kind === 'team') {
-      return (
-        <TeamPanel
-          key={route.id}
-          teamId={route.id}
-          tab={route.tab}
-          onTabChange={(tab) => navigate({kind: 'team', id: route.id, tab}, {replace: true})}
-          onBack={(cityId) => navigate({kind: 'city', id: cityId})}
-          onOpenTeam={openTeam}
-        />
-      );
-    }
-    if (route.kind === 'city') {
-      return (
-        <CityPanel
-          key={route.id}
-          cityId={route.id}
-          filter={filter}
-          onBack={goHome}
-          onOpenTeam={openTeam}
-          onShowAllEras={() => {
-            setEra('all');
-            setLeagues(new Set(LEAGUE_ORDER));
-          }}
-        />
-      );
-    }
-    return <OverviewPanel filter={filter} onOpenCity={openCity} />;
-  })();
+  const isPanelOpen = route.kind !== 'home' || isOverviewOpen;
 
-  const routeKey = route.kind === 'home' ? 'home' : `${route.kind}:${route.id}`;
-  const isSheetOpen = !isDesktop && (route.kind !== 'home' || isBrowsing);
+  let back: {label: string; onClick: () => void} | undefined;
+  let panelBody;
+  if (route.kind === 'team') {
+    const team = TEAM_BY_ID[route.id];
+    const city = team ? CITY_BY_ID[team.cityId] : undefined;
+    if (team && city) back = {label: city.name, onClick: () => navigate({kind: 'city', id: city.id})};
+    panelBody = (
+      <TeamPanel
+        key={route.id}
+        teamId={route.id}
+        tab={route.tab}
+        onTabChange={(tab) => navigate({kind: 'team', id: route.id, tab}, {replace: true})}
+        onOpenTeam={openTeam}
+      />
+    );
+  } else if (route.kind === 'city') {
+    back = {label: 'All cities', onClick: goHome};
+    panelBody = <CityPanel key={route.id} cityId={route.id} league={league} onOpenTeam={openTeam} onShowAllLeagues={() => setLeague('all')} />;
+  } else {
+    panelBody = <OverviewPanel league={league} onOpenCity={openCity} />;
+  }
+  const panel = (
+    <PanelFrame back={back} onClose={closePanel} resetKey={route.kind === 'home' ? 'home' : `${route.kind}:${route.id}`}>
+      {panelBody}
+    </PanelFrame>
+  );
+
   const [viewportH, setViewportH] = useState(() => window.innerHeight);
   useEffect(() => {
     const onResize = () => setViewportH(window.innerHeight);
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
-  const bottomInset = isSheetOpen ? Math.round(viewportH * 0.62) : 0;
+  const bottomInset = !isDesktop && isPanelOpen ? Math.round(viewportH * 0.62) : 0;
+  const rightInset = isDesktop && isPanelOpen ? PANEL_WIDTH + PANEL_GUTTER * 2 : 0;
+  const routeKey = route.kind === 'home' ? 'home' : `${route.kind}:${route.id}`;
 
   return (
-    <Theme theme={neutralTheme} mode={mode}>
+    <Theme theme={neutralTheme} mode={appearance}>
       <div className="flex h-dvh flex-col bg-body text-primary">
         <TopNav
           label="Site"
           heading={
             <TopNavHeading
               logo={<Icon icon={MapleLeafIcon} size="lg" color="red" />}
-              heading="Canada Sports Atlas"
+              heading={isDesktop ? 'Canada Sports Atlas' : 'Sports Atlas'}
               headingHref="#/"
             />
           }
           endContent={
             <HStack gap={1} vAlign="center">
-              <Button size="sm" variant="ghost" label="Credits" onClick={() => setIsCreditsOpen(true)} />
-              <IconButton
-                size="sm"
-                variant="ghost"
-                label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-                tooltip={mode === 'dark' ? 'Light mode' : 'Dark mode'}
-                icon={<Icon icon={mode === 'dark' ? SunIcon : MoonIcon} />}
-                onClick={() => setMode(mode === 'dark' ? 'light' : 'dark')}
-              />
+              <LeagueSelect value={league} onChange={setLeague} isCompact={!isDesktop} />
+              <SiteMenu appearance={appearance} onAppearanceChange={setAppearance} onOpenCredits={() => setIsCreditsOpen(true)} />
             </HStack>
           }
         />
-        <FilterBar leagues={leagues} onLeaguesChange={setLeagues} era={era} onEraChange={setEra} isCompact={!isDesktop} />
 
-        <main className="relative flex min-h-0 flex-1" aria-label="Map and details">
+        <main className="relative min-h-0 flex-1" aria-label="Map and details">
           <VisuallyHidden>
             <h1>Canada Sports Atlas: an interactive map of Canadian professional sports teams</h1>
           </VisuallyHidden>
-          <div className="relative min-w-0 flex-1">
-            <SportsMap cities={mapCities} selectedCityId={selectedCityId} onSelectCity={openCity} bottomInset={bottomInset} />
-            {!isDesktop && !isSheetOpen && (
-              <div className="pointer-events-none absolute inset-x-0 bottom-4 flex justify-center">
-                <div className="pointer-events-auto">
-                  <Button label="Browse cities" variant="primary" elevation="med" onClick={() => setIsBrowsing(true)} />
-                </div>
+          <SportsMap
+            cities={mapCities}
+            selectedCityId={selectedCityId}
+            onSelectCity={openCity}
+            bottomInset={bottomInset}
+            rightInset={rightInset}
+          />
+
+          {!isPanelOpen && (
+            <div className={isDesktop ? 'absolute top-3 right-3' : 'pointer-events-none absolute inset-x-0 bottom-4 flex justify-center'}>
+              <div className="pointer-events-auto">
+                <Button
+                  label={isDesktop ? 'Cities' : 'Browse cities'}
+                  variant={isDesktop ? 'secondary' : 'primary'}
+                  elevation="med"
+                  icon={<Icon icon={ListIcon} />}
+                  onClick={() => setIsOverviewOpen(true)}
+                />
               </div>
-            )}
-          </div>
-          {isDesktop && (
-            <aside key={routeKey} aria-label="Details" className="w-[420px] shrink-0 overflow-y-auto border-s border-border bg-surface p-4 xl:w-[460px]">
+            </div>
+          )}
+
+          {isDesktop && isPanelOpen && (
+            <aside
+              key={routeKey}
+              aria-label="Details"
+              className="absolute overflow-y-auto overscroll-contain rounded-xl border border-border bg-surface p-4 shadow-lg"
+              style={{top: PANEL_GUTTER, right: PANEL_GUTTER, bottom: PANEL_GUTTER, width: PANEL_WIDTH}}>
               {panel}
             </aside>
           )}
@@ -178,9 +176,9 @@ export function App() {
       {!isDesktop && (
         <BottomSheet
           label={route.kind === 'team' ? 'Team overview' : route.kind === 'city' ? 'City overview' : 'Cities'}
-          isOpen={isSheetOpen}
+          isOpen={isPanelOpen}
           onOpenChange={(open) => {
-            if (!open) goHome();
+            if (!open) closePanel();
           }}
           hasScrim={false}
           height="capped"

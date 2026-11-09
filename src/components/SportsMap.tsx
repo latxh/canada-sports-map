@@ -47,6 +47,8 @@ interface Props {
   onSelectCity: (cityId: string) => void;
   /** Pixels at the bottom of the map hidden behind an overlay (mobile bottom sheet). */
   bottomInset?: number;
+  /** Pixels at the right of the map hidden behind an overlay (floating panel). */
+  rightInset?: number;
 }
 
 interface Size {
@@ -57,7 +59,7 @@ interface Size {
 const MAX_ZOOM = 40;
 const LABEL_FONT = 13;
 
-export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0}: Props) {
+export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0, rightInset = 0}: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const zoomRef = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null);
@@ -116,23 +118,40 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
   }, [projection, geo]);
 
   const hasMap = paths !== null;
+
+  /** The "whole country" view, shrunk to fit the part of the map not covered by panels. */
+  const homeTransform = useCallback(() => {
+    if (!size) return zoomIdentity;
+    const w2 = size.w - rightInset;
+    const h2 = size.h - bottomInset;
+    const s = Math.min(1, w2 / size.w, h2 / size.h);
+    return zoomIdentity.translate((w2 - size.w * s) / 2, (h2 - size.h * s) / 2).scale(s);
+  }, [size, rightInset, bottomInset]);
+
   // Attach d3-zoom once the svg exists.
+  const didInit = useRef(false);
   useEffect(() => {
     const svg = svgRef.current;
     if (!svg || !size) return;
     const behavior = d3zoom<SVGSVGElement, unknown>()
-      .scaleExtent([1, MAX_ZOOM])
+      .scaleExtent([0.4, MAX_ZOOM])
       .translateExtent([
-        [-size.w * 0.25, -size.h * 0.25],
-        [size.w * 1.25, size.h * 1.25],
+        [-size.w, -size.h],
+        [size.w * 2, size.h * 2],
       ])
       .on('zoom', (event: {transform: ZoomTransform}) => setTransform(event.transform));
     zoomRef.current = behavior;
     const sel = select(svg);
     sel.call(behavior).on('dblclick.zoom', null);
+    if (!didInit.current) {
+      didInit.current = true;
+      sel.call(behavior.transform, homeTransform());
+    }
     return () => {
       sel.on('.zoom', null);
     };
+    // homeTransform is read once at init; later changes animate below.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [size, hasMap]);
 
   const zoomBy = useCallback((factor: number) => {
@@ -144,8 +163,15 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
   const resetZoom = useCallback(() => {
     const svg = svgRef.current;
     if (!svg || !zoomRef.current) return;
-    select(svg).transition().duration(450).call(zoomRef.current.transform, zoomIdentity);
-  }, []);
+    select(svg).transition().duration(450).call(zoomRef.current.transform, homeTransform());
+  }, [homeTransform]);
+
+  // With no city selected, re-fit the country whenever a panel opens or closes.
+  useEffect(() => {
+    if (selectedCityId || !didInit.current) return;
+    resetZoom();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rightInset, bottomInset, selectedCityId === null]);
 
   // Fly to the selected city.
   const lastFlown = useRef<string | null>(null);
@@ -167,13 +193,13 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
     const k = Math.min(MAX_ZOOM, Math.max(transform.k, Math.min(size.w, size.h) < 600 ? 3 : 4, sep));
     const visibleH = size.h - bottomInset;
     const t = zoomIdentity
-      .translate(size.w / 2, visibleH / 2)
+      .translate((size.w - rightInset) / 2, visibleH / 2)
       .scale(k)
       .translate(-p[0], -p[1]);
     select(svgRef.current).transition().duration(700).call(zoomRef.current.transform, t);
     // transform intentionally omitted: we only fly when the selection changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCityId, projection, size, bottomInset, cities]);
+  }, [selectedCityId, projection, size, bottomInset, rightInset, cities]);
 
   const markers = useMemo(() => {
     if (!projection) return [];
@@ -223,12 +249,12 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
       const cx = members.reduce((a, m) => a + m.px, 0) / members.length;
       const cy = members.reduce((a, m) => a + m.py, 0) / members.length;
       const t = zoomIdentity
-        .translate(size.w / 2, (size.h - bottomInset) / 2)
+        .translate((size.w - rightInset) / 2, (size.h - bottomInset) / 2)
         .scale(k)
         .translate(-cx, -cy);
       select(svg).transition().duration(600).call(zoomRef.current.transform, t);
     },
-    [size, transform.k, bottomInset],
+    [size, transform.k, bottomInset, rightInset],
   );
 
 
@@ -329,10 +355,7 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
                 fontSize={LABEL_FONT}
                 fontWeight={l.isSelected ? 700 : 600}>
                 {l.text}
-                {l.extra > 0 && <tspan fontWeight={600} fill="var(--color-text-secondary)">{` +${l.extra}`}</tspan>}
-                <tspan fontWeight={500} fill="var(--color-text-secondary)" fontSize={LABEL_FONT - 2}>
-                  {` ${l.count}`}
-                </tspan>
+                {l.extra > 0 && <tspan fontWeight={600} fill="var(--color-text-secondary)">{l.extra === 1 ? ` & ${l.second}` : ` +${l.extra}`}</tspan>}
               </text>
             ))}
           </g>
@@ -340,7 +363,7 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
       )}
 
       <div
-        className="absolute right-3 flex flex-col gap-2"
+        className="absolute left-3 flex flex-col gap-2"
         style={{bottom: bottomInset + 12, transition: 'bottom 200ms ease'}}>
         <IconButton label="Zoom in" tooltip="Zoom in" icon={<Icon icon={PlusIcon} />} elevation="med" onClick={() => zoomBy(1.6)} />
         <IconButton label="Zoom out" tooltip="Zoom out" icon={<Icon icon={MinusIcon} />} elevation="med" onClick={() => zoomBy(1 / 1.6)} />
@@ -351,7 +374,15 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
 }
 
 function markerRadius(teamCount: number) {
-  return 5 + Math.sqrt(teamCount) * 1.7;
+  return 8.5 + Math.sqrt(teamCount) * 1.4;
+}
+
+function CountText({count, fill}: {count: number; fill: string}) {
+  return (
+    <text aria-hidden="true" textAnchor="middle" dominantBaseline="central" fontSize={count > 9 ? 10 : 11} fontWeight={800} fill={fill} style={{pointerEvents: 'none'}}>
+      {count}
+    </text>
+  );
 }
 
 interface MarkerProps {
@@ -398,6 +429,7 @@ function CityMarker({x, y, r, city, teamCount, currentCount, leagues, isSelected
           stroke="var(--map-halo)"
           strokeWidth={2}
         />
+        <CountText count={teamCount} fill={isSelected ? 'var(--color-on-accent)' : defunctOnly ? 'var(--color-text-primary)' : 'var(--map-halo)'} />
         <circle className="city-focus" r={ringR + 4} fill="none" stroke="transparent" />
       </g>
     </g>
@@ -531,7 +563,7 @@ function ClusterMarker({
       transform={`translate(${x},${y})`}
       role="button"
       tabIndex={0}
-      aria-label={`${names.length} cities, ${names.join(', ')}: ${teamCount} teams. Zoom in to separate.`}
+      aria-label={`${teamCount} teams in ${names.join(', ')}. Zoom in to separate.`}
       onClick={(e) => {
         e.stopPropagation();
         onActivate();
@@ -547,9 +579,7 @@ function ClusterMarker({
         <circle r={ringR + 5} fill="var(--map-halo)" opacity={0.85} />
         <LeagueRing r={ringR} leagues={leagues} dashed={false} />
         <circle r={r} fill={isSelected ? 'var(--color-accent)' : 'var(--color-text-primary)'} stroke="var(--map-halo)" strokeWidth={2} />
-        <text aria-hidden="true" textAnchor="middle" dominantBaseline="central" fontSize={10} fontWeight={800} fill="var(--map-halo)">
-          {names.length}
-        </text>
+        <CountText count={teamCount} fill={isSelected ? 'var(--color-on-accent)' : 'var(--map-halo)'} />
         <circle className="city-focus" r={ringR + 4} fill="none" stroke="transparent" />
       </g>
     </g>
@@ -562,7 +592,7 @@ interface PlacedLabel {
   id: string;
   text: string;
   extra: number;
-  count: number;
+  second: string;
   x: number;
   y: number;
   anchor: 'start' | 'end' | 'middle';
@@ -582,8 +612,9 @@ function placeLabels(clusters: Cluster[], selectedId: string | null, size: Size 
     if (size && (c.x < -c.r || c.x > size.w + c.r || c.y < -c.r || c.y > size.h + c.r)) continue;
     const text = c.head.city.name;
     const extra = c.members.length - 1;
-    const count = c.teamCount;
-    const w = text.length * LABEL_FONT * 0.58 + (extra ? 22 : 0) + String(count).length * 7 + 8;
+    const second = c.members[1]?.city.name ?? '';
+    const suffix = extra === 1 ? ` & ${second}` : extra > 1 ? ` +${extra}` : '';
+    const w = (text.length + suffix.length) * LABEL_FONT * 0.58 + 6;
     const h = LABEL_FONT + 4;
     const gap = c.r + 6;
     const candidates: {x: number; y: number; anchor: PlacedLabel['anchor']; box: Box}[] = [
@@ -609,7 +640,7 @@ function placeLabels(clusters: Cluster[], selectedId: string | null, size: Size 
     );
     if (fit) {
       labelBoxes.push(fit.box);
-      out.push({id: c.head.city.id, text, extra, count, x: fit.x, y: fit.y, anchor: fit.anchor, isSelected: c.containsSelected});
+      out.push({id: c.head.city.id, text, extra, second, x: fit.x, y: fit.y, anchor: fit.anchor, isSelected: c.containsSelected});
     }
   }
   return {labels: out, boxes: [...markerBoxes, ...labelBoxes]};

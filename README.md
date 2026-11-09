@@ -6,17 +6,19 @@ An interactive map of Canadian professional sports. Every NHL, NBA, MLB, MLS, CF
 
 ## Features
 
-- **Map of Canada.** Each sports city gets a dot and a label. The ring colours show which leagues the city has. Nearby cities (Montréal and Laval, Vancouver and its suburbs, Toronto and Hamilton) merge into a cluster until you zoom in. Pan, zoom, or use the controls to fit all of Canada.
+- **Map of Canada.** Each sports city gets a dot showing how many teams it has had, plus its name. The ring colours show which leagues the city has. Nearby cities (Montréal and Laval, Vancouver and its suburbs, Toronto and Hamilton) merge into a cluster until you zoom in. Pan, zoom, or use the controls to fit all of Canada.
+- **Floating panel.** City and team details open in a panel that floats over the right side of the map and can be closed at any time.
+- **Header menu.** Appearance (light, dark or system), Share (copies the current view's link), Credits, and a link to the author.
 - **City overview.** Shows a city's active and former teams, league titles, a short history, and a 3D model of its venues.
-- **League and era filters.** Toggle NHL, NBA, MLB, MLS, CFL and CPL, and switch between all, active and former teams. Filters are kept in the URL so a view can be shared.
+- **League filter.** A dropdown in the header shows all leagues or just one (NHL, NBA, MLB, MLS, CFL or CPL). The choice is kept in the URL so a view can be shared.
 - **Team pages.**
   - *Overview*: summary, what happened to the team, colours, every championship year and other honours.
   - *History*: a timeline of milestones.
   - *Identity*: logo history, home and away uniforms for each era, and the rink, court, field or pitch for each era.
   - *Venues*: every home the team has had, each with a 3D model.
 - **Procedural 3D stadiums.** Each venue is built in three.js from its type, capacity, roof and surface. Some have signature details: the Saddledome's saddle roof, the Big O's inclined tower, Rogers Centre's sliding panels and BC Place's ring of masts. Retractable roofs open and close, and models can be viewed full screen.
-- **Works on phones.** On small screens the details panel becomes a draggable bottom sheet, and the filters wrap onto two rows.
-- **Light and dark mode**, keyboard-accessible map markers, and no violations from axe-core.
+- **Works on phones.** On small screens the details panel becomes a draggable bottom sheet.
+- Keyboard-accessible map markers and no violations from axe-core.
 
 | City overview with 3D venue | Identity history | Mobile |
 | --- | --- | --- |

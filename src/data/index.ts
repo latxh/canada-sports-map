@@ -16,22 +16,15 @@ export const TEAMS: Team[] = [...NHL_TEAMS, ...NBA_TEAMS, ...MLB_TEAMS, ...MLS_T
 
 export const TEAM_BY_ID: Record<string, Team> = Object.fromEntries(TEAMS.map((t) => [t.id, t]));
 
-export type EraFilter = 'all' | 'current' | 'defunct';
+/** Which league the map shows; 'all' shows every team. */
+export type LeagueFilter = LeagueId | 'all';
 
-export interface TeamFilter {
-  leagues: ReadonlySet<LeagueId>;
-  era: EraFilter;
+export function teamMatches(team: Team, league: LeagueFilter): boolean {
+  return league === 'all' || team.league === league;
 }
 
-export function teamMatches(team: Team, filter: TeamFilter): boolean {
-  if (!filter.leagues.has(team.league)) return false;
-  if (filter.era === 'current') return team.status === 'current';
-  if (filter.era === 'defunct') return team.status !== 'current';
-  return true;
-}
-
-export function teamsForCity(cityId: string, filter?: TeamFilter): Team[] {
-  return TEAMS.filter((t) => t.cityId === cityId && (!filter || teamMatches(t, filter))).sort(compareTeams);
+export function teamsForCity(cityId: string, league: LeagueFilter = 'all'): Team[] {
+  return TEAMS.filter((t) => t.cityId === cityId && teamMatches(t, league)).sort(compareTeams);
 }
 
 const LEAGUE_RANK: Record<LeagueId, number> = {NHL: 0, NBA: 1, MLB: 2, MLS: 3, CFL: 4, CPL: 5};
@@ -44,8 +37,8 @@ export function compareTeams(a: Team, b: Team): number {
   return (b.to ?? 9999) - (a.to ?? 9999) || a.from - b.from;
 }
 
-export function citiesWithTeams(filter: TeamFilter): {city: City; teams: Team[]}[] {
-  return CITIES.map((city) => ({city, teams: teamsForCity(city.id, filter)})).filter((c) => c.teams.length > 0);
+export function citiesWithTeams(league: LeagueFilter): {city: City; teams: Team[]}[] {
+  return CITIES.map((city) => ({city, teams: teamsForCity(city.id, league)})).filter((c) => c.teams.length > 0);
 }
 
 export function yearsLabel(from: number, to?: number): string {

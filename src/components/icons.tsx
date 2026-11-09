@@ -96,3 +96,37 @@ export const MapleLeafIcon = (p: SVGProps<SVGSVGElement>) => (
 /** A simplified 11-point maple leaf on a 24×24 grid (original drawing). */
 export const MAPLE_LEAF_PATH_24 =
   'M12 1.5l1.7 3.4 1.9-1-.6 4.9 2.6-2.8.6 1.6 2.9-.6-.9 3.2 1.3.6-4.4 3.8.5 1.7-4.3-.7.1 4.9h-1.4l.1-4.9-4.3.7.5-1.7L3.8 11l1.3-.6-.9-3.2 2.9.6.6-1.6L10.3 9l-.6-4.9 1.9 1z';
+
+export const MonitorIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <rect x="3" y="4" width="18" height="12" rx="2" />
+    <path d="M8 20h8M12 16v4" />
+  </svg>
+);
+
+export const ShareIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M12 3v12M7 8l5-5 5 5" />
+    <path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" />
+  </svg>
+);
+
+export const InfoIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 11v5M12 8h.01" />
+  </svg>
+);
+
+export const UserIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <circle cx="12" cy="8" r="4" />
+    <path d="M4 21a8 8 0 0 1 16 0" />
+  </svg>
+);
+
+export const ListIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+  </svg>
+);

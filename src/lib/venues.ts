@@ -1,4 +1,4 @@
-import {CITY_BY_ID, LEAGUES, TEAMS, VENUE_BY_ID, VENUES, yearsLabel, type Team, type TeamFilter} from '../data';
+import {CITY_BY_ID, LEAGUES, TEAMS, VENUE_BY_ID, VENUES, yearsLabel, type LeagueFilter, type Team} from '../data';
 import {teamMatches} from '../data';
 import {mix} from './color';
 import type {VenueEntry} from '../components/VenueSection';
@@ -34,11 +34,11 @@ export function venueEntriesForTeam(team: Team): VenueEntry[] {
     });
 }
 
-export function venueEntriesForCity(cityId: string, filter: TeamFilter): VenueEntry[] {
+export function venueEntriesForCity(cityId: string, league: LeagueFilter): VenueEntry[] {
   const venues = VENUES.filter((v) => v.cityId === cityId);
   const entries: (VenueEntry & {rank: number})[] = [];
   for (const venue of venues) {
-    const tenants = TEAMS.filter((t) => t.venues.some((s) => s.venueId === venue.id) && teamMatches(t, filter));
+    const tenants = TEAMS.filter((t) => t.venues.some((s) => s.venueId === venue.id) && teamMatches(t, league));
     if (tenants.length === 0) continue;
     // Most recent tenant drives the model's field and colours.
     const lead = tenants

@@ -1,7 +1,8 @@
-import {useMemo, useState, type ReactNode} from 'react';
+import {useLayoutEffect, useMemo, useRef, useState, type ReactNode} from 'react';
 import {Heading} from '@astryxdesign/core/Heading';
 import {Text} from '@astryxdesign/core/Text';
 import {Button} from '@astryxdesign/core/Button';
+import {IconButton} from '@astryxdesign/core/IconButton';
 import {Icon} from '@astryxdesign/core/Icon';
 import {List, ListItem} from '@astryxdesign/core/List';
 import {VStack} from '@astryxdesign/core/VStack';
@@ -27,7 +28,7 @@ import {
   type IdentityEra,
   type Sport,
   type Team,
-  type TeamFilter,
+  type LeagueFilter,
 } from '../data';
 import {TeamBadge} from '../visuals/TeamBadge';
 import {Jersey} from '../visuals/Jersey';
@@ -39,8 +40,43 @@ import {MapleLeafIcon, PinIcon, TrophyIcon} from './icons';
 
 // ── Shared ────────────────────────────────────────────────────────────────
 
-function BackButton({label, onClick}: {label: string; onClick: () => void}) {
-  return <Button size="sm" variant="ghost" label={label} icon={<Icon icon="chevronLeft" />} onClick={onClick} />;
+/**
+ * Chrome shared by every panel: an optional back button and a close button
+ * that dismisses the panel at any time.
+ */
+export function PanelFrame({
+  back,
+  onClose,
+  resetKey,
+  children,
+}: {
+  back?: {label: string; onClick: () => void};
+  onClose: () => void;
+  /** When this changes, the nearest scrolling container returns to the top. */
+  resetKey?: string;
+  children: ReactNode;
+}) {
+  const rootRef = useRef<HTMLElement>(null);
+  useLayoutEffect(() => {
+    let el = rootRef.current?.parentElement ?? null;
+    while (el) {
+      const {overflowY} = getComputedStyle(el);
+      if ((overflowY === 'auto' || overflowY === 'scroll') && el.scrollHeight > el.clientHeight) {
+        el.scrollTop = 0;
+        return;
+      }
+      el = el.parentElement;
+    }
+  }, [resetKey]);
+  return (
+    <VStack gap={2} ref={rootRef}>
+      <HStack hAlign="between" vAlign="center" gap={2}>
+        {back ? <Button size="sm" variant="ghost" label={back.label} icon={<Icon icon="chevronLeft" />} onClick={back.onClick} /> : <span />}
+        <IconButton size="sm" variant="ghost" label="Close panel" tooltip="Close" icon={<Icon icon="close" />} onClick={onClose} />
+      </HStack>
+      {children}
+    </VStack>
+  );
 }
 
 function Stat({value, label}: {value: ReactNode; label: string}) {
@@ -84,19 +120,13 @@ function TeamRow({team, onOpen}: {team: Team; onOpen: (id: string) => void}) {
 
 // ── Overview (nothing selected) ───────────────────────────────────────────
 
-export function OverviewPanel({
-  filter,
-  onOpenCity,
-}: {
-  filter: TeamFilter;
-  onOpenCity: (id: string) => void;
-}) {
+export function OverviewPanel({league, onOpenCity}: {league: LeagueFilter; onOpenCity: (id: string) => void}) {
   const rows = useMemo(
     () =>
-      CITIES.map((c) => ({city: c, teams: teamsForCity(c.id, filter)}))
+      CITIES.map((c) => ({city: c, teams: teamsForCity(c.id, league)}))
         .filter((r) => r.teams.length > 0)
         .sort((a, b) => b.teams.length - a.teams.length || a.city.rank - b.city.rank),
-    [filter],
+    [league],
   );
   const visibleTeams = rows.flatMap((r) => r.teams);
   const titles = visibleTeams.reduce((n, t) => n + t.championships.length, 0);
@@ -110,8 +140,9 @@ export function OverviewPanel({
           <Heading level={2}>Canadian pro sports, mapped</Heading>
         </HStack>
         <Text color="secondary">
-          Every Canadian NHL, NBA, MLB, MLS, CFL and CPL team, past and present. Pick a city on the map or below to see its teams,
-          venues, championships and identity history.
+          {league === 'all'
+            ? 'Every Canadian NHL, NBA, MLB, MLS, CFL and CPL team, past and present. Pick a city on the map or below to see its teams, venues, championships and identity history.'
+            : `Every Canadian ${LEAGUES[league].name} team, past and present. Pick a city on the map or below.`}
         </Text>
       </VStack>
       <StatRow>
@@ -121,7 +152,7 @@ export function OverviewPanel({
       </StatRow>
       <VStack gap={2}>
         <SectionTitle>Legend</SectionTitle>
-        <Grid columns={2} rowGap={1.5} columnGap={4}>
+        <Grid columns={1} rowGap={1.5}>
           {LEAGUE_ORDER.map((l) => (
             <HStack key={l} gap={2} vAlign="center">
               <LeagueDot league={l} />
@@ -132,13 +163,13 @@ export function OverviewPanel({
           ))}
         </Grid>
         <Text type="supporting">
-          Rings show which leagues a city has. A hollow, dashed marker means the city only has former teams.
+          The number on each dot is how many teams the city has had. Rings show the leagues. A hollow, dashed dot means the city only has former teams.
         </Text>
       </VStack>
       <VStack gap={1}>
         <SectionTitle>Cities</SectionTitle>
         {rows.length === 0 ? (
-          <EmptyState title="No teams match these filters" description="Turn on more leagues or switch to All eras." isCompact />
+          <EmptyState title="No teams in this league" isCompact />
         ) : (
           <List hasDividers edge="flush">
             {rows.map(({city, teams}) => {
@@ -171,21 +202,19 @@ export function OverviewPanel({
 
 export function CityPanel({
   cityId,
-  filter,
-  onBack,
+  league,
   onOpenTeam,
-  onShowAllEras,
+  onShowAllLeagues,
 }: {
   cityId: string;
-  filter: TeamFilter;
-  onBack: () => void;
+  league: LeagueFilter;
   onOpenTeam: (id: string) => void;
-  onShowAllEras: () => void;
+  onShowAllLeagues: () => void;
 }) {
   const city = CITY_BY_ID[cityId];
-  const teams = useMemo(() => teamsForCity(cityId, filter), [cityId, filter]);
+  const teams = useMemo(() => teamsForCity(cityId, league), [cityId, league]);
   const allTeams = useMemo(() => teamsForCity(cityId), [cityId]);
-  const venueEntries = useMemo(() => venueEntriesForCity(cityId, filter), [cityId, filter]);
+  const venueEntries = useMemo(() => venueEntriesForCity(cityId, league), [cityId, league]);
   if (!city) return <EmptyState title="City not found" />;
 
   const current = teams.filter((t) => t.status === 'current');
@@ -195,9 +224,6 @@ export function CityPanel({
 
   return (
     <VStack gap={4}>
-      <HStack>
-        <BackButton label="All cities" onClick={onBack} />
-      </HStack>
       <VStack gap={1}>
         <Heading level={2}>{city.name}</Heading>
         <Text color="secondary">{PROVINCE_NAMES[city.province]}</Text>
@@ -229,12 +255,12 @@ export function CityPanel({
           </List>
         </VStack>
       )}
-      {teams.length === 0 && <EmptyState title="No teams match these filters" isCompact />}
+      {teams.length === 0 && league !== 'all' && <EmptyState title={`No ${league} teams here`} isCompact />}
       {hidden > 0 && (
         <Banner
           status="info"
-          title={`${hidden} more team${hidden === 1 ? '' : 's'} hidden by your filters`}
-          endContent={<Button size="sm" label="Show all" onClick={onShowAllEras} />}
+          title={`${hidden} more team${hidden === 1 ? '' : 's'} in other leagues`}
+          endContent={<Button size="sm" label="Show all leagues" onClick={onShowAllLeagues} />}
         />
       )}
 
@@ -271,13 +297,11 @@ export function TeamPanel({
   teamId,
   tab,
   onTabChange,
-  onBack,
   onOpenTeam,
 }: {
   teamId: string;
   tab: string | undefined;
   onTabChange: (tab: TeamTab) => void;
-  onBack: (cityId: string) => void;
   onOpenTeam: (id: string) => void;
 }) {
   const team = TEAMS.find((t) => t.id === teamId);
@@ -292,9 +316,6 @@ export function TeamPanel({
 
   return (
     <VStack gap={4}>
-      <HStack>
-        <BackButton label={city ? city.name : 'Back'} onClick={() => onBack(team.cityId)} />
-      </HStack>
       <HStack gap={3} vAlign="center">
         <TeamBadge era={era} size={64} title={`${team.name} badge illustration`} />
         <VStack gap={1}>
