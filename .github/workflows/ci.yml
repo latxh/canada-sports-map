@@ -18,3 +18,12 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      # Relative-path build that works from any folder or static host; download it from the run's Artifacts.
+      - run: npm run build -- --outDir dist-preview
+        env:
+          BASE_PATH: ./
+      - uses: actions/upload-artifact@v4
+        with:
+          name: preview-build
+          path: dist-preview
+          retention-days: 14
