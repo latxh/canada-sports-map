@@ -19,8 +19,17 @@ import {useHashRoute} from './hooks/useHashRoute';
 
 type Mode = 'light' | 'dark';
 
+/** Storage and history can throw inside sandboxed frames (e.g. embedded previews); fail soft. */
+function safely<T>(fn: () => T, fallback: T): T {
+  try {
+    return fn();
+  } catch {
+    return fallback;
+  }
+}
+
 function initialMode(): Mode {
-  const stored = localStorage.getItem('csa-mode');
+  const stored = safely(() => localStorage.getItem('csa-mode'), null);
   if (stored === 'light' || stored === 'dark') return stored;
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
@@ -47,7 +56,7 @@ export function App() {
   const isDesktop = useMediaQuery(DESKTOP_QUERY);
 
   useEffect(() => {
-    localStorage.setItem('csa-mode', mode);
+    safely(() => localStorage.setItem('csa-mode', mode), undefined);
     document.documentElement.style.colorScheme = mode;
   }, [mode]);
 
@@ -59,7 +68,7 @@ export function App() {
     if (era === 'all') params.delete('era');
     else params.set('era', era);
     const qs = params.toString();
-    history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}${window.location.hash}`);
+    safely(() => history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}${window.location.hash}`), undefined);
   }, [leagues, era]);
 
   const filter: TeamFilter = useMemo(() => ({leagues, era}), [leagues, era]);

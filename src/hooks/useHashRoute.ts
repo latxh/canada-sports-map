@@ -34,8 +34,12 @@ export function useHashRoute(): [Route, (route: Route, options?: {replace?: bool
     const next = routeToHash(route);
     if (next === window.location.hash) return;
     if (options?.replace) {
-      history.replaceState(null, '', next);
-      window.dispatchEvent(new HashChangeEvent('hashchange'));
+      try {
+        history.replaceState(null, '', next);
+        window.dispatchEvent(new HashChangeEvent('hashchange'));
+      } catch {
+        window.location.hash = next;
+      }
     } else {
       window.location.hash = next;
     }
