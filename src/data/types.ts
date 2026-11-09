@@ -50,14 +50,6 @@ export type RoofType = 'indoor' | 'open' | 'canopy' | 'retractable' | 'fixed-dom
 
 export type Surface = 'ice' | 'hardwood' | 'grass' | 'turf' | 'hybrid';
 
-/** Optional signature architecture the 3D builder knows how to draw. */
-export type VenueFeature =
-  | 'saddle-roof' // Scotiabank Saddledome
-  | 'inclined-tower' // Olympic Stadium
-  | 'segmented-dome' // Rogers Centre
-  | 'cable-crown' // BC Place
-  | 'temporary-stands'; // modular / scaffold grandstands
-
 export interface Venue {
   id: string;
   name: string;
@@ -72,7 +64,6 @@ export interface Venue {
   kind: VenueKind;
   roof: RoofType;
   surface: Surface;
-  feature?: VenueFeature;
   facts: string[];
   wikipedia: string;
 }

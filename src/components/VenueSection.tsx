@@ -9,6 +9,7 @@ import {Link} from '@astryxdesign/core/Link';
 import {MetadataList, MetadataListItem} from '@astryxdesign/core/MetadataList';
 import {VStack} from '@astryxdesign/core/VStack';
 import {CITY_BY_ID, type Sport, type Venue} from '../data';
+import {hasStadiumModel} from '../three/modelIds';
 import {ExpandIcon, StadiumIcon} from './icons';
 import {SectionTitle} from './bits';
 
@@ -64,9 +65,17 @@ export function VenueSection({entries, title = 'Venues'}: {entries: VenueEntry[]
   if (!selected) return null;
   const v = selected.venue;
 
-  const viewer = (height: number | string) => (
+  const hasModel = hasStadiumModel(v.id);
+  const viewer = (height: number | string, isFullscreen = false) => (
     <Suspense fallback={<Skeleton width="100%" height={typeof height === 'number' ? height : 320} />}>
-      <StadiumViewer venue={v} sport={selected.sport} seatColor={selected.seatColor} accentColor={selected.accentColor} height={height} />
+      <StadiumViewer
+        venue={v}
+        sport={selected.sport}
+        seatColor={selected.seatColor}
+        accentColor={selected.accentColor}
+        height={height}
+        isFullscreen={isFullscreen}
+      />
     </Suspense>
   );
 
@@ -74,18 +83,28 @@ export function VenueSection({entries, title = 'Venues'}: {entries: VenueEntry[]
     <VStack gap={3}>
       <SectionTitle
         endContent={
-          <IconButton
-            size="sm"
-            variant="ghost"
-            label={`Open ${v.name} 3D model full screen`}
-            tooltip="Full screen"
-            icon={<Icon icon={ExpandIcon} />}
-            onClick={() => setIsExpanded(true)}
-          />
+          hasModel ? (
+            <IconButton
+              size="sm"
+              variant="ghost"
+              label={`Open ${v.name} 3D model full screen`}
+              tooltip="Full screen"
+              icon={<Icon icon={ExpandIcon} />}
+              onClick={() => setIsExpanded(true)}
+            />
+          ) : undefined
         }>
         {title}: {v.name}
       </SectionTitle>
-      {isExpanded ? <Skeleton width="100%" height={260} /> : viewer(260)}
+      {hasModel ? (
+        isExpanded ? (
+          <Skeleton width="100%" height={260} />
+        ) : (
+          viewer(260)
+        )
+      ) : (
+        <Text type="supporting">3D models are shown for the venues current teams play in.</Text>
+      )}
       <MetadataList columns={2} label={{position: 'top'}}>
         <MetadataListItem label="Type">{KIND_LABEL[v.kind]}</MetadataListItem>
         <MetadataListItem label="Capacity">{formatCapacity(v.capacity)}</MetadataListItem>
@@ -125,7 +144,7 @@ export function VenueSection({entries, title = 'Venues'}: {entries: VenueEntry[]
 
       <Dialog isOpen={isExpanded} onOpenChange={setIsExpanded} variant="fullscreen" padding={4}>
         <DialogHeader title={v.name} subtitle={`${CITY_BY_ID[v.cityId]?.name ?? ''} · ${venueYears(v)} · ${formatCapacity(v.capacity)}`} onOpenChange={setIsExpanded} />
-        <div className="pt-3">{isExpanded && viewer('calc(100dvh - 180px)')}</div>
+        <div className="pt-3">{isExpanded && hasModel && viewer('calc(100dvh - 180px)', true)}</div>
       </Dialog>
     </VStack>
   );

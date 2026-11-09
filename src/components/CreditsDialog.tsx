@@ -29,11 +29,16 @@ const SOURCES = [
     href: 'https://www.naturalearthdata.com/',
     note: 'Province, coastline and lake boundaries (public domain), simplified for the web.',
   },
+  {
+    name: 'OpenStreetMap',
+    href: 'https://www.openstreetmap.org/copyright',
+    note: 'Venue footprints, stand layouts and dimensions, used as references for the 3D models. © OpenStreetMap contributors (ODbL).',
+  },
 ];
 
 const TOOLS = [
   {name: 'Astryx design system', href: 'https://github.com/facebook/astryx', note: 'UI components and theme (MIT).'},
-  {name: 'three.js / React Three Fiber', href: 'https://threejs.org/', note: 'Procedural 3D stadium models (MIT).'},
+  {name: 'three.js / React Three Fiber', href: 'https://threejs.org/', note: 'Low-poly 3D stadium models (MIT).'},
   {name: 'd3-geo, d3-zoom & TopoJSON', href: 'https://d3js.org/', note: 'Map projection and pan/zoom (ISC).'},
 ];
 
@@ -107,8 +112,9 @@ export function CreditsDialog({isOpen, onOpenChange}: {isOpen: boolean; onOpenCh
           <SectionTitle>About the visuals</SectionTitle>
           <Text type="supporting">
             Current logos are the official marks of their teams and leagues. Badges for earlier eras, uniforms and playing surfaces
-            are original illustrations in each era’s colours, not reproductions of official artwork. 3D stadiums are generated from a handful of parameters (shape, capacity, roof, signature features), so
-            they are approximate.
+            are original illustrations in each era’s colours, not reproductions of official artwork. The 3D models of the 24 venues current
+            teams play in are hand-built, low-poly approximations drawn to scale from OpenStreetMap footprints, with Wikimedia Commons photos
+            used only as visual references. Former venues are not modelled.
           </Text>
           <Text type="supporting">
             Capacities are approximate. The 113th Grey Cup (November 15, 2026) and the 2026 CPL Final had not been played when the
