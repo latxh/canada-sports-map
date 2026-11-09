@@ -1,4 +1,4 @@
-import type {SVGProps} from 'react';
+import type {ReactNode, SVGProps} from 'react';
 import {Selector} from '@astryxdesign/core/Selector';
 import {DropdownMenu} from '@astryxdesign/core/DropdownMenu';
 import {IconButton} from '@astryxdesign/core/IconButton';
@@ -8,29 +8,13 @@ import {Text} from '@astryxdesign/core/Text';
 import {SegmentedControl, SegmentedControlItem} from '@astryxdesign/core/SegmentedControl';
 import {useToast} from '@astryxdesign/core/Toast';
 import {LEAGUES, LEAGUE_ORDER, type LeagueFilter, type LeagueId} from '../data';
-import {InfoIcon, MonitorIcon, MoonIcon, ShareIcon, SunIcon, UserIcon} from './icons';
+import {VStack} from '@astryxdesign/core/VStack';
+import {InfoIcon, MapleLeafIcon, MonitorIcon, MoonIcon, ShareIcon, SunIcon, UserIcon} from './icons';
+import {LeagueLogo} from '../visuals/Logos';
 
 export type Appearance = 'light' | 'dark' | 'system';
 
-function dotIcon(color: string) {
-  const DotIcon = (p: SVGProps<SVGSVGElement>) => (
-    <svg viewBox="0 0 16 16" aria-hidden {...p}>
-      <circle cx="8" cy="8" r="5" fill={color} />
-    </svg>
-  );
-  return DotIcon;
-}
-
-const LEAGUE_ICONS = Object.fromEntries(LEAGUE_ORDER.map((l) => [l, dotIcon(LEAGUES[l].color)])) as Record<LeagueId, ReturnType<typeof dotIcon>>;
-
-const AllIcon = (p: SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 16 16" aria-hidden {...p}>
-    {LEAGUE_ORDER.map((l, i) => {
-      const a = (i / LEAGUE_ORDER.length) * Math.PI * 2 - Math.PI / 2;
-      return <circle key={l} cx={8 + Math.cos(a) * 5} cy={8 + Math.sin(a) * 5} r="2.2" fill={LEAGUES[l].color} />;
-    })}
-  </svg>
-);
+const AllIcon = (p: SVGProps<SVGSVGElement>) => <MapleLeafIcon {...p} style={{color: 'var(--maple)'}} />;
 
 export function LeagueSelect({value, onChange, isCompact}: {value: LeagueFilter; onChange: (v: LeagueFilter) => void; isCompact: boolean}) {
   return (
@@ -44,9 +28,24 @@ export function LeagueSelect({value, onChange, isCompact}: {value: LeagueFilter;
       options={[
         {value: 'all', label: isCompact ? 'All' : 'All leagues', icon: AllIcon},
         {type: 'divider'},
-        ...LEAGUE_ORDER.map((l) => ({value: l, label: l, description: LEAGUES[l].name, icon: LEAGUE_ICONS[l]})),
+        ...LEAGUE_ORDER.map((l) => ({value: l, label: l, description: LEAGUES[l].name})),
       ]}
+      renderOption={(o) => <LeagueOptionRow value={o.value} label={o.label} description={o.description} />}
+      renderValue={(o) => <LeagueOptionRow value={o.value} label={o.label} isCompact />}
     />
+  );
+}
+
+function LeagueOptionRow({value, label, description, isCompact}: {value?: string; label: ReactNode; description?: ReactNode; isCompact?: boolean}) {
+  const isLeague = !!value && (LEAGUE_ORDER as string[]).includes(value);
+  return (
+    <HStack gap={2} vAlign="center">
+      {isLeague ? <LeagueLogo league={value as LeagueId} size={isCompact ? 18 : 24} isDecorative /> : <Icon icon={MapleLeafIcon} color="red" size={isCompact ? 'sm' : 'md'} />}
+      <VStack gap={0}>
+        <Text>{label}</Text>
+        {description && !isCompact ? <Text type="supporting">{description}</Text> : null}
+      </VStack>
+    </HStack>
   );
 }
 

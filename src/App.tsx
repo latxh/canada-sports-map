@@ -2,17 +2,16 @@ import {useCallback, useEffect, useMemo, useState} from 'react';
 import {Theme} from '@astryxdesign/core/theme';
 import {neutralTheme} from '@astryxdesign/theme-neutral/built';
 import {TopNav, TopNavHeading} from '@astryxdesign/core/TopNav';
-import {Button} from '@astryxdesign/core/Button';
 import {Icon} from '@astryxdesign/core/Icon';
 import {HStack} from '@astryxdesign/core/HStack';
 import {BottomSheet} from '@astryxdesign/core/BottomSheet';
 import {VisuallyHidden} from '@astryxdesign/core/VisuallyHidden';
-import {CITY_BY_ID, LEAGUE_ORDER, TEAM_BY_ID, citiesWithTeams, type LeagueFilter, type LeagueId} from './data';
+import {LEAGUE_ORDER, TEAM_BY_ID, citiesWithTeams, type LeagueFilter, type LeagueId} from './data';
 import {SportsMap} from './components/SportsMap';
-import {CityPanel, OverviewPanel, PanelFrame, TeamPanel} from './components/Panels';
+import {CityPanel, TeamPanel} from './components/Panels';
 import {CreditsDialog} from './components/CreditsDialog';
 import {LeagueSelect, SiteMenu, type Appearance} from './components/HeaderControls';
-import {ListIcon, MapleLeafIcon} from './components/icons';
+import {MapleLeafIcon} from './components/icons';
 import {DESKTOP_QUERY, useMediaQuery} from './hooks/useMediaQuery';
 import {useHashRoute} from './hooks/useHashRoute';
 
@@ -43,7 +42,6 @@ export function App() {
   const [league, setLeague] = useState<LeagueFilter>(initialLeague);
   const [isCreditsOpen, setIsCreditsOpen] = useState(false);
   const isDesktop = useMediaQuery(DESKTOP_QUERY);
-  const [isOverviewOpen, setIsOverviewOpen] = useState(() => window.matchMedia(DESKTOP_QUERY).matches);
   const [route, navigate] = useHashRoute();
 
   useEffect(() => {
@@ -67,43 +65,35 @@ export function App() {
 
   const openCity = useCallback((id: string) => navigate({kind: 'city', id}), [navigate]);
   const openTeam = useCallback((id: string) => navigate({kind: 'team', id}), [navigate]);
-  const goHome = useCallback(() => {
-    setIsOverviewOpen(true);
-    navigate({kind: 'home'});
-  }, [navigate]);
-  const closePanel = useCallback(() => {
-    setIsOverviewOpen(false);
-    navigate({kind: 'home'});
-  }, [navigate]);
+  const closePanel = useCallback(() => navigate({kind: 'home'}), [navigate]);
 
-  const isPanelOpen = route.kind !== 'home' || isOverviewOpen;
+  const isPanelOpen = route.kind !== 'home';
 
-  let back: {label: string; onClick: () => void} | undefined;
-  let panelBody;
+  let panel = null;
   if (route.kind === 'team') {
-    const team = TEAM_BY_ID[route.id];
-    const city = team ? CITY_BY_ID[team.cityId] : undefined;
-    if (team && city) back = {label: city.name, onClick: () => navigate({kind: 'city', id: city.id})};
-    panelBody = (
+    panel = (
       <TeamPanel
         key={route.id}
         teamId={route.id}
         tab={route.tab}
         onTabChange={(tab) => navigate({kind: 'team', id: route.id, tab}, {replace: true})}
         onOpenTeam={openTeam}
+        onOpenCity={openCity}
+        onClose={closePanel}
       />
     );
   } else if (route.kind === 'city') {
-    back = {label: 'All cities', onClick: goHome};
-    panelBody = <CityPanel key={route.id} cityId={route.id} league={league} onOpenTeam={openTeam} onShowAllLeagues={() => setLeague('all')} />;
-  } else {
-    panelBody = <OverviewPanel league={league} onOpenCity={openCity} />;
+    panel = (
+      <CityPanel
+        key={route.id}
+        cityId={route.id}
+        league={league}
+        onOpenTeam={openTeam}
+        onShowAllLeagues={() => setLeague('all')}
+        onClose={closePanel}
+      />
+    );
   }
-  const panel = (
-    <PanelFrame back={back} onClose={closePanel} resetKey={route.kind === 'home' ? 'home' : `${route.kind}:${route.id}`}>
-      {panelBody}
-    </PanelFrame>
-  );
 
   const [viewportH, setViewportH] = useState(() => window.innerHeight);
   useEffect(() => {
@@ -147,20 +137,6 @@ export function App() {
             rightInset={rightInset}
           />
 
-          {!isPanelOpen && (
-            <div className={isDesktop ? 'absolute top-3 right-3' : 'pointer-events-none absolute inset-x-0 bottom-4 flex justify-center'}>
-              <div className="pointer-events-auto">
-                <Button
-                  label={isDesktop ? 'Cities' : 'Browse cities'}
-                  variant={isDesktop ? 'secondary' : 'primary'}
-                  elevation="med"
-                  icon={<Icon icon={ListIcon} />}
-                  onClick={() => setIsOverviewOpen(true)}
-                />
-              </div>
-            </div>
-          )}
-
           {isDesktop && isPanelOpen && (
             <aside
               key={routeKey}
@@ -175,7 +151,7 @@ export function App() {
 
       {!isDesktop && (
         <BottomSheet
-          label={route.kind === 'team' ? 'Team overview' : route.kind === 'city' ? 'City overview' : 'Cities'}
+          label={route.kind === 'team' ? 'Team overview' : 'City overview'}
           isOpen={isPanelOpen}
           onOpenChange={(open) => {
             if (!open) closePanel();

@@ -6,11 +6,12 @@ An interactive map of Canadian professional sports. Every NHL, NBA, MLB, MLS, CF
 
 ## Features
 
-- **Map of Canada.** Each sports city gets a dot showing how many teams it has had, plus its name. The ring colours show which leagues the city has. Nearby cities (Montréal and Laval, Vancouver and its suburbs, Toronto and Hamilton) merge into a cluster until you zoom in. Pan, zoom, or use the controls to fit all of Canada.
-- **Floating panel.** City and team details open in a panel that floats over the right side of the map and can be closed at any time.
+- **Map of Canada.** Each sports city gets a simple dot and its name: a solid outline for cities with active teams, a dashed one for cities that only had teams in the past. Nearby cities (Montréal and Laval, Vancouver and its suburbs, Toronto and Hamilton) merge into a cluster until you zoom in. Pan, zoom, or use the controls to fit all of Canada.
+- **Floating panel.** Click a city to open its details in a panel that floats over the right side of the map. The panel header is the city or team name with a close button.
 - **Header menu.** Appearance (light, dark or system), Share (copies the current view's link), Credits, and a link to the author.
 - **City overview.** Shows a city's active and former teams, league titles, a short history, and a 3D model of its venues.
 - **League filter.** A dropdown in the header shows all leagues or just one (NHL, NBA, MLB, MLS, CFL or CPL). The choice is kept in the URL so a view can be shared.
+- **Official logos.** Team and league logos come from the files their Wikipedia articles use (see Credits).
 - **Team pages.**
   - *Overview*: summary, what happened to the team, colours, every championship year and other honours.
   - *History*: a timeline of milestones.
@@ -74,8 +75,9 @@ Each team is one object in `src/data/teams/*.ts`, typed by `src/data/types.ts`. 
 ## Credits
 
 - **[Wikipedia](https://en.wikipedia.org/)**: team, venue and championship facts, paraphrased (CC BY-SA 4.0). Every team and venue links to its article.
+- **Logos**: `public/logos/` holds the logo files used on each team's and league's Wikipedia article. `src/data/logos.ts` records each file page and its licence. Most are non-free trademarks, used on Wikipedia under fair use.
 - **[SportsLogos.net](https://www.sportslogos.net/)**: reference for logo and uniform history. The app links to its league archives. SportsLogos.net asks automated tools not to collect its content, so no images or data were copied from it.
 - **[Natural Earth](https://www.naturalearthdata.com/)**: boundaries and lakes (public domain).
 - **[Astryx](https://github.com/facebook/astryx)**, **[three.js](https://threejs.org/)** / **[React Three Fiber](https://r3f.docs.pmnd.rs/)**, **[d3](https://d3js.org/)**, **[TopoJSON](https://github.com/topojson/topojson)**.
 
-Team badges, uniforms and playing surfaces in this app are original illustrations in each team's colours, not official artwork. Team names, logos and uniforms are trademarks of their owners. This is an unofficial fan project and is not affiliated with any league or team.
+Where there's no official logo for an era, the badge is an original illustration in that era's colours, and so are the uniforms and playing surfaces. Making this repository public would mean publishing official team logos, which are trademarks of their owners. Team names, logos and uniforms are trademarks of their owners. This is an unofficial fan project and is not affiliated with any league or team.

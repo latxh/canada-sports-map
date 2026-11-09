@@ -86,3 +86,16 @@ describe('dataset integrity', () => {
     }
   });
 });
+
+describe('logos', () => {
+  it('points every logo at a real file and a known team or league', async () => {
+    const fs = await import('node:fs');
+    const {LOGOS} = await import('./logos');
+    for (const [key, logo] of Object.entries(LOGOS)) {
+      expect(fs.existsSync(`public/logos/${logo.file}`), logo.file).toBe(true);
+      if (key.startsWith('league-')) expect(LEAGUES[key.slice(7) as keyof typeof LEAGUES], key).toBeDefined();
+      else expect(TEAMS.some((t) => t.id === key), key).toBe(true);
+      if (logo.eraIndex !== undefined) expect(TEAMS.find((t) => t.id === key)!.identity[logo.eraIndex], key).toBeDefined();
+    }
+  });
+});

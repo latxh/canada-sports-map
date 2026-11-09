@@ -8,7 +8,7 @@ import type {FeatureCollection, Geometry} from 'geojson';
 import type {Topology, GeometryCollection} from 'topojson-specification';
 import {IconButton} from '@astryxdesign/core/IconButton';
 import {Icon} from '@astryxdesign/core/Icon';
-import {LEAGUES, LEAGUE_ORDER, type City, type LeagueId, type Team} from '../data';
+import {LEAGUE_ORDER, type City, type LeagueId, type Team} from '../data';
 import {FitIcon, MinusIcon, PlusIcon} from './icons';
 
 type GeoProps = {name: string; code?: string};
@@ -374,15 +374,8 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
 }
 
 function markerRadius(teamCount: number) {
-  return 8.5 + Math.sqrt(teamCount) * 1.4;
-}
-
-function CountText({count, fill}: {count: number; fill: string}) {
-  return (
-    <text aria-hidden="true" textAnchor="middle" dominantBaseline="central" fontSize={count > 9 ? 10 : 11} fontWeight={800} fill={fill} style={{pointerEvents: 'none'}}>
-      {count}
-    </text>
-  );
+  // Simple dots: a touch larger for bigger sports cities.
+  return 4.5 + Math.min(3, Math.sqrt(teamCount) * 0.8);
 }
 
 interface MarkerProps {
@@ -397,7 +390,7 @@ interface MarkerProps {
   onSelect: () => void;
 }
 
-function CityMarker({x, y, r, city, teamCount, currentCount, leagues, isSelected, onSelect}: MarkerProps) {
+function CityMarker({x, y, r, city, teamCount, currentCount, isSelected, onSelect}: MarkerProps) {
   const ringR = r + 3.5;
   const defunctOnly = currentCount === 0;
   const label = `${city.name}: ${teamCount} team${teamCount === 1 ? '' : 's'}${defunctOnly ? ', all former' : ''}. Open city overview.`;
@@ -422,56 +415,31 @@ function CityMarker({x, y, r, city, teamCount, currentCount, leagues, isSelected
       <circle className="city-hit" r={Math.max(22, ringR + 8)} />
       {isSelected && <circle className="city-pulse" r={ringR} fill="none" stroke="var(--color-accent)" strokeWidth={2} />}
       <g className="city-core">
-        <LeagueRing r={ringR} leagues={leagues} dashed={defunctOnly} />
+        <OutlineRing r={ringR} dashed={defunctOnly} isSelected={isSelected} />
         <circle
           r={r}
           fill={isSelected ? 'var(--color-accent)' : defunctOnly ? 'var(--map-land)' : 'var(--color-text-primary)'}
           stroke="var(--map-halo)"
           strokeWidth={2}
         />
-        <CountText count={teamCount} fill={isSelected ? 'var(--color-on-accent)' : defunctOnly ? 'var(--color-text-primary)' : 'var(--map-halo)'} />
         <circle className="city-focus" r={ringR + 4} fill="none" stroke="transparent" />
       </g>
     </g>
   );
 }
 
-function LeagueRing({r, leagues, dashed}: {r: number; leagues: LeagueId[]; dashed: boolean}) {
-  if (leagues.length === 0) return null;
-  const width = 3.5;
-  if (leagues.length === 1) {
-    return (
+function OutlineRing({r, dashed, isSelected}: {r: number; dashed: boolean; isSelected: boolean}) {
+  return (
+    <>
+      <circle r={r + 1.5} fill="var(--map-halo)" opacity={0.9} />
       <circle
         r={r}
         fill="none"
-        stroke={LEAGUES[leagues[0]].color}
-        strokeWidth={width}
-        strokeDasharray={dashed ? '3 2' : undefined}
+        stroke={isSelected ? 'var(--color-accent)' : 'var(--color-text-primary)'}
+        strokeWidth={2}
+        strokeDasharray={dashed ? '3 2.5' : undefined}
       />
-    );
-  }
-  const gap = 0.18;
-  const step = (Math.PI * 2) / leagues.length;
-  return (
-    <g>
-      {leagues.map((l, i) => {
-        const a0 = -Math.PI / 2 + i * step + gap / 2;
-        const a1 = a0 + step - gap;
-        const large = a1 - a0 > Math.PI ? 1 : 0;
-        const d = `M ${r * Math.cos(a0)} ${r * Math.sin(a0)} A ${r} ${r} 0 ${large} 1 ${r * Math.cos(a1)} ${r * Math.sin(a1)}`;
-        return (
-          <path
-            key={l}
-            d={d}
-            fill="none"
-            stroke={LEAGUES[l].color}
-            strokeWidth={width}
-            strokeLinecap="round"
-            strokeDasharray={dashed ? '3 2' : undefined}
-          />
-        );
-      })}
-    </g>
+    </>
   );
 }
 
@@ -543,7 +511,6 @@ function ClusterMarker({
   r,
   names,
   teamCount,
-  leagues,
   isSelected,
   onActivate,
 }: {
@@ -576,10 +543,8 @@ function ClusterMarker({
       }}>
       <circle className="city-hit" r={Math.max(22, ringR + 8)} />
       <g className="city-core">
-        <circle r={ringR + 5} fill="var(--map-halo)" opacity={0.85} />
-        <LeagueRing r={ringR} leagues={leagues} dashed={false} />
+        <OutlineRing r={ringR} dashed={false} isSelected={isSelected} />
         <circle r={r} fill={isSelected ? 'var(--color-accent)' : 'var(--color-text-primary)'} stroke="var(--map-halo)" strokeWidth={2} />
-        <CountText count={teamCount} fill={isSelected ? 'var(--color-on-accent)' : 'var(--map-halo)'} />
         <circle className="city-focus" r={ringR + 4} fill="none" stroke="transparent" />
       </g>
     </g>

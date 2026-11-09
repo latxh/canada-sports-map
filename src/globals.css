@@ -75,6 +75,12 @@
     pointer-events: none;
   }
 
+  /* Official logos are drawn for light backgrounds; give them a light chip in dark mode. */
+  .logo-chip {
+    background: light-dark(transparent, #f3f4f6);
+    padding: light-dark(0px, 2px);
+  }
+
   .scrollbar-none {
     scrollbar-width: none;
   }

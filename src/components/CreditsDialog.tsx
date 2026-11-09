@@ -3,7 +3,9 @@ import {VStack} from '@astryxdesign/core/VStack';
 import {Text} from '@astryxdesign/core/Text';
 import {Link} from '@astryxdesign/core/Link';
 import {List, ListItem} from '@astryxdesign/core/List';
-import {DATA_AS_OF} from '../data';
+import {Collapsible} from '@astryxdesign/core/Collapsible';
+import {DATA_AS_OF, LEAGUES, TEAM_BY_ID, type LeagueId} from '../data';
+import {LOGOS} from '../data/logos';
 import {SectionTitle} from './bits';
 
 const SOURCES = [
@@ -18,6 +20,11 @@ const SOURCES = [
     note: 'Reference for logo and uniform eras. We link to the league archives there and do not copy their images. Logos and uniforms are trademarks of their teams and leagues.',
   },
   {
+    name: 'Wikipedia & Wikimedia Commons logos',
+    href: 'https://commons.wikimedia.org/',
+    note: 'Current team and league logos are the files used on each Wikipedia article (listed below with their licences). Most are non-free trademarks shown only to identify the team or league.',
+  },
+  {
     name: 'Natural Earth',
     href: 'https://www.naturalearthdata.com/',
     note: 'Province, coastline and lake boundaries (public domain), simplified for the web.',
@@ -29,6 +36,15 @@ const TOOLS = [
   {name: 'three.js / React Three Fiber', href: 'https://threejs.org/', note: 'Procedural 3D stadium models (MIT).'},
   {name: 'd3-geo, d3-zoom & TopoJSON', href: 'https://d3js.org/', note: 'Map projection and pan/zoom (ISC).'},
 ];
+
+const LOGO_CREDITS = Object.entries(LOGOS)
+  .map(([key, l]) => ({
+    key,
+    label: key.startsWith('league-') ? LEAGUES[key.slice(7) as LeagueId].name : (TEAM_BY_ID[key]?.name ?? key),
+    page: l.page,
+    license: l.license,
+  }))
+  .sort((a, b) => a.label.localeCompare(b.label));
 
 export function CreditsDialog({isOpen, onOpenChange}: {isOpen: boolean; onOpenChange: (open: boolean) => void}) {
   return (
@@ -72,11 +88,26 @@ export function CreditsDialog({isOpen, onOpenChange}: {isOpen: boolean; onOpenCh
             ))}
           </List>
         </VStack>
+        <Collapsible trigger={<Text weight="semibold">Logo files ({LOGO_CREDITS.length})</Text>} defaultIsOpen={false}>
+          <List density="compact" edge="flush">
+            {LOGO_CREDITS.map((c) => (
+              <ListItem
+                key={c.key}
+                label={
+                  <Link href={c.page} isExternalLink>
+                    {c.label}
+                  </Link>
+                }
+                description={c.license || 'See file page'}
+              />
+            ))}
+          </List>
+        </Collapsible>
         <VStack gap={1}>
           <SectionTitle>About the visuals</SectionTitle>
           <Text type="supporting">
-            Team badges, uniforms and playing surfaces are original illustrations in each era’s colours. They are not reproductions of
-            official artwork. 3D stadiums are generated from a handful of parameters (shape, capacity, roof, signature features), so
+            Current logos are the official marks of their teams and leagues. Badges for earlier eras, uniforms and playing surfaces
+            are original illustrations in each era’s colours, not reproductions of official artwork. 3D stadiums are generated from a handful of parameters (shape, capacity, roof, signature features), so
             they are approximate.
           </Text>
           <Text type="supporting">
