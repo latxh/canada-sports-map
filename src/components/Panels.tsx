@@ -9,13 +9,14 @@ import {VStack} from '@astryxdesign/core/VStack';
 import {HStack} from '@astryxdesign/core/HStack';
 import {Link} from '@astryxdesign/core/Link';
 import {Banner} from '@astryxdesign/core/Banner';
-import {Token} from '@astryxdesign/core/Token';
 import {TabList, Tab} from '@astryxdesign/core/TabList';
 import {MetadataList, MetadataListItem} from '@astryxdesign/core/MetadataList';
 import {EmptyState} from '@astryxdesign/core/EmptyState';
 import {Divider} from '@astryxdesign/core/Divider';
 import {Grid} from '@astryxdesign/core/Grid';
 import {Card} from '@astryxdesign/core/Card';
+import {ClickableCard} from '@astryxdesign/core/ClickableCard';
+import {Tooltip} from '@astryxdesign/core/Tooltip';
 import {
   CITY_BY_ID,
   LEAGUES,
@@ -31,10 +32,11 @@ import {
 import {EraLogo, LeagueLogo, TeamLogo} from '../visuals/Logos';
 import {Jersey} from '../visuals/Jersey';
 import {PlayingSurface} from '../visuals/PlayingSurface';
-import {latestEra, venueEntriesForCity, venueEntriesForTeam} from '../lib/venues';
+import {latestEra, shortName, venueEntriesForCity, venueEntriesForTeam} from '../lib/venues';
+import {TROPHY_NAME, TrophyArt, TrophyCabinet, TrophyShelf} from '../visuals/Trophies';
 import {VenueSection} from './VenueSection';
-import {LeagueToken, SectionTitle, StatusBadge, championshipLabel} from './bits';
-import {PinIcon, TrophyIcon} from './icons';
+import {SectionTitle, StatusBadge} from './bits';
+import {PinIcon} from './icons';
 
 // ── Shared ────────────────────────────────────────────────────────────────
 
@@ -44,12 +46,14 @@ import {PinIcon, TrophyIcon} from './icons';
  */
 export function PanelFrame({
   title,
+  subtitle,
   leading,
   onClose,
   resetKey,
   children,
 }: {
   title: ReactNode;
+  subtitle?: ReactNode;
   /** Logo or badge before the title. */
   leading?: ReactNode;
   onClose: () => void;
@@ -71,16 +75,14 @@ export function PanelFrame({
   }, [resetKey]);
   return (
     <VStack gap={4} ref={rootRef}>
-      <HStack
-        gap={3}
-        vAlign="center"
-        className="sticky -top-4 z-10 -mx-4 -mt-4 border-b border-border bg-surface px-4 pt-4 pb-3">
+      <HStack gap={3} vAlign="center" className="sticky -top-4 z-10 -mx-4 -mt-4 bg-surface px-4 pt-4 pb-3">
         {leading}
-        <div className="min-w-0 flex-1">
+        <VStack gap={0} className="min-w-0 flex-1">
           <Heading level={2} maxLines={2}>
             {title}
           </Heading>
-        </div>
+          {subtitle ? <Text type="supporting">{subtitle}</Text> : null}
+        </VStack>
         <IconButton size="sm" variant="ghost" label="Close panel" tooltip="Close" icon={<Icon icon="close" />} onClick={onClose} />
       </HStack>
       {children}
@@ -88,42 +90,37 @@ export function PanelFrame({
   );
 }
 
-function Stat({value, label}: {value: ReactNode; label: string}) {
+/** A team as a tappable logo tile: visuals first, name second. */
+function TeamTile({team, onOpen}: {team: Team; onOpen: (id: string) => void}) {
+  const isFormer = team.status !== 'current';
   return (
-    <Card variant="muted" padding={2}>
-      <VStack gap={0.5}>
-        <Text type="large" weight="bold" hasTabularNumbers>
-          {value}
+    <ClickableCard label={team.name} onClick={() => onOpen(team.id)} padding={2} variant="transparent">
+      <VStack gap={1.5} hAlign="center">
+        <span className={isFormer ? 'opacity-80 grayscale-[35%]' : undefined}>
+          <TeamLogo team={team} size={60} />
+        </span>
+        <Text size="sm" weight="medium" justify="center" maxLines={2}>
+          {shortName(team)}
         </Text>
-        <Text type="supporting" maxLines={1}>
-          {label}
-        </Text>
+        <HStack gap={1} vAlign="center" hAlign="center">
+          <LeagueLogo league={team.league} size={16} isDecorative plate="none" />
+          <Text type="supporting" size="xsm" hasTabularNumbers>
+            {isFormer ? yearsLabel(team.from, team.to) : team.championships.length ? `${team.championships.length}×` : team.league}
+          </Text>
+          {!isFormer && team.championships.length > 0 && <TrophyArt league={team.league} height={14} />}
+        </HStack>
       </VStack>
-    </Card>
+    </ClickableCard>
   );
 }
 
-function StatRow({children}: {children: ReactNode}) {
+function TeamGrid({teams, onOpen}: {teams: Team[]; onOpen: (id: string) => void}) {
   return (
-    <Grid columns={3} gap={2}>
-      {children}
+    <Grid columns={3} gap={1}>
+      {teams.map((t) => (
+        <TeamTile key={t.id} team={t} onOpen={onOpen} />
+      ))}
     </Grid>
-  );
-}
-
-function teamDescription(team: Team) {
-  return `${team.league} · ${yearsLabel(team.from, team.to)} · ${championshipLabel(team)}`;
-}
-
-function TeamRow({team, onOpen}: {team: Team; onOpen: (id: string) => void}) {
-  return (
-    <ListItem
-      label={team.name}
-      description={teamDescription(team)}
-      startContent={<TeamLogo team={team} size={36} />}
-      endContent={team.status === 'current' ? <LeagueToken league={team.league} /> : <StatusBadge status={team.status} />}
-      onClick={() => onOpen(team.id)}
-    />
   );
 }
 
@@ -150,49 +147,35 @@ export function CityPanel({
 
   const current = teams.filter((t) => t.status === 'current');
   const former = teams.filter((t) => t.status !== 'current');
-  const titles = teams.reduce((n, t) => n + t.championships.length, 0);
   const hidden = allTeams.length - teams.length;
 
   return (
-    <PanelFrame title={city.name} onClose={onClose} resetKey={`city:${cityId}`}>
-      <VStack gap={1}>
-        <Text color="secondary">{PROVINCE_NAMES[city.province]}</Text>
-        <Text>{city.blurb}</Text>
-      </VStack>
-      <StatRow>
-        <Stat value={current.length} label="Active teams" />
-        <Stat value={former.length} label="Former teams" />
-        <Stat value={titles} label="League titles" />
-      </StatRow>
+    <PanelFrame title={city.name} subtitle={PROVINCE_NAMES[city.province]} onClose={onClose} resetKey={`city:${cityId}`}>
+      <TrophyShelf teams={teams} />
 
       {current.length > 0 && (
         <VStack gap={1}>
-          <SectionTitle>Active teams</SectionTitle>
-          <List hasDividers edge="flush">
-            {current.map((t) => (
-              <TeamRow key={t.id} team={t} onOpen={onOpenTeam} />
-            ))}
-          </List>
+          <SectionTitle>Active · {current.length}</SectionTitle>
+          <TeamGrid teams={current} onOpen={onOpenTeam} />
         </VStack>
       )}
       {former.length > 0 && (
         <VStack gap={1}>
-          <SectionTitle>Former teams</SectionTitle>
-          <List hasDividers edge="flush">
-            {former.map((t) => (
-              <TeamRow key={t.id} team={t} onOpen={onOpenTeam} />
-            ))}
-          </List>
+          <SectionTitle>Former · {former.length}</SectionTitle>
+          <TeamGrid teams={former} onOpen={onOpenTeam} />
         </VStack>
       )}
       {teams.length === 0 && league !== 'all' && <EmptyState title={`No ${league} teams here`} isCompact />}
       {hidden > 0 && (
-        <Banner
-          status="info"
-          title={`${hidden} more team${hidden === 1 ? '' : 's'} in other leagues`}
-          endContent={<Button size="sm" label="Show all leagues" onClick={onShowAllLeagues} />}
-        />
+        <HStack gap={2} vAlign="center" hAlign="between">
+          <Text type="supporting">
+            +{hidden} in other leagues
+          </Text>
+          <Button size="sm" variant="ghost" label="Show all leagues" onClick={onShowAllLeagues} />
+        </HStack>
       )}
+
+      <Text color="secondary">{city.blurb}</Text>
 
       {venueEntries.length > 0 && <VenueSection entries={venueEntries} title="Venue" />}
 
@@ -247,17 +230,39 @@ export function TeamPanel({
   const active: TeamTab = (['overview', 'history', 'identity', 'venues'] as const).includes(tab as TeamTab) ? (tab as TeamTab) : 'overview';
   const panelId = `team-panel-${active}`;
   const siblings = TEAMS.filter((t) => t.cityId === team.cityId && t.id !== team.id && t.league === team.league);
+  const titleCount = team.championships.length;
 
   return (
-    <PanelFrame title={team.name} leading={<TeamLogo team={team} size={40} />} onClose={onClose} resetKey={`team:${teamId}`}>
-      <HStack gap={2} wrap="wrap" vAlign="center">
-        <LeagueToken league={team.league} size="md" />
-        <StatusBadge status={team.status} />
-        <Text type="supporting">{yearsLabel(team.from, team.to)}</Text>
+    <PanelFrame title={team.name} leading={<TeamLogo team={team} size={44} />} onClose={onClose} resetKey={`team:${teamId}`}>
+      {/* Hero: the logo, big, on a wash of the team's colour. */}
+      <VStack
+        gap={3}
+        hAlign="center"
+        className="rounded-2xl px-4 pt-5 pb-4"
+        style={{background: `linear-gradient(160deg, color-mix(in srgb, ${era.colors[0]} 20%, var(--color-background-surface)), color-mix(in srgb, ${era.colors[0]} 4%, var(--color-background-surface)))`}}>
+        <TeamLogo team={team} size={132} />
+        <HStack gap={2} wrap="wrap" vAlign="center" hAlign="center">
+          <HStack gap={1} vAlign="center">
+            <LeagueLogo league={team.league} size={22} plate="none" />
+            <Text weight="semibold">{team.league}</Text>
+          </HStack>
+          <Text color="secondary" hasTabularNumbers>
+            {yearsLabel(team.from, team.to)}
+          </Text>
+          {team.status !== 'current' && <StatusBadge status={team.status} />}
+          {titleCount > 0 && (
+            <HStack gap={0.5} vAlign="center">
+              <TrophyArt league={team.league} height={20} />
+              <Text weight="semibold" hasTabularNumbers>
+                ×{titleCount}
+              </Text>
+            </HStack>
+          )}
+        </HStack>
         {city && (
           <Button size="sm" variant="ghost" label={`${city.name}, ${city.province}`} icon={<Icon icon={PinIcon} />} onClick={() => onOpenCity(city.id)} />
         )}
-      </HStack>
+      </VStack>
 
       <TabList value={active} onChange={(v) => onTabChange(v as TeamTab)} hasDivider role="tablist" layout="fill" size="sm">
         <Tab value="overview" label="Overview" panelId="team-panel-overview" />
@@ -270,60 +275,43 @@ export function TeamPanel({
         {active === 'overview' && (
           <VStack gap={4}>
             {team.fate && <Banner status="warning" title={team.status === 'relocated' ? 'Relocated' : 'Defunct'} description={team.fate} />}
-            <Text>{team.summary}</Text>
-            <MetadataList label={{position: 'start', width: 120}}>
-              <MetadataListItem label="League">
-                <HStack gap={2} vAlign="center">
-                  <LeagueLogo league={team.league} size={22} />
-                  <Text>{league.name}</Text>
-                </HStack>
-              </MetadataListItem>
-              <MetadataListItem label="City">{city ? `${city.name}, ${PROVINCE_NAMES[city.province]}` : '—'}</MetadataListItem>
-              <MetadataListItem label="Years">{yearsLabel(team.from, team.to)}</MetadataListItem>
-              {team.formerNames && team.formerNames.length > 0 && (
-                <MetadataListItem label="Also known as">
-                  {team.formerNames.map((n) => `${n.name} (${yearsLabel(n.from, n.to)})`).join('; ')}
-                </MetadataListItem>
-              )}
-              <MetadataListItem label="Colours">
-                <HStack gap={1.5} wrap="wrap" vAlign="center">
-                  {era.colors.map((c, i) => (
-                    <Swatch key={c + i} color={c} name={era.colorNames[i]} />
-                  ))}
-                </HStack>
-              </MetadataListItem>
-            </MetadataList>
 
             <VStack gap={2}>
-              <SectionTitle endContent={<Icon icon={TrophyIcon} color="secondary" size="sm" />}>{championshipLabel(team)}</SectionTitle>
-              {team.championships.length > 0 ? (
-                <HStack gap={1.5} wrap="wrap">
-                  {team.championships.map((y) => (
-                    <Token key={y} label={String(y)} size="sm" color="yellow" />
-                  ))}
-                </HStack>
-              ) : (
-                <Text type="supporting">This team has not won a {league.trophy} in {league.id} play.</Text>
-              )}
+              <SectionTitle>{titleCount > 0 ? `${titleCount} × ${TROPHY_NAME[team.league]}` : TROPHY_NAME[team.league]}</SectionTitle>
+              <TrophyCabinet team={team} />
               {team.honours && (
                 <ul className="flex list-disc flex-col gap-1 ps-5">
                   {team.honours.map((h) => (
                     <li key={h}>
-                      <Text>{h}</Text>
+                      <Text type="supporting">{h}</Text>
                     </li>
                   ))}
                 </ul>
               )}
             </VStack>
 
+            <Text>{team.summary}</Text>
+
+            <MetadataList label={{position: 'start', width: 110}}>
+              <MetadataListItem label="League">{league.name}</MetadataListItem>
+              {team.formerNames && team.formerNames.length > 0 && (
+                <MetadataListItem label="Also known as">
+                  {team.formerNames.map((n) => `${n.name} (${yearsLabel(n.from, n.to)})`).join('; ')}
+                </MetadataListItem>
+              )}
+              <MetadataListItem label="Colours">
+                <HStack gap={1} wrap="wrap" vAlign="center">
+                  {era.colors.map((c, i) => (
+                    <ColorDot key={c + i} color={c} name={era.colorNames[i]} />
+                  ))}
+                </HStack>
+              </MetadataListItem>
+            </MetadataList>
+
             {siblings.length > 0 && (
               <VStack gap={1}>
                 <SectionTitle>Other {league.id} teams in {city?.name}</SectionTitle>
-                <List hasDividers edge="flush" density="compact">
-                  {siblings.map((t) => (
-                    <TeamRow key={t.id} team={t} onOpen={onOpenTeam} />
-                  ))}
-                </List>
+                <TeamGrid teams={siblings} onOpen={onOpenTeam} />
               </VStack>
             )}
             <SourceLinks team={team} />
@@ -340,9 +328,12 @@ export function TeamPanel({
                     className="absolute top-1.5 size-2.5 rounded-full"
                     style={{insetInlineStart: 'calc(-1rem - 6px)', background: era.colors[0], boxShadow: '0 0 0 2px var(--color-background-surface)'}}
                   />
-                  <Text weight="semibold" hasTabularNumbers>
-                    {m.year}
-                  </Text>
+                  <HStack gap={1.5} vAlign="center">
+                    <Text weight="semibold" hasTabularNumbers>
+                      {m.year}
+                    </Text>
+                    {team.championships.includes(m.year) && <TrophyArt league={team.league} height={16} />}
+                  </HStack>
                   <Text display="block">{m.text}</Text>
                 </li>
               ))}
@@ -360,13 +351,18 @@ export function TeamPanel({
   );
 }
 
-function Swatch({color, name}: {color: string; name?: string}) {
+/** A colour swatch; the name is in the tooltip and accessible label rather than on screen. */
+function ColorDot({color, name}: {color: string; name?: string}) {
   return (
-    <Token
-      size="sm"
-      label={name ?? color}
-      icon={<span aria-hidden className="inline-block size-3 rounded-full border border-border" style={{background: color}} />}
-    />
+    <Tooltip content={name ?? color}>
+      <span
+        role="img"
+        aria-label={name ?? color}
+        tabIndex={0}
+        className="inline-block size-6 rounded-full border border-border"
+        style={{background: color}}
+      />
+    </Tooltip>
   );
 }
 
@@ -394,11 +390,7 @@ function IdentityTab({team}: {team: Team}) {
 
   return (
     <VStack gap={5}>
-      <Banner
-        status="info"
-        title="About these images"
-        description="Where we have it, the team’s official logo (via Wikipedia) appears for its era. Other eras’ badges, the uniforms and the playing surfaces are illustrations in each era’s colours. See SportsLogos.net for the full logo archive."
-      />
+      <Text type="supporting">Official logo where we have it; other eras, uniforms and surfaces are illustrations in each era’s colours.</Text>
 
       <VStack gap={2}>
         <SectionTitle>Logo history</SectionTitle>
@@ -411,14 +403,14 @@ function IdentityTab({team}: {team: Team}) {
               description={
                 <VStack gap={1.5}>
                   <Text type="supporting">{e.logo}</Text>
-                  <HStack gap={1.5} wrap="wrap">
+                  <HStack gap={1} wrap="wrap">
                     {e.colors.map((c, j) => (
-                      <Swatch key={c + j} color={c} name={e.colorNames[j]} />
+                      <ColorDot key={c + j} color={c} name={e.colorNames[j]} />
                     ))}
                   </HStack>
                 </VStack>
               }
-              startContent={<EraLogo team={team} index={i} size={56} />}
+              startContent={<EraLogo team={team} index={i} size={72} />}
             />
           ))}
         </List>

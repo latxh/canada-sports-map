@@ -13,7 +13,7 @@ function colorsFor(team: Team) {
   return {seatColor: mix(primary, '#4a4f55', 0.15), accentColor: secondary.toLowerCase() === '#ffffff' ? primary : secondary};
 }
 
-function shortName(team: Team) {
+export function shortName(team: Team) {
   const base = team.name.replace(/\s*\(.*\)$/, '');
   const city = CITY_BY_ID[team.cityId]?.name ?? '';
   const plain = (x: string) => x.normalize('NFD').replace(/[\u0300-\u036f]/g, '');

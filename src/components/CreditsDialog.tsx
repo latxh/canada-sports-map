@@ -111,8 +111,8 @@ export function CreditsDialog({isOpen, onOpenChange}: {isOpen: boolean; onOpenCh
         <VStack gap={1}>
           <SectionTitle>About the visuals</SectionTitle>
           <Text type="supporting">
-            Current logos are the official marks of their teams and leagues. Badges for earlier eras, uniforms and playing surfaces
-            are original illustrations in each era’s colours, not reproductions of official artwork. The 3D models of the 24 venues current
+            Current logos are the official marks of their teams and leagues. Trophies, badges for earlier eras, uniforms and playing
+            surfaces are original illustrations, not reproductions of official artwork. The 3D models of the 24 venues current
             teams play in are hand-built, low-poly approximations drawn to scale from OpenStreetMap footprints, with Wikimedia Commons photos
             used only as visual references. Former venues are not modelled.
           </Text>

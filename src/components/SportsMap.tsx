@@ -7,6 +7,7 @@ import {feature} from 'topojson-client';
 import type {FeatureCollection, Geometry} from 'geojson';
 import type {Topology, GeometryCollection} from 'topojson-specification';
 import {IconButton} from '@astryxdesign/core/IconButton';
+import {ButtonGroup} from '@astryxdesign/core/ButtonGroup';
 import {Icon} from '@astryxdesign/core/Icon';
 import {LEAGUE_ORDER, type City, type LeagueId, type Team} from '../data';
 import {FitIcon, MinusIcon, PlusIcon} from './icons';
@@ -49,6 +50,8 @@ interface Props {
   bottomInset?: number;
   /** Pixels at the right of the map hidden behind an overlay (floating panel). */
   rightInset?: number;
+  /** Pixels at the top of the map hidden behind floating controls. */
+  topInset?: number;
 }
 
 interface Size {
@@ -59,7 +62,7 @@ interface Size {
 const MAX_ZOOM = 40;
 const LABEL_FONT = 13;
 
-export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0, rightInset = 0}: Props) {
+export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0, rightInset = 0, topInset = 0}: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const zoomRef = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null);
@@ -123,10 +126,10 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
   const homeTransform = useCallback(() => {
     if (!size) return zoomIdentity;
     const w2 = size.w - rightInset;
-    const h2 = size.h - bottomInset;
+    const h2 = size.h - bottomInset - topInset;
     const s = Math.min(1, w2 / size.w, h2 / size.h);
-    return zoomIdentity.translate((w2 - size.w * s) / 2, (h2 - size.h * s) / 2).scale(s);
-  }, [size, rightInset, bottomInset]);
+    return zoomIdentity.translate((w2 - size.w * s) / 2, topInset + (h2 - size.h * s) / 2).scale(s);
+  }, [size, rightInset, bottomInset, topInset]);
 
   // Attach d3-zoom once the svg exists.
   const didInit = useRef(false);
@@ -171,7 +174,7 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
     if (selectedCityId || !didInit.current) return;
     resetZoom();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rightInset, bottomInset, selectedCityId === null]);
+  }, [rightInset, bottomInset, topInset, selectedCityId === null]);
 
   // Fly to the selected city.
   const lastFlown = useRef<string | null>(null);
@@ -191,15 +194,15 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
       cities.filter((c) => c.city.id !== city.id).map((c) => projection([c.city.lon, c.city.lat])).filter((q): q is [number, number] => !!q),
     );
     const k = Math.min(MAX_ZOOM, Math.max(transform.k, Math.min(size.w, size.h) < 600 ? 3 : 4, sep));
-    const visibleH = size.h - bottomInset;
+    const visibleH = size.h - bottomInset - topInset;
     const t = zoomIdentity
-      .translate((size.w - rightInset) / 2, visibleH / 2)
+      .translate((size.w - rightInset) / 2, topInset + visibleH / 2)
       .scale(k)
       .translate(-p[0], -p[1]);
     select(svgRef.current).transition().duration(700).call(zoomRef.current.transform, t);
     // transform intentionally omitted: we only fly when the selection changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCityId, projection, size, bottomInset, rightInset, cities]);
+  }, [selectedCityId, projection, size, bottomInset, rightInset, topInset, cities]);
 
   const markers = useMemo(() => {
     if (!projection) return [];
@@ -249,12 +252,12 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
       const cx = members.reduce((a, m) => a + m.px, 0) / members.length;
       const cy = members.reduce((a, m) => a + m.py, 0) / members.length;
       const t = zoomIdentity
-        .translate((size.w - rightInset) / 2, (size.h - bottomInset) / 2)
+        .translate((size.w - rightInset) / 2, topInset + (size.h - bottomInset - topInset) / 2)
         .scale(k)
         .translate(-cx, -cy);
       select(svg).transition().duration(600).call(zoomRef.current.transform, t);
     },
-    [size, transform.k, bottomInset, rightInset],
+    [size, transform.k, bottomInset, rightInset, topInset],
   );
 
 
@@ -342,7 +345,7 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
               )}
           </g>
 
-          {/* City labels */}
+          {/* City labels: clicking a name does the same as clicking its ring. The ring is the accessible control. */}
           <g aria-hidden="true">
             {placed.labels.map((l) => (
               <text
@@ -353,7 +356,14 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
                 dominantBaseline="central"
                 className="city-label"
                 fontSize={LABEL_FONT}
-                fontWeight={l.isSelected ? 700 : 600}>
+                fontWeight={l.isSelected ? 700 : 600}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const cluster = placed.clusters.find((c) => c.head.city.id === l.id);
+                  if (!cluster) return;
+                  if (cluster.members.length === 1) onSelectCity(cluster.head.city.id);
+                  else zoomToCluster(cluster.members);
+                }}>
                 {l.text}
                 {l.extra > 0 && <tspan fontWeight={600} fill="var(--color-text-secondary)">{l.extra === 1 ? ` & ${l.second}` : ` +${l.extra}`}</tspan>}
               </text>
@@ -362,20 +372,20 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
         </svg>
       )}
 
-      <div
-        className="absolute left-3 flex flex-col gap-2"
-        style={{bottom: bottomInset + 12, transition: 'bottom 200ms ease'}}>
-        <IconButton label="Zoom in" tooltip="Zoom in" icon={<Icon icon={PlusIcon} />} elevation="med" onClick={() => zoomBy(1.6)} />
-        <IconButton label="Zoom out" tooltip="Zoom out" icon={<Icon icon={MinusIcon} />} elevation="med" onClick={() => zoomBy(1 / 1.6)} />
-        <IconButton label="Show all of Canada" tooltip="Show all of Canada" icon={<Icon icon={FitIcon} />} elevation="med" onClick={resetZoom} />
+      <div className="absolute left-3" style={{bottom: bottomInset + 12, transition: 'bottom 200ms ease'}}>
+        <ButtonGroup label="Map zoom" orientation="vertical" className="glass glass-group rounded-xl">
+          <IconButton variant="ghost" label="Zoom in" tooltip="Zoom in" icon={<Icon icon={PlusIcon} />} onClick={() => zoomBy(1.6)} />
+          <IconButton variant="ghost" label="Zoom out" tooltip="Zoom out" icon={<Icon icon={MinusIcon} />} onClick={() => zoomBy(1 / 1.6)} />
+          <IconButton variant="ghost" label="Show all of Canada" tooltip="Show all of Canada" icon={<Icon icon={FitIcon} />} onClick={resetZoom} />
+        </ButtonGroup>
       </div>
     </div>
   );
 }
 
 function markerRadius(teamCount: number) {
-  // Simple dots: a touch larger for bigger sports cities.
-  return 4.5 + Math.min(3, Math.sqrt(teamCount) * 0.8);
+  // Simple rings: a touch larger for bigger sports cities.
+  return 3.5 + Math.min(2.5, Math.sqrt(teamCount) * 0.7);
 }
 
 interface MarkerProps {
@@ -416,30 +426,24 @@ function CityMarker({x, y, r, city, teamCount, currentCount, isSelected, onSelec
       {isSelected && <circle className="city-pulse" r={ringR} fill="none" stroke="var(--color-accent)" strokeWidth={2} />}
       <g className="city-core">
         <OutlineRing r={ringR} dashed={defunctOnly} isSelected={isSelected} />
-        <circle
-          r={r}
-          fill={isSelected ? 'var(--color-accent)' : defunctOnly ? 'var(--map-land)' : 'var(--color-text-primary)'}
-          stroke="var(--map-halo)"
-          strokeWidth={2}
-        />
+        {isSelected && <circle r={ringR - 3.2} fill="var(--color-accent)" />}
         <circle className="city-focus" r={ringR + 4} fill="none" stroke="transparent" />
       </g>
     </g>
   );
 }
 
-function OutlineRing({r, dashed, isSelected}: {r: number; dashed: boolean; isSelected: boolean}) {
+function OutlineRing({r, dashed, isSelected, faint = false}: {r: number; dashed: boolean; isSelected: boolean; faint?: boolean}) {
   return (
-    <>
-      <circle r={r + 1.5} fill="var(--map-halo)" opacity={0.9} />
-      <circle
-        r={r}
-        fill="none"
-        stroke={isSelected ? 'var(--color-accent)' : 'var(--color-text-primary)'}
-        strokeWidth={2}
-        strokeDasharray={dashed ? '3 2.5' : undefined}
-      />
-    </>
+    <circle
+      r={r}
+      fill={faint ? 'none' : 'var(--map-halo)'}
+      fillOpacity={0.85}
+      stroke={isSelected ? 'var(--color-accent)' : 'var(--color-text-primary)'}
+      strokeOpacity={faint ? 0.45 : 1}
+      strokeWidth={faint ? 1.25 : 2.25}
+      strokeDasharray={dashed ? '3.2 2.6' : undefined}
+    />
   );
 }
 
@@ -543,9 +547,10 @@ function ClusterMarker({
       }}>
       <circle className="city-hit" r={Math.max(22, ringR + 8)} />
       <g className="city-core">
+        <OutlineRing r={ringR + 3} dashed={false} isSelected={isSelected} faint />
         <OutlineRing r={ringR} dashed={false} isSelected={isSelected} />
-        <circle r={r} fill={isSelected ? 'var(--color-accent)' : 'var(--color-text-primary)'} stroke="var(--map-halo)" strokeWidth={2} />
-        <circle className="city-focus" r={ringR + 4} fill="none" stroke="transparent" />
+        {isSelected && <circle r={ringR - 3.2} fill="var(--color-accent)" />}
+        <circle className="city-focus" r={ringR + 6} fill="none" stroke="transparent" />
       </g>
     </g>
   );

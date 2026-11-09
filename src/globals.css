@@ -72,13 +72,49 @@
     stroke-linejoin: round;
     fill: var(--map-label);
     font-family: var(--font-family-body, system-ui);
-    pointer-events: none;
+    cursor: pointer;
+  }
+  @media (hover: hover) {
+    .city-label:hover {
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
   }
 
-  /* Official logos are drawn for light backgrounds; give them a light chip in dark mode. */
+  /* Official logos are drawn for light backgrounds. Rather than a plate, dark mode traces a hairline light
+     outline around each logo so navy and black marks stay visible. The league picker keeps a very
+     subtle plate. */
   .logo-chip {
-    background: light-dark(transparent, #f3f4f6);
-    padding: light-dark(0px, 2px);
+    --logo-outline: light-dark(transparent, rgb(255 255 255 / 0.85));
+  }
+  .logo-chip > img {
+    filter: drop-shadow(0 0 0.6px var(--logo-outline)) drop-shadow(0 0 0.6px var(--logo-outline));
+  }
+  .logo-chip[data-plate='subtle'] {
+    background: light-dark(rgb(0 0 0 / 0.04), rgb(255 255 255 / 0.1));
+    padding: 2px;
+  }
+
+  /* Frosted-glass surface for controls floating over the map. */
+  .glass {
+    background: color-mix(in srgb, var(--color-background-surface) 58%, transparent);
+    -webkit-backdrop-filter: blur(18px) saturate(1.7);
+    backdrop-filter: blur(18px) saturate(1.7);
+    border: 1px solid color-mix(in srgb, var(--color-text-primary) 9%, transparent);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+  }
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass {
+      background: color-mix(in srgb, var(--color-background-surface) 92%, transparent);
+    }
+  }
+  /* Attached buttons inside a glass group: no fills of their own, hairline dividers between them. */
+  .glass-group {
+    overflow: hidden;
+    padding: 2px;
+  }
+  .glass-group > * + * {
+    border-block-start: 1px solid color-mix(in srgb, var(--color-text-primary) 8%, transparent);
   }
 
   .scrollbar-none {

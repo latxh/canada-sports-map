@@ -6,11 +6,13 @@ An interactive map of Canadian professional sports. Every NHL, NBA, MLB, MLS, CF
 
 ## Features
 
-- **Map of Canada.** Each sports city gets a simple dot and its name: a solid outline for cities with active teams, a dashed one for cities that only had teams in the past. Nearby cities (Montréal and Laval, Vancouver and its suburbs, Toronto and Hamilton) merge into a cluster until you zoom in. Pan, zoom, or use the controls to fit all of Canada.
+- **Map of Canada.** The map fills the screen. Each sports city is a ring with its name: a solid outline for cities with active teams, a dashed one for cities that only had teams in the past, filled in when selected. Clicking the name works like clicking the ring. Nearby cities (Montréal and Laval, Vancouver and its suburbs, Toronto and Hamilton) merge into a cluster until you zoom in. Pan, zoom, or use the controls to fit all of Canada.
+- **Floating controls.** Frosted-glass buttons float over the map: the site name top left, the league picker and menu top right, and attached zoom controls bottom left.
 - **Floating panel.** Click a city to open its details in a panel that floats over the right side of the map. The panel header is the city or team name with a close button.
-- **Header menu.** Appearance (light, dark or system), Share (copies the current view's link), Credits, and a link to the author.
-- **City overview.** Shows a city's active and former teams, league titles, a short history, and its venues, with a 3D model of each one a current team plays in.
-- **League filter.** A dropdown in the header shows all leagues or just one (NHL, NBA, MLB, MLS, CFL or CPL). The choice is kept in the URL so a view can be shared.
+- **Menu.** Appearance (light, dark or system), Share (copies the current view's link), Credits, and a link to the author.
+- **City overview.** A trophy shelf of the city's titles, its active and former teams as logo tiles, a short history, and its venues, with a 3D model of each one a current team plays in.
+- **Trophy cabinet.** Every team page shows one trophy per championship with its year: Stanley Cup, Larry O'Brien Trophy, Commissioner's Trophy, Philip F. Anschutz Trophy (MLS Cup), Grey Cup and North Star Cup. The trophies are original illustrations.
+- **League filter.** A dropdown shows all leagues or just one (NHL, NBA, MLB, MLS, CFL or CPL). The choice is kept in the URL so a view can be shared.
 - **Official logos.** Team and league logos come from the files their Wikipedia articles use (see Credits).
 - **Team pages.**
   - *Overview*: summary, what happened to the team, colours, every championship year and other honours.
@@ -21,9 +23,9 @@ An interactive map of Canadian professional sports. Every NHL, NBA, MLB, MLS, CF
 - **Works on phones.** On small screens the details panel becomes a draggable bottom sheet.
 - Keyboard-accessible map markers and no violations from axe-core.
 
-| City overview with 3D venue | Identity history | Mobile |
+| City overview | Team page with trophy cabinet | Mobile |
 | --- | --- | --- |
-| ![City](docs/desktop-city-3d.png) | ![Identity](docs/desktop-identity.png) | ![Mobile](docs/mobile-city.png) |
+| ![City](docs/desktop-city-3d.png) | ![Team](docs/desktop-identity.png) | ![Mobile](docs/mobile-city.png) |
 
 ### Stadium models
 

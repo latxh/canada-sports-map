@@ -8,7 +8,6 @@ import {Text} from '@astryxdesign/core/Text';
 import {SegmentedControl, SegmentedControlItem} from '@astryxdesign/core/SegmentedControl';
 import {useToast} from '@astryxdesign/core/Toast';
 import {LEAGUES, LEAGUE_ORDER, type LeagueFilter, type LeagueId} from '../data';
-import {VStack} from '@astryxdesign/core/VStack';
 import {InfoIcon, MapleLeafIcon, MonitorIcon, MoonIcon, ShareIcon, SunIcon, UserIcon} from './icons';
 import {LeagueLogo} from '../visuals/Logos';
 
@@ -21,8 +20,8 @@ export function LeagueSelect({value, onChange, isCompact}: {value: LeagueFilter;
     <Selector
       label="League"
       isLabelHidden
-      size="sm"
-      variant="secondary"
+      size="md"
+      variant="ghost"
       value={value}
       onChange={(v) => onChange((v ?? 'all') as LeagueFilter)}
       options={[
@@ -30,21 +29,23 @@ export function LeagueSelect({value, onChange, isCompact}: {value: LeagueFilter;
         {type: 'divider'},
         ...LEAGUE_ORDER.map((l) => ({value: l, label: l, description: LEAGUES[l].name})),
       ]}
-      renderOption={(o) => <LeagueOptionRow value={o.value} label={o.label} description={o.description} />}
+      renderOption={(o) => <LeagueOptionRow value={o.value} label={o.label} />}
       renderValue={(o) => <LeagueOptionRow value={o.value} label={o.label} isCompact />}
     />
   );
 }
 
-function LeagueOptionRow({value, label, description, isCompact}: {value?: string; label: ReactNode; description?: ReactNode; isCompact?: boolean}) {
+/** League names stay in each option's accessible description; the row itself is just the logo and the short name. */
+function LeagueOptionRow({value, label, isCompact}: {value?: string; label: ReactNode; isCompact?: boolean}) {
   const isLeague = !!value && (LEAGUE_ORDER as string[]).includes(value);
   return (
     <HStack gap={2} vAlign="center">
-      {isLeague ? <LeagueLogo league={value as LeagueId} size={isCompact ? 18 : 24} isDecorative /> : <Icon icon={MapleLeafIcon} color="red" size={isCompact ? 'sm' : 'md'} />}
-      <VStack gap={0}>
-        <Text>{label}</Text>
-        {description && !isCompact ? <Text type="supporting">{description}</Text> : null}
-      </VStack>
+      {isLeague ? (
+        <LeagueLogo league={value as LeagueId} size={isCompact ? 20 : 26} isDecorative plate="subtle" />
+      ) : (
+        <Icon icon={MapleLeafIcon} color="red" size={isCompact ? 'sm' : 'md'} />
+      )}
+      <Text weight={isCompact ? 'medium' : 'normal'}>{label}</Text>
     </HStack>
   );
 }
@@ -79,7 +80,7 @@ export function SiteMenu({appearance, onAppearanceChange, onOpenCredits}: SiteMe
       hasChevron={false}
       alignment="end"
       menuWidth={300}
-      renderTrigger={(props) => <IconButton {...props} size="sm" variant="ghost" label="More options" tooltip="More" icon={<Icon icon="moreHorizontal" />} />}
+      renderTrigger={(props) => <IconButton {...props} variant="ghost" label="More options" tooltip="More" icon={<Icon icon="moreHorizontal" />} />}
       header={
         <HStack hAlign="between" vAlign="center" gap={3} paddingInline={3} paddingBlock={2}>
           <Text>Appearance</Text>
