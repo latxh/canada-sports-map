@@ -1,0 +1,66 @@
+import type {League, LeagueId} from './types';
+
+export const LEAGUES: Record<LeagueId, League> = {
+  NHL: {
+    id: 'NHL',
+    name: 'National Hockey League',
+    sport: 'hockey',
+    trophy: 'Stanley Cup',
+    color: '#4b5563',
+    founded: 1917,
+    wikipedia: 'https://en.wikipedia.org/wiki/National_Hockey_League',
+    sportsLogos: 'https://www.sportslogos.net/teams/list_by_league/1/National-Hockey-League-Logos/NHL-Logos/',
+  },
+  NBA: {
+    id: 'NBA',
+    name: 'National Basketball Association',
+    sport: 'basketball',
+    trophy: 'Larry O’Brien Trophy',
+    color: '#c2410c',
+    founded: 1946,
+    wikipedia: 'https://en.wikipedia.org/wiki/National_Basketball_Association',
+    sportsLogos: 'https://www.sportslogos.net/teams/list_by_league/6/National-Basketball-Association-Logos/NBA-Logos/',
+  },
+  MLB: {
+    id: 'MLB',
+    name: 'Major League Baseball',
+    sport: 'baseball',
+    trophy: 'World Series',
+    color: '#1d4ed8',
+    founded: 1903,
+    wikipedia: 'https://en.wikipedia.org/wiki/Major_League_Baseball',
+    sportsLogos: 'https://www.sportslogos.net/teams/list_by_league/4/Major-League-Baseball-Logos/MLB-Logos/',
+  },
+  MLS: {
+    id: 'MLS',
+    name: 'Major League Soccer',
+    sport: 'soccer',
+    trophy: 'MLS Cup',
+    color: '#0f766e',
+    founded: 1996,
+    wikipedia: 'https://en.wikipedia.org/wiki/Major_League_Soccer',
+    sportsLogos: 'https://www.sportslogos.net/teams/list_by_league/9/Major-League-Soccer-Logos/MLS-Logos/',
+  },
+  CFL: {
+    id: 'CFL',
+    name: 'Canadian Football League',
+    sport: 'football',
+    trophy: 'Grey Cup',
+    color: '#b91c1c',
+    founded: 1958,
+    wikipedia: 'https://en.wikipedia.org/wiki/Canadian_Football_League',
+    sportsLogos: 'https://www.sportslogos.net/teams/list_by_league/8/Canadian-Football-League-Logos/CFL-Logos/',
+  },
+  CPL: {
+    id: 'CPL',
+    name: 'Canadian Premier League',
+    sport: 'soccer',
+    trophy: 'North Star Cup',
+    color: '#7c3aed',
+    founded: 2019,
+    wikipedia: 'https://en.wikipedia.org/wiki/Canadian_Premier_League',
+    sportsLogos: 'https://www.sportslogos.net/',
+  },
+};
+
+export const LEAGUE_ORDER: LeagueId[] = ['NHL', 'NBA', 'MLB', 'MLS', 'CFL', 'CPL'];

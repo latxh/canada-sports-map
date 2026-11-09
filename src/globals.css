@@ -1,0 +1,108 @@
+@layer reset, theme, base, astryx-base, astryx-theme, components, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+@import '@astryxdesign/core/reset.css';
+@import '@astryxdesign/core/astryx.css';
+@import '@astryxdesign/theme-neutral/theme.css';
+@import '@astryxdesign/core/tailwind-theme.css';
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+@layer components {
+  :root {
+    /* Map palette, derived from system tokens so dark mode follows the theme. */
+    --map-water: color-mix(in srgb, var(--color-background-blue) 55%, var(--color-background-body));
+    --map-land: var(--color-background-surface);
+    --map-land-hover: color-mix(in srgb, var(--color-background-surface) 92%, var(--color-text-primary));
+    --map-neighbour: color-mix(in srgb, var(--color-background-body) 70%, var(--color-background-surface));
+    --map-border: var(--color-border-emphasized);
+    --map-label: var(--color-text-primary);
+    --map-halo: var(--color-background-surface);
+    --maple: #d52b1e;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    background: var(--color-background-body);
+    color: var(--color-text-primary);
+    overscroll-behavior: none;
+  }
+
+  .map-svg {
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: grab;
+  }
+  .map-svg:active {
+    cursor: grabbing;
+  }
+
+  .city-marker {
+    cursor: pointer;
+    outline: none;
+  }
+  .city-marker .city-hit {
+    fill: transparent;
+  }
+  .city-marker .city-core {
+    transition: transform var(--duration-fast, 120ms) var(--ease-standard, ease);
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  @media (hover: hover) {
+    .city-marker:hover .city-core {
+      transform: scale(1.18);
+    }
+  }
+  .city-marker:focus-visible .city-focus {
+    stroke: var(--color-accent);
+    stroke-width: 3;
+  }
+
+  .city-label {
+    paint-order: stroke;
+    stroke: var(--map-halo);
+    stroke-width: 4px;
+    stroke-linejoin: round;
+    fill: var(--map-label);
+    font-family: var(--font-family-body, system-ui);
+    pointer-events: none;
+  }
+
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  @keyframes pulse-ring {
+    from {
+      opacity: 0.55;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(2.4);
+    }
+  }
+  .city-pulse {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation-name: pulse-ring;
+    animation-duration: 1.8s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-out;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .city-pulse {
+      animation-name: none;
+    }
+  }
+}
