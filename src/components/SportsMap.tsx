@@ -760,13 +760,12 @@ export function SportsMap({
                 const cx = transform.applyX(m.px);
                 const cy = transform.applyY(m.py);
                 const d = arcPath(pinScreen[0], pinScreen[1], cx, cy);
-                // A glint runs along each arc from the pin to the city, staggered so they ripple out.
-                const glint = {animationDelay: `${700 + ((i * 230) % 1900)}ms`};
+                // One light runs along every arc together (timing in CSS), so they pulse as one.
                 return (
                   <g key={target.id}>
                     <path d={d} pathLength={1} className="pin-arc" stroke={target.color} style={{animationDelay: `${Math.min(900, i * 35)}ms`}} />
-                    <path d={d} pathLength={1} className="pin-glint" stroke={target.color} style={glint} />
-                    <path d={d} pathLength={1} className="pin-glint-core" style={glint} />
+                    <path d={d} pathLength={1} className="pin-glint" stroke={target.color} />
+                    <path d={d} pathLength={1} className="pin-glint-core" />
                   </g>
                 );
               })}

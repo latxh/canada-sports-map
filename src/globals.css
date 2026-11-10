@@ -117,34 +117,35 @@
       stroke-dashoffset: 0;
     }
   }
-  /* A short bright dash that travels along each arc, pin to city, over and over. */
+  /* A soft light that travels along every arc at once, pin to city, then rests. */
   .pin-glint,
   .pin-glint-core {
     fill: none;
     stroke-linecap: round;
-    stroke-dasharray: 0.08 1.1;
-    stroke-dashoffset: 0.08;
+    stroke-dasharray: 0.12 1.2;
+    stroke-dashoffset: 0.12;
     opacity: 0;
-    animation: pin-glint 2.2s cubic-bezier(0.45, 0, 0.35, 1) infinite;
+    animation: pin-glint 3.2s ease-in-out 900ms infinite;
   }
   .pin-glint {
-    stroke-width: 4.5;
+    stroke-width: 3;
   }
   .pin-glint-core {
     stroke: #ffffff;
-    stroke-width: 1.6;
+    stroke-width: 1;
   }
   @keyframes pin-glint {
     0% {
-      stroke-dashoffset: 0.08;
+      stroke-dashoffset: 0.12;
       opacity: 0;
     }
-    10% {
-      opacity: 1;
+    12% {
+      opacity: 0.45;
     }
-    85% {
-      opacity: 1;
+    55% {
+      opacity: 0.45;
     }
+    70%,
     100% {
       stroke-dashoffset: -1;
       opacity: 0;

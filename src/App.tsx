@@ -85,11 +85,14 @@ export function App() {
   const [appearance, setAppearance] = useState<Appearance>(initialAppearance);
   const [league, setLeague] = useState<LeagueFilter>(initialLeague);
   const [view, setView] = useState<MapView>(initialView);
-  const [pin, setPin] = useState<LatLon | null>(initialPin);
-  const [isPinMode, setIsPinMode] = useState(() => initialPin() !== null);
+  const [pin, setPin] = useState<LatLon | null>(() => (initialView() === 'teams' ? initialPin() : null));
+  // The four map modes (Population, Championships, Closest team, Drop a pin) are exclusive.
+  const [isPinMode, setIsPinMode] = useState(() => initialView() === 'teams' && initialPin() !== null);
   const [locateError, setLocateError] = useState(false);
   // Closest team is a layer like Population and Championships: only one shows at a time.
-  const [showClosest, setShowClosest] = useState(() => initialView() === 'teams' && new URLSearchParams(window.location.search).get('closest') === '1');
+  const [showClosest, setShowClosest] = useState(
+    () => initialView() === 'teams' && initialPin() === null && new URLSearchParams(window.location.search).get('closest') === '1',
+  );
   const [isCreditsOpen, setIsCreditsOpen] = useState(false);
   const isDesktop = useMediaQuery(DESKTOP_QUERY);
   const [route, navigate] = useHashRoute();
@@ -129,7 +132,15 @@ export function App() {
   const setPinMode = useCallback((on: boolean) => {
     setIsPinMode(on);
     setLocateError(false);
-    if (!on) setPin(null);
+    if (on) {
+      setView('teams');
+      setShowClosest(false);
+    } else setPin(null);
+  }, []);
+  const leavePinMode = useCallback(() => {
+    setIsPinMode(false);
+    setPin(null);
+    setLocateError(false);
   }, []);
   const locate = useCallback(() => {
     setLocateError(false);
@@ -260,14 +271,20 @@ export function App() {
               view={view}
               onViewChange={(v) => {
                 setView(v);
-                if (v !== 'teams') setShowClosest(false);
+                if (v !== 'teams') {
+                  setShowClosest(false);
+                  leavePinMode();
+                }
               }}
               isPinMode={isPinMode}
               onPinModeChange={setPinMode}
               showClosest={showClosest}
               onShowClosestChange={(on) => {
                 setShowClosest(on);
-                if (on) setView('teams');
+                if (on) {
+                  setView('teams');
+                  leavePinMode();
+                }
               }}
             />
             <SiteMenu appearance={appearance} onAppearanceChange={setAppearance} onOpenCredits={() => setIsCreditsOpen(true)} />
