@@ -576,16 +576,21 @@ export function SportsMap({
   const ditherMode = useMemo<DitherMode | null>(() => {
     if (takeover) return null;
     if (showClosest) return closestFieldSites.length ? {kind: 'closest', sites: closestFieldSites} : null;
-    if (view === 'population') return {kind: 'blobs', rgb: [238, 108, 52], blobs: popPoints.map((a) => ({x: a.px, y: a.py, r: popRadius(a.pop, transform.k)}))};
+    if (view === 'population') return {kind: 'blobs', rgb: [238, 108, 52], radius: popRadius, blobs: popPoints.map((a) => ({x: a.px, y: a.py, value: a.pop}))};
     if (view === 'titles') {
       const blobs = markers
-        .map((m) => ({x: m.px, y: m.py, titles: m.teams.reduce((n, t) => n + t.championships.length, 0)}))
-        .filter((b) => b.titles > 0)
-        .map((b) => ({x: b.x, y: b.y, r: titleRadius(b.titles, transform.k)}));
-      return {kind: 'blobs', rgb: [222, 166, 34], sparkle: true, blobs};
+        .map((m) => ({x: m.px, y: m.py, value: m.teams.reduce((n, t) => n + t.championships.length, 0)}))
+        .filter((b) => b.value > 0);
+      return {kind: 'blobs', rgb: [222, 166, 34], radius: titleRadius, sparkle: true, blobs};
     }
     return null;
-  }, [takeover, showClosest, closestFieldSites, view, popPoints, markers, transform.k]);
+  }, [takeover, showClosest, closestFieldSites, view, popPoints, markers]);
+  // Outlines the dither is clipped to (stable between renders so the field only rebuilds when they change).
+  const ditherProvinces = useMemo(
+    () => (paths ? (showDetail && detailPaths ? detailPaths.provinces : paths.provinces).map((p) => p.d) : []),
+    [paths, detailPaths, showDetail],
+  );
+  const ditherLakes = useMemo(() => (paths ? (showDetail && detailPaths ? detailPaths.lakes : paths.lakes) : []), [paths, detailPaths, showDetail]);
 
   const zoomToCluster = useCallback(
     (members: {px: number; py: number}[]) => {
@@ -704,8 +709,8 @@ export function SportsMap({
               height={size.h}
               transform={transform}
               mode={ditherMode}
-              provinces={(showDetail && detailPaths ? detailPaths.provinces : paths.provinces).map((p) => p.d)}
-              lakes={showDetail && detailPaths ? detailPaths.lakes : paths.lakes}
+              provinces={ditherProvinces}
+              lakes={ditherLakes}
             />
           )}
 
