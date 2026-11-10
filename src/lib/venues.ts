@@ -34,11 +34,19 @@ export function venueEntriesForTeam(team: Team): VenueEntry[] {
     });
 }
 
-export function venueEntriesForCity(cityId: string, league: LeagueFilter): VenueEntry[] {
+/**
+ * A city's venues for the league filter. With `activeOnly`, only venues a current team
+ * plays in today.
+ */
+export function venueEntriesForCity(cityId: string, league: LeagueFilter, {activeOnly = false}: {activeOnly?: boolean} = {}): VenueEntry[] {
   const venues = VENUES.filter((v) => v.cityId === cityId);
   const entries: (VenueEntry & {rank: number})[] = [];
   for (const venue of venues) {
-    const tenants = TEAMS.filter((t) => t.venues.some((s) => s.venueId === venue.id) && teamMatches(t, league));
+    const tenants = TEAMS.filter(
+      (t) =>
+        teamMatches(t, league) &&
+        t.venues.some((s) => s.venueId === venue.id && (!activeOnly || (t.status === 'current' && s.to === undefined))),
+    );
     if (tenants.length === 0) continue;
     // Most recent tenant drives the model's field and colours.
     const lead = tenants

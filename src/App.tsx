@@ -108,9 +108,6 @@ export function App() {
       <TeamPanel
         key={route.id}
         teamId={route.id}
-        tab={route.tab}
-        onTabChange={(tab) => navigate({kind: 'team', id: route.id, tab}, {replace: true})}
-        onOpenTeam={openTeam}
         onOpenCity={openCity}
         onClose={closePanel}
       />
@@ -122,7 +119,6 @@ export function App() {
         cityId={route.id}
         league={league}
         onOpenTeam={openTeam}
-        onShowAllLeagues={() => setLeague('all')}
         onClose={closePanel}
       />
     );

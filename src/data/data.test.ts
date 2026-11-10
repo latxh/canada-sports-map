@@ -105,3 +105,25 @@ describe('logos', () => {
     }
   });
 });
+
+describe('media', () => {
+  it('points every historical logo and photo at a real file and a known team or venue', async () => {
+    const fs = await import('node:fs');
+    const {HISTORICAL_LOGOS, TEAM_PHOTOS, VENUE_PHOTOS} = await import('./media');
+    for (const [id, list] of Object.entries(HISTORICAL_LOGOS)) {
+      expect(TEAMS.some((t) => t.id === id), id).toBe(true);
+      for (const l of list) {
+        expect(fs.existsSync(`public/media/${l.file}`), l.file).toBe(true);
+        if (l.to !== undefined) expect(l.to).toBeGreaterThanOrEqual(l.from);
+      }
+    }
+    for (const [id, list] of Object.entries(TEAM_PHOTOS)) {
+      expect(TEAMS.some((t) => t.id === id), id).toBe(true);
+      for (const p of list) expect(fs.existsSync(`public/media/${p.file}`), p.file).toBe(true);
+    }
+    for (const [id, p] of Object.entries(VENUE_PHOTOS)) {
+      expect(VENUE_BY_ID[id], id).toBeDefined();
+      expect(fs.existsSync(`public/media/${p.file}`), p.file).toBe(true);
+    }
+  });
+});

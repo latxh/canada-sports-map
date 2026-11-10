@@ -8,14 +8,15 @@ const asset = logoAsset;
 
 export type LogoPlate = 'auto' | 'subtle' | 'none';
 
-function LogoImage({file, alt, size, plate = 'auto'}: {file: string; alt: string; size: number; plate?: LogoPlate}) {
+/** A logo image by file name in public/logos, or by full `src` (e.g. a historical logo in public/media). */
+export function LogoImage({file, src, alt, size, plate = 'auto'}: {file?: string; src?: string; alt: string; size: number; plate?: LogoPlate}) {
   // alt='' marks a decorative logo next to visible text.
   return (
     <span
       data-plate={plate}
       className={`logo-chip inline-flex shrink-0 items-center justify-center ${size >= 64 ? 'rounded-2xl' : 'rounded-lg'}`}
       style={{width: size, height: size}}>
-      <img src={asset(file)} alt={alt} width={size} height={size} loading="lazy" decoding="async" className="size-full object-contain" />
+      <img src={src ?? asset(file ?? '')} alt={alt} width={size} height={size} loading="lazy" decoding="async" className="size-full object-contain" />
     </span>
   );
 }

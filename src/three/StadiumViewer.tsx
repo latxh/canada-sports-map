@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useRef, useState} from 'react';
+import {useEffect, useMemo, useRef, useState, type ReactNode} from 'react';
 import {Canvas, useFrame, useThree} from '@react-three/fiber';
 import {OrbitControls} from '@react-three/drei';
 import * as THREE from 'three';
@@ -6,9 +6,7 @@ import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment.j
 import {Button} from '@astryxdesign/core/Button';
 import {EmptyState} from '@astryxdesign/core/EmptyState';
 import {HStack} from '@astryxdesign/core/HStack';
-import {Switch} from '@astryxdesign/core/Switch';
 import {SegmentedControl, SegmentedControlItem} from '@astryxdesign/core/SegmentedControl';
-import {Text} from '@astryxdesign/core/Text';
 import type {Sport, Venue} from '../data';
 import {buildStadium, type StadiumModel} from './buildStadium';
 
@@ -18,8 +16,10 @@ export interface StadiumViewerProps {
   seatColor: string;
   accentColor: string;
   height?: number | string;
-  /** Show the roof / rotate controls under the canvas. */
+  /** Show the retractable-roof control under the canvas. */
   hasControls?: boolean;
+  /** Extra controls at the end of the control row (e.g. a full-screen button). */
+  endControls?: ReactNode;
   /** Full-screen viewer: wheel and pinch zoom are enabled (inline they would trap page scrolling). */
   isFullscreen?: boolean;
 }
@@ -43,19 +43,19 @@ function hasWebGL() {
 
 const media = (q: string) => typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia(q).matches;
 
-export default function StadiumViewer({venue, sport, seatColor, accentColor, height = 280, hasControls = true, isFullscreen = false}: StadiumViewerProps) {
+export default function StadiumViewer({venue, sport, seatColor, accentColor, height = 280, hasControls = true, endControls, isFullscreen = false}: StadiumViewerProps) {
   const model = useMemo(() => buildStadium({venue, sport, seatColor, accentColor}), [venue, sport, seatColor, accentColor]);
   useEffect(() => () => model?.dispose(), [model]);
-  const [showRoof, setShowRoof] = useState(true);
   const [roofOpen, setRoofOpen] = useState(true);
-  const [autoRotate, setAutoRotate] = useState(true);
+  // The model always turns slowly unless the person prefers reduced motion.
+  const autoRotate = true;
+  const showRoof = true;
   const [gl, setGl] = useState<'ok' | 'unsupported' | 'lost'>(() => (hasWebGL() ? 'ok' : 'unsupported'));
   const [canvasKey, setCanvasKey] = useState(0);
   const reducedMotion = useMemo(() => media('(prefers-reduced-motion: reduce)'), []);
   const coarse = useMemo(() => media('(pointer: coarse)'), []);
 
   useEffect(() => {
-    setShowRoof(true);
     setRoofOpen(true);
   }, [venue.id]);
 
@@ -122,24 +122,16 @@ export default function StadiumViewer({venue, sport, seatColor, accentColor, hei
             />
           </div>
         )}
-        {gl === 'ok' && (
-          <div className="pointer-events-none absolute bottom-2 left-2 rounded-md bg-surface/80 px-2 py-1">
-            <Text type="supporting" size="xsm">
-              Low-poly model · to scale
-            </Text>
-          </div>
-        )}
       </div>
-      {hasControls && gl === 'ok' && (
-        <HStack gap={3} wrap="wrap" vAlign="center">
-          {hasRoof && <Switch size="sm" label="Roof" value={showRoof} onChange={setShowRoof} />}
-          {hasRoof && isRetractable && showRoof && (
+      {hasControls && gl === 'ok' && ((hasRoof && isRetractable) || endControls) && (
+        <HStack gap={2} vAlign="center" hAlign="end">
+          {hasRoof && isRetractable && (
             <SegmentedControl size="sm" label="Retractable roof" value={roofOpen ? 'open' : 'closed'} onChange={(v) => setRoofOpen(v === 'open')}>
               <SegmentedControlItem value="closed" label="Closed" />
               <SegmentedControlItem value="open" label="Open" />
             </SegmentedControl>
           )}
-          {!reducedMotion && <Switch size="sm" label="Auto-rotate" value={autoRotate} onChange={setAutoRotate} />}
+          {endControls}
         </HStack>
       )}
     </div>

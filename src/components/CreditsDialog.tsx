@@ -6,6 +6,7 @@ import {List, ListItem} from '@astryxdesign/core/List';
 import {Collapsible} from '@astryxdesign/core/Collapsible';
 import {DATA_AS_OF, LEAGUES, TEAM_BY_ID, type LeagueId} from '../data';
 import {LOGOS} from '../data/logos';
+import {HISTORICAL_LOGOS, TEAM_PHOTOS, VENUE_PHOTOS} from '../data/media';
 import {SectionTitle} from './bits';
 
 const SOURCES = [
@@ -22,7 +23,12 @@ const SOURCES = [
   {
     name: 'Wikipedia & Wikimedia Commons logos',
     href: 'https://commons.wikimedia.org/',
-    note: 'Current team and league logos are the files used on each Wikipedia article (listed below with their licences). Most are non-free trademarks shown only to identify the team or league.',
+    note: 'Team and league logos, current and historical, are the files Wikipedia and Wikimedia Commons serve (listed below with their licences). Most are non-free trademarks shown only to identify the team or league.',
+  },
+  {
+    name: 'Wikimedia Commons photos',
+    href: 'https://commons.wikimedia.org/',
+    note: 'Team, venue and moment photos are freely licensed files from Wikimedia Commons, each credited under the photo and listed below.',
   },
   {
     name: 'Natural Earth',
@@ -50,6 +56,35 @@ const LOGO_CREDITS = Object.entries(LOGOS)
     license: l.license,
   }))
   .sort((a, b) => a.label.localeCompare(b.label));
+
+const HISTORICAL_CREDITS = Object.entries(HISTORICAL_LOGOS)
+  .flatMap(([id, list]) => list.map((l) => ({key: l.file, label: `${TEAM_BY_ID[id]?.name ?? id}, ${l.from}${l.to ? `–${l.to}` : '–'}`, page: l.page, license: l.license})))
+  .sort((a, b) => a.label.localeCompare(b.label));
+
+const PHOTO_CREDITS = [...Object.values(TEAM_PHOTOS).flat(), ...Object.values(VENUE_PHOTOS)]
+  .filter((p, i, all) => all.findIndex((q) => q.page === p.page) === i)
+  .map((p) => ({key: p.file, label: p.caption, page: p.page, license: [p.artist, p.license].filter(Boolean).join(' · ')}));
+
+function CreditList({title, items}: {title: string; items: {key: string; label: string; page: string; license: string}[]}) {
+  if (items.length === 0) return null;
+  return (
+    <Collapsible trigger={<Text weight="semibold">{`${title} (${items.length})`}</Text>} defaultIsOpen={false}>
+      <List density="compact" edge="flush">
+        {items.map((c) => (
+          <ListItem
+            key={c.key}
+            label={
+              <Link href={c.page} isExternalLink>
+                {c.label}
+              </Link>
+            }
+            description={c.license || 'See file page'}
+          />
+        ))}
+      </List>
+    </Collapsible>
+  );
+}
 
 export function CreditsDialog({isOpen, onOpenChange}: {isOpen: boolean; onOpenChange: (open: boolean) => void}) {
   return (
@@ -92,26 +127,15 @@ export function CreditsDialog({isOpen, onOpenChange}: {isOpen: boolean; onOpenCh
             ))}
           </List>
         </VStack>
-        <Collapsible trigger={<Text weight="semibold">Logo files ({LOGO_CREDITS.length})</Text>} defaultIsOpen={false}>
-          <List density="compact" edge="flush">
-            {LOGO_CREDITS.map((c) => (
-              <ListItem
-                key={c.key}
-                label={
-                  <Link href={c.page} isExternalLink>
-                    {c.label}
-                  </Link>
-                }
-                description={c.license || 'See file page'}
-              />
-            ))}
-          </List>
-        </Collapsible>
+        <CreditList title="Logo files" items={LOGO_CREDITS} />
+        <CreditList title="Historical logo files" items={HISTORICAL_CREDITS} />
+        <CreditList title="Photos" items={PHOTO_CREDITS} />
         <VStack gap={1}>
           <SectionTitle>About the visuals</SectionTitle>
           <Text type="supporting">
-            Current logos are the official marks of their teams and leagues. Trophies, badges for earlier eras, uniforms and playing
-            surfaces are original illustrations, not reproductions of official artwork. The 3D models of the 24 venues current
+            Logos are the official marks of their teams and leagues; eras without a logo file show an illustrated badge instead.
+            Trophies (drawn from reference photos), uniforms and playing surfaces are original illustrations, not reproductions of
+            official artwork. The 3D models of the 24 venues current
             NHL, NBA, MLB, MLS, CFL and CPL teams play in are hand-built, low-poly approximations drawn to scale from OpenStreetMap footprints, with Wikimedia Commons photos
             used only as visual references. Former venues are not modelled, and venues used only by the newer leagues are not modelled yet.
           </Text>

@@ -1,17 +1,19 @@
 import {lazy, Suspense, useEffect, useState} from 'react';
-import {List, ListItem} from '@astryxdesign/core/List';
 import {Icon} from '@astryxdesign/core/Icon';
 import {IconButton} from '@astryxdesign/core/IconButton';
 import {Dialog, DialogHeader} from '@astryxdesign/core/Dialog';
 import {Skeleton} from '@astryxdesign/core/Skeleton';
 import {Text} from '@astryxdesign/core/Text';
-import {Link} from '@astryxdesign/core/Link';
-import {MetadataList, MetadataListItem} from '@astryxdesign/core/MetadataList';
+import {Card} from '@astryxdesign/core/Card';
+import {Grid} from '@astryxdesign/core/Grid';
+import {Selector} from '@astryxdesign/core/Selector';
 import {VStack} from '@astryxdesign/core/VStack';
 import {CITY_BY_ID, type Sport, type Venue} from '../data';
+import {VENUE_PHOTOS} from '../data/media';
 import {hasStadiumModel} from '../three/modelIds';
-import {ExpandIcon, StadiumIcon} from './icons';
+import {ExpandIcon} from './icons';
 import {SectionTitle} from './bits';
+import {PhotoFigure} from './Media';
 
 const StadiumViewer = lazy(() => import('../three/StadiumViewer'));
 
@@ -24,28 +26,20 @@ export interface VenueEntry {
   accentColor: string;
 }
 
-const KIND_LABEL: Record<Venue['kind'], string> = {
-  arena: 'Indoor arena',
-  ballpark: 'Ballpark',
-  football: 'Stadium',
-  soccer: 'Soccer stadium',
-  dome: 'Domed stadium',
-};
-
-const ROOF_LABEL: Record<Venue['roof'], string> = {
-  indoor: 'Indoor',
-  open: 'Open air',
-  canopy: 'Canopy over seats',
-  retractable: 'Retractable roof',
-  'fixed-dome': 'Fixed roof',
-};
-
 const SURFACE_LABEL: Record<Venue['surface'], string> = {
   ice: 'Ice',
   hardwood: 'Hardwood',
-  grass: 'Natural grass',
-  turf: 'Artificial turf',
+  grass: 'Grass',
+  turf: 'Turf',
   hybrid: 'Hybrid grass',
+};
+
+const ROOF_LABEL: Record<Venue['roof'], string> = {
+  indoor: 'Roofed',
+  'fixed-dome': 'Roofed',
+  retractable: 'Retractable roof',
+  open: 'Open-air',
+  canopy: 'Open-air',
 };
 
 export function formatCapacity(c: number | null) {
@@ -57,6 +51,25 @@ export function venueYears(v: Venue) {
   return v.closed ? `${v.opened}–${v.closed}` : `Opened ${v.opened}`;
 }
 
+function Stat({label, value}: {label: string; value: string}) {
+  return (
+    <Card variant="muted" padding={3}>
+      <VStack gap={0.5}>
+        <Text type="supporting" size="xsm">
+          {label}
+        </Text>
+        <Text weight="semibold" size="lg" hasTabularNumbers>
+          {value}
+        </Text>
+      </VStack>
+    </Card>
+  );
+}
+
+/**
+ * A place's venues: pick one from the dropdown, turn its 3D model (or see its photo),
+ * and read the four numbers that matter.
+ */
 export function VenueSection({entries, title = 'Venues'}: {entries: VenueEntry[]; title?: string}) {
   const [selectedId, setSelectedId] = useState(entries[0]?.venue.id);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -64,8 +77,9 @@ export function VenueSection({entries, title = 'Venues'}: {entries: VenueEntry[]
   const selected = entries.find((e) => e.venue.id === selectedId) ?? entries[0];
   if (!selected) return null;
   const v = selected.venue;
-
   const hasModel = hasStadiumModel(v.id);
+  const photo = VENUE_PHOTOS[v.id];
+
   const viewer = (height: number | string, isFullscreen = false) => (
     <Suspense fallback={<Skeleton width="100%" height={typeof height === 'number' ? height : 320} />}>
       <StadiumViewer
@@ -75,72 +89,47 @@ export function VenueSection({entries, title = 'Venues'}: {entries: VenueEntry[]
         accentColor={selected.accentColor}
         height={height}
         isFullscreen={isFullscreen}
-      />
-    </Suspense>
-  );
-
-  return (
-    <VStack gap={3}>
-      <SectionTitle
-        endContent={
-          hasModel ? (
+        endControls={
+          isFullscreen ? undefined : (
             <IconButton
               size="sm"
-              variant="ghost"
+              variant="secondary"
               label={`Open ${v.name} 3D model full screen`}
               tooltip="Full screen"
               icon={<Icon icon={ExpandIcon} />}
               onClick={() => setIsExpanded(true)}
             />
-          ) : undefined
-        }>
-        {title}: {v.name}
-      </SectionTitle>
-      {hasModel ? (
-        isExpanded ? (
-          <Skeleton width="100%" height={260} />
-        ) : (
-          viewer(260)
-        )
-      ) : (
-        <Text type="supporting">{v.closed !== undefined ? '3D models are shown for the venues current teams play in.' : 'No 3D model of this venue yet.'}</Text>
-      )}
-      <MetadataList columns={2} label={{position: 'top'}}>
-        <MetadataListItem label="Type">{KIND_LABEL[v.kind]}</MetadataListItem>
-        <MetadataListItem label="Capacity">{formatCapacity(v.capacity)}</MetadataListItem>
-        <MetadataListItem label="Years">{venueYears(v)}</MetadataListItem>
-        <MetadataListItem label="Roof · Surface">
-          {ROOF_LABEL[v.roof]} · {SURFACE_LABEL[v.surface]}
-        </MetadataListItem>
-      </MetadataList>
-      {v.formerNames && v.formerNames.length > 0 && (
-        <Text type="supporting">Also known as: {v.formerNames.join('; ')}</Text>
-      )}
-      <ul className="flex list-disc flex-col gap-1 ps-5">
-        {v.facts.map((f) => (
-          <li key={f}>
-            <Text>{f}</Text>
-          </li>
-        ))}
-      </ul>
-      <Link href={v.wikipedia} isExternalLink isStandalone>
-        {v.name} on Wikipedia
-      </Link>
+          )
+        }
+      />
+    </Suspense>
+  );
 
-      {entries.length > 1 && (
-        <List density="compact" hasDividers header={<Text type="label">Choose a venue</Text>}>
-          {entries.map((e) => (
-            <ListItem
-              key={e.venue.id}
-              label={e.venue.name}
-              description={`${e.note} · ${formatCapacity(e.venue.capacity)}`}
-              startContent={<Icon icon={StadiumIcon} color={e.venue.id === selected.venue.id ? 'accent' : 'secondary'} />}
-              isSelected={e.venue.id === selected.venue.id}
-              onClick={() => setSelectedId(e.venue.id)}
-            />
-          ))}
-        </List>
+  return (
+    <VStack gap={2}>
+      <SectionTitle>{title}</SectionTitle>
+      {entries.length > 1 ? (
+        <Selector
+          label="Venue"
+          isLabelHidden
+          variant="secondary"
+          width="100%"
+          value={selected.venue.id}
+          onChange={(id) => id && setSelectedId(id)}
+          options={entries.map((e) => ({value: e.venue.id, label: e.venue.name, description: e.note}))}
+        />
+      ) : (
+        <Text weight="semibold" size="lg">
+          {v.name}
+        </Text>
       )}
+      {hasModel ? isExpanded ? <Skeleton width="100%" height={260} /> : viewer(260) : photo ? <PhotoFigure photo={photo} height={200} /> : null}
+      <Grid columns={2} gap={2}>
+        <Stat label={v.closed ? 'Years' : 'Opened'} value={v.closed ? venueYears(v) : v.opened ? String(v.opened) : '—'} />
+        <Stat label="Capacity" value={v.capacity ? v.capacity.toLocaleString('en-CA') : '—'} />
+        <Stat label="Surface" value={SURFACE_LABEL[v.surface]} />
+        <Stat label="Roof" value={ROOF_LABEL[v.roof]} />
+      </Grid>
 
       <Dialog isOpen={isExpanded} onOpenChange={setIsExpanded} variant="fullscreen" padding={4}>
         <DialogHeader title={v.name} subtitle={`${CITY_BY_ID[v.cityId]?.name ?? ''} · ${venueYears(v)} · ${formatCapacity(v.capacity)}`} onOpenChange={setIsExpanded} />
