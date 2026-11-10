@@ -62,16 +62,16 @@ for team_id in sorted(set(media['teams']) | set(logos2)):
 photos = {}
 for team_id, rec in sorted(media['teams'].items()):
     items = []
-    for p in rec.get('photos', [])[:5]:
-        if p['file'] in DROP:
-            continue
+    for p in [p for p in rec.get('photos', []) if p['file'] not in DROP][:3]:
         items.append({'file': copy(p['file']), 'page': p['page'], 'license': p.get('license', ''), 'artist': clean_artist(p.get('artist')), 'caption': caption(p)})
     if items:
         photos[team_id] = items
 
+# Venue photos stand in where there is no 3D model; modelled venues show the model instead.
+modelled = set(re.findall(r"'([a-z0-9-]+)'", open('src/three/modelIds.ts').read()))
 venues = {}
 for venue_id, p in sorted(media.get('venues', {}).items()):
-    if p['file'] in DROP:
+    if p['file'] in DROP or venue_id in modelled:
         continue
     venues[venue_id] = {'file': copy(p['file']), 'page': p['page'], 'license': p.get('license', ''), 'artist': clean_artist(p.get('artist')), 'caption': caption(p)}
 
