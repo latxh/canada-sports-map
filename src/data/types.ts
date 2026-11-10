@@ -7,9 +7,9 @@
  * actual artwork rather than copying it.
  */
 
-export type LeagueId = 'NHL' | 'NBA' | 'MLB' | 'MLS' | 'CFL' | 'CPL';
+export type LeagueId = 'NHL' | 'NBA' | 'MLB' | 'MLS' | 'CFL' | 'CPL' | 'NLL' | 'CEBL' | 'PWHL' | 'WNBA' | 'NSL';
 
-export type Sport = 'hockey' | 'basketball' | 'baseball' | 'soccer' | 'football';
+export type Sport = 'hockey' | 'basketball' | 'baseball' | 'soccer' | 'football' | 'lacrosse';
 
 export interface League {
   id: LeagueId;

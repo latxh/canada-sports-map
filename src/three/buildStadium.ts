@@ -60,7 +60,7 @@ export function buildStadium(o: StadiumOptions): StadiumModel | null {
     layer: (name, spec) => builder.layer(name, spec),
     sport: o.sport,
     team: {seat: o.seatColor, accent: o.accentColor},
-    kindFor: (options, fallback) => options[o.sport] ?? fallback,
+    kindFor: (options, fallback) => options[o.sport] ?? (o.sport === 'lacrosse' ? options.hockey : undefined) ?? fallback,
     ground: (r, color, g = {}) => {
       groundSpec = {r, color, hole: g.hole, y: g.y ?? -0.06};
     },

@@ -220,6 +220,107 @@ function NorthStarCup() {
   );
 }
 
+function NllCup() {
+  // A tall two-handled silver cup on a black plinth with a gold band.
+  return (
+    <g stroke={EDGE} strokeWidth={0.6} strokeLinejoin="round">
+      <path d="M14 14 C9 14 8 26 18 30" fill="none" stroke={G.silverDark} strokeWidth={2.6} />
+      <path d="M46 14 C51 14 52 26 42 30" fill="none" stroke={G.silverDark} strokeWidth={2.6} />
+      <path d="M16 9 C16 30 22 40 30 40 C38 40 44 30 44 9 Z" fill={G.silver} />
+      <ellipse cx="30" cy="9" rx="14" ry="2.6" fill={G.silverDark} />
+      <path d="M21 15 C22 27 25 34 29 37" stroke="rgb(255 255 255 / 0.7)" strokeWidth={1.2} fill="none" />
+      <path d="M27 40 H33 L34 52 H26 Z" fill={G.silverDark} />
+      <ellipse cx="30" cy="53" rx="9" ry="2.2" fill={G.silver} />
+      <path d="M18 56 H42 L44 68 H16 Z" fill="#1b1d22" />
+      <rect x="16" y="68" width="28" height="4" fill={G.gold} />
+      <path d="M15 72 H45 L46.5 92 H13.5 Z" fill="#1b1d22" />
+      <rect x="12.5" y="92" width="35" height="3.5" rx="1" fill={G.silverDark} />
+    </g>
+  );
+}
+
+function CeblTrophy() {
+  // A silver ball on a slim gold column, standing on a black base.
+  return (
+    <g stroke={EDGE} strokeWidth={0.6} strokeLinejoin="round">
+      <circle cx="30" cy="18" r="11" fill={G.silver} />
+      <g stroke="rgb(60 66 72 / 0.55)" strokeWidth={0.7} fill="none">
+        <path d="M19 18 H41" />
+        <path d="M30 7 V29" />
+        <path d="M22.5 10 C27 14 27 22 22.5 26" />
+        <path d="M37.5 10 C33 14 33 22 37.5 26" />
+      </g>
+      <path d="M26 29 H34 L32.5 34 H27.5 Z" fill={G.gold} />
+      <path d="M27.5 34 H32.5 L34.5 66 H25.5 Z" fill={G.gold} />
+      <path d="M28.5 37 L27 63" stroke="rgb(255 255 255 / 0.6)" strokeWidth={1} />
+      <path d="M20 66 H40 L42 74 H18 Z" fill={G.goldDark} />
+      <path d="M16 74 H44 L45.5 92 H14.5 Z" fill="#1b1d22" />
+      <rect x="13" y="92" width="34" height="3.5" rx="1" fill={G.gold} />
+    </g>
+  );
+}
+
+function WalterCup() {
+  // Sterling silver: a broad bowl on a short stem, resting on a ring of rays above a dark base.
+  const rays = Array.from({length: 13}, (_, i) => {
+    const a = Math.PI + (i / 12) * Math.PI;
+    return <line key={i} x1={30} y1={66} x2={30 + Math.cos(a) * 15} y2={66 + Math.sin(a) * 9} stroke="rgb(255 255 255 / 0.55)" strokeWidth={0.6} />;
+  });
+  return (
+    <g stroke={EDGE} strokeWidth={0.6} strokeLinejoin="round">
+      <path d="M8 10 C8 32 18 44 30 44 C42 44 52 32 52 10 Z" fill={G.silver} />
+      <ellipse cx="30" cy="10" rx="22" ry="3.4" fill={G.silverDark} />
+      <ellipse cx="30" cy="10" rx="19" ry="2.3" fill="#5f666d" opacity={0.55} />
+      <path d="M14 15 C15 30 21 39 28 42" stroke="rgb(255 255 255 / 0.7)" strokeWidth={1.4} fill="none" />
+      <path d="M26 44 H34 L33 54 H27 Z" fill={G.silverDark} />
+      <path d="M14 66 A16 10 0 0 1 46 66 Z" fill={G.silver} />
+      {rays}
+      <path d="M13 66 H47 V72 H13 Z" fill={G.silverDark} />
+      <path d="M15 72 H45 L46.5 92 H13.5 Z" fill="#1d2027" />
+      <rect x="12.5" y="92" width="35" height="3.5" rx="1" fill={G.silverDark} />
+    </g>
+  );
+}
+
+function WnbaTrophy() {
+  // A silver ball cradled on a tall, tapering silver stand.
+  return (
+    <g stroke={EDGE} strokeWidth={0.6} strokeLinejoin="round">
+      <circle cx="30" cy="17" r="10" fill={G.silver} />
+      <g stroke="rgb(60 66 72 / 0.5)" strokeWidth={0.7} fill="none">
+        <path d="M20 17 H40" />
+        <path d="M30 7 V27" />
+        <path d="M23 9.5 C27 13 27 21 23 24.5" />
+        <path d="M37 9.5 C33 13 33 21 37 24.5" />
+      </g>
+      <path d="M21 25 C24 30 36 30 39 25 L36 33 H24 Z" fill={G.silverDark} />
+      <path d="M24 33 H36 L33 72 H27 Z" fill={G.silver} />
+      <path d="M27.5 36 L28.5 69" stroke="rgb(255 255 255 / 0.75)" strokeWidth={1.1} />
+      <path d="M20 72 H40 L42 80 H18 Z" fill={G.silverDark} />
+      <path d="M16 80 H44 L45.5 92 H14.5 Z" fill={G.silver} />
+      <rect x="13" y="92" width="34" height="3.5" rx="1" fill={G.silverDark} />
+    </g>
+  );
+}
+
+function MathesonCup() {
+  // A slim silver cup on a long stem, standing on a light wooden base.
+  return (
+    <g stroke={EDGE} strokeWidth={0.6} strokeLinejoin="round">
+      <path d="M17 8 C17 24 22 32 30 32 C38 32 43 24 43 8 Z" fill={G.silver} />
+      <ellipse cx="30" cy="8" rx="13" ry="2.5" fill={G.silverDark} />
+      <path d="M21 13 C22 22 25 28 29 30" stroke="rgb(255 255 255 / 0.7)" strokeWidth={1.2} fill="none" />
+      <circle cx="30" cy="19" r="4.2" fill="none" stroke="rgb(60 66 72 / 0.45)" strokeWidth={0.7} />
+      <path d="M28.5 32 H31.5 L32.5 62 H27.5 Z" fill={G.silverDark} />
+      <ellipse cx="30" cy="62" rx="7" ry="2" fill={G.silver} />
+      <path d="M17 64 H43 L44.5 92 H15.5 Z" fill="#b98a5a" />
+      <path d="M17 64 H43 L44.5 92 H15.5 Z" fill="url(#tr-wood)" opacity={0.35} />
+      <rect x="21" y="72" width="18" height="7" rx="0.8" fill={G.silver} opacity={0.9} />
+      <rect x="13.5" y="92" width="33" height="3.5" rx="1" fill={G.silverDark} />
+    </g>
+  );
+}
+
 const ART: Record<LeagueId, () => ReactNode> = {
   NHL: StanleyCup,
   NBA: LarryOBrien,
@@ -227,6 +328,11 @@ const ART: Record<LeagueId, () => ReactNode> = {
   MLS: MlsCup,
   CFL: GreyCup,
   CPL: NorthStarCup,
+  NLL: NllCup,
+  CEBL: CeblTrophy,
+  PWHL: WalterCup,
+  WNBA: WnbaTrophy,
+  NSL: MathesonCup,
 };
 
 /** The trophy each league's champion lifts, by its proper name. */
@@ -237,6 +343,11 @@ export const TROPHY_NAME: Record<LeagueId, string> = {
   MLS: 'Philip F. Anschutz Trophy',
   CFL: 'Grey Cup',
   CPL: 'North Star Cup',
+  NLL: 'NLL Cup',
+  CEBL: 'CEBL Championship',
+  PWHL: 'Walter Cup',
+  WNBA: 'WNBA Championship',
+  NSL: 'Diana B. Matheson Cup',
 };
 
 export function TrophyArt({league, height = 64, isMuted = false, title}: {league: LeagueId; height?: number; isMuted?: boolean; title?: string}) {

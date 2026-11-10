@@ -3,6 +3,9 @@ import {CITIES} from './cities';
 import {NHL_TEAMS} from './teams/nhl';
 import {NBA_TEAMS, MLB_TEAMS, MLS_TEAMS} from './teams/nba-mlb-mls';
 import {CFL_TEAMS, CPL_TEAMS} from './teams/cfl-cpl';
+import {NLL_TEAMS} from './teams/nll';
+import {CEBL_TEAMS} from './teams/cebl';
+import {PWHL_TEAMS, WNBA_TEAMS, NSL_TEAMS} from './teams/pwhl-wnba-nsl';
 
 export * from './types';
 export {LEAGUES, LEAGUE_ORDER} from './leagues';
@@ -12,7 +15,19 @@ export {VENUES, VENUE_BY_ID} from './venues';
 /** When the dataset was last reviewed against its sources. */
 export const DATA_AS_OF = 'November 2026';
 
-export const TEAMS: Team[] = [...NHL_TEAMS, ...NBA_TEAMS, ...MLB_TEAMS, ...MLS_TEAMS, ...CFL_TEAMS, ...CPL_TEAMS];
+export const TEAMS: Team[] = [
+  ...NHL_TEAMS,
+  ...NBA_TEAMS,
+  ...MLB_TEAMS,
+  ...MLS_TEAMS,
+  ...CFL_TEAMS,
+  ...CPL_TEAMS,
+  ...NLL_TEAMS,
+  ...CEBL_TEAMS,
+  ...PWHL_TEAMS,
+  ...WNBA_TEAMS,
+  ...NSL_TEAMS,
+];
 
 export const TEAM_BY_ID: Record<string, Team> = Object.fromEntries(TEAMS.map((t) => [t.id, t]));
 
@@ -27,7 +42,7 @@ export function teamsForCity(cityId: string, league: LeagueFilter = 'all'): Team
   return TEAMS.filter((t) => t.cityId === cityId && teamMatches(t, league)).sort(compareTeams);
 }
 
-const LEAGUE_RANK: Record<LeagueId, number> = {NHL: 0, NBA: 1, MLB: 2, MLS: 3, CFL: 4, CPL: 5};
+const LEAGUE_RANK: Record<LeagueId, number> = {NHL: 0, NBA: 1, MLB: 2, MLS: 3, CFL: 4, CPL: 5, NLL: 6, CEBL: 7, PWHL: 8, WNBA: 9, NSL: 10};
 
 export function compareTeams(a: Team, b: Team): number {
   const status = Number(a.status !== 'current') - Number(b.status !== 'current');
@@ -42,5 +57,6 @@ export function citiesWithTeams(league: LeagueFilter): {city: City; teams: Team[
 }
 
 export function yearsLabel(from: number, to?: number): string {
+  if (to === from) return String(from);
   return to ? `${from}–${to}` : `${from}–present`;
 }

@@ -22,6 +22,8 @@ export function LeagueSelect({value, onChange, isCompact}: {value: LeagueFilter;
       isLabelHidden
       size="md"
       variant="ghost"
+      width={isCompact ? 116 : 152}
+      controlClassName="rounded-full"
       value={value}
       onChange={(v) => onChange((v ?? 'all') as LeagueFilter)}
       options={[
@@ -41,7 +43,7 @@ function LeagueOptionRow({value, label, isCompact}: {value?: string; label: Reac
   return (
     <HStack gap={2} vAlign="center">
       {isLeague ? (
-        <LeagueLogo league={value as LeagueId} size={isCompact ? 20 : 26} isDecorative plate="subtle" />
+        <LeagueLogo league={value as LeagueId} size={isCompact ? 20 : 26} isDecorative />
       ) : (
         <Icon icon={MapleLeafIcon} color="red" size={isCompact ? 'sm' : 'md'} />
       )}
@@ -79,10 +81,12 @@ export function SiteMenu({appearance, onAppearanceChange, onOpenCredits}: SiteMe
     <DropdownMenu
       hasChevron={false}
       alignment="end"
-      menuWidth={300}
-      renderTrigger={(props) => <IconButton {...props} variant="ghost" label="More options" tooltip="More" icon={<Icon icon="moreHorizontal" />} />}
+      menuWidth={228}
+      renderTrigger={(props) => (
+        <IconButton {...props} variant="ghost" className="rounded-full" label="More options" tooltip="More" icon={<Icon icon="moreHorizontal" />} />
+      )}
       header={
-        <HStack hAlign="between" vAlign="center" gap={3} paddingInline={3} paddingBlock={2}>
+        <HStack hAlign="between" vAlign="center" gap={3} paddingInline={3} paddingBlock={2} className="border-b border-border">
           <Text>Appearance</Text>
           <SegmentedControl label="Appearance" size="sm" value={appearance} onChange={(v) => onAppearanceChange(v as Appearance)}>
             <SegmentedControlItem value="light" label="Light" isLabelHidden icon={<Icon icon={SunIcon} size="sm" />} />

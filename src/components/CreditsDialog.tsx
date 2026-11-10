@@ -57,8 +57,7 @@ export function CreditsDialog({isOpen, onOpenChange}: {isOpen: boolean; onOpenCh
       <DialogHeader title="Credits & sources" subtitle={`Data reviewed ${DATA_AS_OF}`} onOpenChange={onOpenChange} />
       <VStack gap={4} paddingBlockStart={3}>
         <Text>
-          Canada Sports Atlas is an unofficial fan project. It is not affiliated with or endorsed by the NHL, NBA, MLB, MLS, CFL, CPL or
-          any team.
+          Canada Sports Atlas is an unofficial fan project. It is not affiliated with or endorsed by any league or team shown.
         </Text>
         <VStack gap={1}>
           <SectionTitle>Sources</SectionTitle>
@@ -113,11 +112,11 @@ export function CreditsDialog({isOpen, onOpenChange}: {isOpen: boolean; onOpenCh
           <Text type="supporting">
             Current logos are the official marks of their teams and leagues. Trophies, badges for earlier eras, uniforms and playing
             surfaces are original illustrations, not reproductions of official artwork. The 3D models of the 24 venues current
-            teams play in are hand-built, low-poly approximations drawn to scale from OpenStreetMap footprints, with Wikimedia Commons photos
-            used only as visual references. Former venues are not modelled.
+            NHL, NBA, MLB, MLS, CFL and CPL teams play in are hand-built, low-poly approximations drawn to scale from OpenStreetMap footprints, with Wikimedia Commons photos
+            used only as visual references. Former venues are not modelled, and venues used only by the newer leagues are not modelled yet.
           </Text>
           <Text type="supporting">
-            Capacities are approximate. The 113th Grey Cup (November 15, 2026) and the 2026 CPL Final had not been played when the
+            Capacities are approximate. The 2026 NSL final (November 14), the 113th Grey Cup (November 15) and the 2026 CPL Final had not been played when the
             data was last reviewed. Spot a mistake? Open an issue on GitHub.
           </Text>
         </VStack>

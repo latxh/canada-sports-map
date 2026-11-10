@@ -14,6 +14,11 @@ export const LEAGUE_TOKEN_COLOR: Record<LeagueId, TokenColor> = {
   MLS: 'teal',
   CFL: 'red',
   CPL: 'purple',
+  NLL: 'yellow',
+  CEBL: 'pink',
+  PWHL: 'purple',
+  WNBA: 'orange',
+  NSL: 'cyan',
 };
 
 export function LeagueDot({league, size = 10}: {league: LeagueId; size?: number}) {

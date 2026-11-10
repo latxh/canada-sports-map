@@ -3,7 +3,7 @@ import type {IdentityEra, JerseyPattern, Sport} from '../data';
 import {luminance, readableOn} from '../lib/color';
 
 /** Silhouettes on a 120×130 canvas. Original drawings. */
-const BODY: Record<Sport, string> = {
+const BODY_BASE = {
   hockey:
     'M38 8 C46 14 74 14 82 8 L106 22 C112 26 116 34 117 44 L119 74 L100 78 L97 52 L96 122 C80 126 40 126 24 122 L23 52 L20 78 L1 74 L3 44 C4 34 8 26 14 22 Z',
   basketball:
@@ -16,13 +16,17 @@ const BODY: Record<Sport, string> = {
     'M44 8 C50 14 70 14 76 8 L102 16 L116 44 L100 54 L94 44 L94 122 C78 126 42 126 26 122 L26 44 L20 54 L4 44 L18 16 Z',
 };
 
-const COLLAR: Record<Sport, string> = {
+const COLLAR_BASE = {
   hockey: 'M38 8 C46 14 74 14 82 8 L76 20 C66 26 54 26 44 20 Z',
   basketball: 'M40 6 C44 22 76 22 80 6 L76 6 C72 18 48 18 44 6 Z',
   baseball: 'M42 8 C48 16 72 16 78 8 L60 32 Z',
   football: 'M42 8 C48 18 72 18 78 8 L72 8 C68 14 52 14 48 8 Z',
   soccer: 'M44 8 C50 14 70 14 76 8 L68 18 L60 22 L52 18 Z',
 };
+
+/** Box lacrosse jerseys are cut like football jerseys, short-sleeved over shoulder pads. */
+const BODY: Record<Sport, string> = {...BODY_BASE, lacrosse: BODY_BASE.football};
+const COLLAR: Record<Sport, string> = {...COLLAR_BASE, lacrosse: COLLAR_BASE.football};
 
 interface Props {
   era: IdentityEra;

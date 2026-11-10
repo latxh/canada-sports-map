@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
+import {useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState} from 'react';
 import {geoConicConformal, geoPath} from 'd3-geo';
 import {select} from 'd3-selection';
 import 'd3-transition';
@@ -52,6 +52,15 @@ interface Props {
   rightInset?: number;
   /** Pixels at the top of the map hidden behind floating controls. */
   topInset?: number;
+  /** Fill Canada with a team's logo (the only Canadian team in its league). */
+  takeover?: MapTakeover | null;
+}
+
+export interface MapTakeover {
+  id: string;
+  logoHref: string;
+  background: string;
+  label: string;
 }
 
 interface Size {
@@ -62,7 +71,8 @@ interface Size {
 const MAX_ZOOM = 40;
 const LABEL_FONT = 13;
 
-export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0, rightInset = 0, topInset = 0}: Props) {
+export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0, rightInset = 0, topInset = 0, takeover = null}: Props) {
+  const clipId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const zoomRef = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null);
@@ -117,6 +127,7 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
       })),
       neighbours: geo.neighbours.features.map((f) => gen(f) ?? ''),
       lakes: geo.lakes.features.map((f) => gen(f) ?? ''),
+      bounds: gen.bounds(geo.provinces),
     };
   }, [projection, geo]);
 
@@ -176,9 +187,21 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rightInset, bottomInset, topInset, selectedCityId === null]);
 
+  // During a logo takeover, show the whole country.
+  const takeoverId = takeover?.id ?? null;
+  useEffect(() => {
+    if (!takeoverId || !didInit.current) return;
+    resetZoom();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [takeoverId, rightInset, bottomInset, topInset]);
+
   // Fly to the selected city.
   const lastFlown = useRef<string | null>(null);
   useEffect(() => {
+    if (takeoverId) {
+      lastFlown.current = null;
+      return;
+    }
     if (!selectedCityId || !projection || !size || !svgRef.current || !zoomRef.current) {
       if (!selectedCityId) lastFlown.current = null;
       return;
@@ -202,7 +225,7 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
     select(svgRef.current).transition().duration(700).call(zoomRef.current.transform, t);
     // transform intentionally omitted: we only fly when the selection changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCityId, projection, size, bottomInset, rightInset, topInset, cities]);
+  }, [selectedCityId, projection, size, bottomInset, rightInset, topInset, cities, takeoverId]);
 
   const markers = useMemo(() => {
     if (!projection) return [];
@@ -240,6 +263,8 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
     return {clusters, labels, provinceLabels};
   }, [markers, transform, selectedCityId, size, paths]);
 
+  const labelById = useMemo(() => new Map(placed.labels.map((l) => [l.id, l])), [placed.labels]);
+
   const zoomToCluster = useCallback(
     (members: {px: number; py: number}[]) => {
       const svg = svgRef.current;
@@ -271,6 +296,18 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
           height={size.h}
           role="group"
           aria-label={`Map of Canada showing ${cities.length} cities with professional teams. Use the city buttons to open an overview.`}>
+          <defs>
+            <linearGradient id="takeover-sheen" x1="0" y1="0" x2="0.6" y2="1">
+              <stop offset="0" stopColor="#ffffff" stopOpacity={0.16} />
+              <stop offset="0.55" stopColor="#000000" stopOpacity={0} />
+              <stop offset="1" stopColor="#000000" stopOpacity={0.32} />
+            </linearGradient>
+            <clipPath id={clipId}>
+              {paths.provinces.map((p) => (
+                <path key={p.id} d={p.d} />
+              ))}
+            </clipPath>
+          </defs>
           <g transform={transform.toString()}>
             {paths.neighbours.map((d, i) => (
               <path key={`n${i}`} d={d} fill="var(--map-neighbour)" stroke="var(--map-border)" strokeWidth={0.5} vectorEffect="non-scaling-stroke" />
@@ -287,14 +324,28 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
                 <title>{p.name}</title>
               </path>
             ))}
-            {paths.lakes.map((d, i) => (
+            {takeover && <TakeoverLayer key={takeover.id} takeover={takeover} bounds={paths.bounds} clipId={clipId} />}
+            {takeover &&
+              paths.provinces.map((p) => (
+                <path
+                  key={`tb-${p.id}`}
+                  d={p.d}
+                  fill="none"
+                  stroke="rgb(255 255 255 / 0.45)"
+                  strokeWidth={0.8}
+                  vectorEffect="non-scaling-stroke"
+                  strokeLinejoin="round"
+                  pointerEvents="none"
+                />
+              ))}
+            {(takeover ? [] : paths.lakes).map((d, i) => (
               <path key={`l${i}`} d={d} fill="var(--map-water)" stroke="none" />
             ))}
           </g>
 
           {/* Province names: faint, screen-space so they stay readable at any zoom. */}
           <g aria-hidden="true">
-            {placed.provinceLabels.map((p) => (
+            {(takeover ? [] : placed.provinceLabels).map((p) => (
               <text
                 key={`pl-${p.id}`}
                 x={p.x}
@@ -313,7 +364,7 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
           {/* City markers (nearby cities merge into a cluster until you zoom in) */}
           <g>
             {placed.clusters
-              .slice()
+              .filter((c) => !takeover || c.containsSelected)
               .sort((a, b) => Number(a.containsSelected) - Number(b.containsSelected))
               .map((c) =>
                 c.members.length === 1 ? (
@@ -328,6 +379,7 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
                     leagues={c.leagues}
                     isSelected={c.head.city.id === selectedCityId}
                     onSelect={() => onSelectCity(c.head.city.id)}
+                    label={labelById.get(c.head.city.id)}
                   />
                 ) : (
                   <ClusterMarker
@@ -340,43 +392,20 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
                     leagues={c.leagues}
                     isSelected={c.containsSelected}
                     onActivate={() => zoomToCluster(c.members)}
+                    label={labelById.get(c.head.city.id)}
                   />
                 ),
               )}
           </g>
 
-          {/* City labels: clicking a name does the same as clicking its ring. The ring is the accessible control. */}
-          <g aria-hidden="true">
-            {placed.labels.map((l) => (
-              <text
-                key={`label-${l.id}`}
-                x={l.x}
-                y={l.y}
-                textAnchor={l.anchor}
-                dominantBaseline="central"
-                className="city-label"
-                fontSize={LABEL_FONT}
-                fontWeight={l.isSelected ? 700 : 600}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const cluster = placed.clusters.find((c) => c.head.city.id === l.id);
-                  if (!cluster) return;
-                  if (cluster.members.length === 1) onSelectCity(cluster.head.city.id);
-                  else zoomToCluster(cluster.members);
-                }}>
-                {l.text}
-                {l.extra > 0 && <tspan fontWeight={600} fill="var(--color-text-secondary)">{l.extra === 1 ? ` & ${l.second}` : ` +${l.extra}`}</tspan>}
-              </text>
-            ))}
-          </g>
         </svg>
       )}
 
       <div className="absolute left-3" style={{bottom: bottomInset + 12, transition: 'bottom 200ms ease'}}>
-        <ButtonGroup label="Map zoom" orientation="vertical" className="glass glass-group rounded-xl">
-          <IconButton variant="ghost" label="Zoom in" tooltip="Zoom in" icon={<Icon icon={PlusIcon} />} onClick={() => zoomBy(1.6)} />
-          <IconButton variant="ghost" label="Zoom out" tooltip="Zoom out" icon={<Icon icon={MinusIcon} />} onClick={() => zoomBy(1 / 1.6)} />
-          <IconButton variant="ghost" label="Show all of Canada" tooltip="Show all of Canada" icon={<Icon icon={FitIcon} />} onClick={resetZoom} />
+        <ButtonGroup label="Map zoom" orientation="vertical" className="glass glass-group rounded-full">
+          <IconButton variant="ghost" className="rounded-t-full rounded-b-none" label="Zoom in" tooltip="Zoom in" icon={<Icon icon={PlusIcon} />} onClick={() => zoomBy(1.6)} />
+          <IconButton variant="ghost" className="rounded-none" label="Zoom out" tooltip="Zoom out" icon={<Icon icon={MinusIcon} />} onClick={() => zoomBy(1 / 1.6)} />
+          <IconButton variant="ghost" className="rounded-b-full rounded-t-none" label="Show all of Canada" tooltip="Show all of Canada" icon={<Icon icon={FitIcon} />} onClick={resetZoom} />
         </ButtonGroup>
       </div>
     </div>
@@ -389,6 +418,7 @@ function markerRadius(teamCount: number) {
 }
 
 interface MarkerProps {
+  label?: PlacedLabel;
   x: number;
   y: number;
   r: number;
@@ -400,17 +430,17 @@ interface MarkerProps {
   onSelect: () => void;
 }
 
-function CityMarker({x, y, r, city, teamCount, currentCount, isSelected, onSelect}: MarkerProps) {
+function CityMarker({x, y, r, city, teamCount, currentCount, isSelected, onSelect, label}: MarkerProps) {
   const ringR = r + 3.5;
   const defunctOnly = currentCount === 0;
-  const label = `${city.name}: ${teamCount} team${teamCount === 1 ? '' : 's'}${defunctOnly ? ', all former' : ''}. Open city overview.`;
+  const name = `${city.name}: ${teamCount} team${teamCount === 1 ? '' : 's'}${defunctOnly ? ', all former' : ''}. Open city overview.`;
   return (
     <g
       className="city-marker"
       transform={`translate(${x},${y})`}
       role="button"
       tabIndex={0}
-      aria-label={label}
+      aria-label={name}
       aria-pressed={isSelected}
       onClick={(e) => {
         e.stopPropagation();
@@ -422,13 +452,64 @@ function CityMarker({x, y, r, city, teamCount, currentCount, isSelected, onSelec
           onSelect();
         }
       }}>
-      <circle className="city-hit" r={Math.max(22, ringR + 8)} />
+      <circle className="city-hit" r={Math.max(14, ringR + 6)} />
       {isSelected && <circle className="city-pulse" r={ringR} fill="none" stroke="var(--color-accent)" strokeWidth={2} />}
       <g className="city-core">
         <OutlineRing r={ringR} dashed={defunctOnly} isSelected={isSelected} />
         {isSelected && <circle r={ringR - 3.2} fill="var(--color-accent)" />}
         <circle className="city-focus" r={ringR + 4} fill="none" stroke="transparent" />
       </g>
+      {label && <MarkerLabel label={label} x={x} y={y} />}
+    </g>
+  );
+}
+
+/** The words a label shows, so a marker's accessible name can contain them (WCAG 2.5.3). */
+function labelText(label: PlacedLabel): string {
+  if (label.extra === 0) return label.text;
+  return label.extra === 1 ? `${label.text} & ${label.second}` : `${label.text} +${label.extra}`;
+}
+
+/** The city name, inside the marker's group so the ring and the name hover and click as one. */
+function MarkerLabel({label, x, y}: {label: PlacedLabel; x: number; y: number}) {
+  const {box} = label;
+  return (
+    <>
+      <rect className="city-hit" x={box.x0 - x} y={box.y0 - y} width={box.x1 - box.x0} height={box.y1 - box.y0} />
+      <text
+        x={label.x - x}
+        y={label.y - y}
+        textAnchor={label.anchor}
+        dominantBaseline="central"
+        className="city-label"
+        fontSize={LABEL_FONT}
+        fontWeight={label.isSelected ? 700 : 600}>
+        {label.text}
+        {label.extra > 0 && (
+          <tspan fontWeight={600} fill="var(--color-text-secondary)">
+            {label.extra === 1 ? ` & ${label.second}` : ` +${label.extra}`}
+          </tspan>
+        )}
+      </text>
+    </>
+  );
+}
+
+/** A team's logo filling the shape of Canada, on its colour, clipped to the provinces. */
+function TakeoverLayer({takeover, bounds, clipId}: {takeover: MapTakeover; bounds: [[number, number], [number, number]]; clipId: string}) {
+  const [[x0, y0], [x1, y1]] = bounds;
+  const w = x1 - x0;
+  const h = y1 - y0;
+  // Sit the logo over the western and central land mass (the Prairies and the territories), clear of
+  // Hudson Bay, and a little low because the Arctic islands thin out towards the top.
+  const size = Math.min(w * 0.56, h * 0.98);
+  const cx = x0 + w * 0.36;
+  const cy = y0 + h * 0.57;
+  return (
+    <g clipPath={`url(#${clipId})`} className="takeover" aria-hidden="true" pointerEvents="none">
+      <rect x={x0} y={y0} width={w} height={h} fill={takeover.background} />
+      <rect x={x0} y={y0} width={w} height={h} fill="url(#takeover-sheen)" />
+      <image href={takeover.logoHref} x={cx - size / 2} y={cy - size / 2} width={size} height={size} preserveAspectRatio="xMidYMid meet" />
     </g>
   );
 }
@@ -517,7 +598,9 @@ function ClusterMarker({
   teamCount,
   isSelected,
   onActivate,
+  label,
 }: {
+  label?: PlacedLabel;
   x: number;
   y: number;
   r: number;
@@ -534,7 +617,7 @@ function ClusterMarker({
       transform={`translate(${x},${y})`}
       role="button"
       tabIndex={0}
-      aria-label={`${teamCount} teams in ${names.join(', ')}. Zoom in to separate.`}
+      aria-label={`${label ? labelText(label) : names[0]}: ${teamCount} teams in ${names.join(', ')}. Zoom in to separate.`}
       onClick={(e) => {
         e.stopPropagation();
         onActivate();
@@ -545,13 +628,14 @@ function ClusterMarker({
           onActivate();
         }
       }}>
-      <circle className="city-hit" r={Math.max(22, ringR + 8)} />
+      <circle className="city-hit" r={Math.max(14, ringR + 8)} />
       <g className="city-core">
         <OutlineRing r={ringR + 3} dashed={false} isSelected={isSelected} faint />
         <OutlineRing r={ringR} dashed={false} isSelected={isSelected} />
         {isSelected && <circle r={ringR - 3.2} fill="var(--color-accent)" />}
         <circle className="city-focus" r={ringR + 6} fill="none" stroke="transparent" />
       </g>
+      {label && <MarkerLabel label={label} x={x} y={y} />}
     </g>
   );
 }
@@ -567,6 +651,7 @@ interface PlacedLabel {
   y: number;
   anchor: 'start' | 'end' | 'middle';
   isSelected: boolean;
+  box: Box;
 }
 
 /** Greedy label placement: most important clusters first, four candidate positions each. */
@@ -610,7 +695,7 @@ function placeLabels(clusters: Cluster[], selectedId: string | null, size: Size 
     );
     if (fit) {
       labelBoxes.push(fit.box);
-      out.push({id: c.head.city.id, text, extra, second, x: fit.x, y: fit.y, anchor: fit.anchor, isSelected: c.containsSelected});
+      out.push({id: c.head.city.id, text, extra, second, x: fit.x, y: fit.y, anchor: fit.anchor, isSelected: c.containsSelected, box: fit.box});
     }
   }
   return {labels: out, boxes: [...markerBoxes, ...labelBoxes]};

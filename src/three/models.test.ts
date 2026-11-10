@@ -1,13 +1,21 @@
 import {describe, expect, it} from 'vitest';
 import * as THREE from 'three';
-import {LEAGUES, TEAMS, VENUE_BY_ID, VENUES} from '../data';
+import {LEAGUES, TEAMS, VENUE_BY_ID, VENUES, type LeagueId} from '../data';
 import {buildStadium} from './buildStadium';
 import {hasStadiumModel, STADIUM_MODEL_IDS} from './modelIds';
 import {STADIUM_MODELS} from './models';
 
-/** Venues a current team plays in today (open-ended tenure). */
+/**
+ * The leagues the hand-built models were made for. Venues used only by the
+ * leagues added later (NLL, CEBL, PWHL, WNBA, NSL) show a placeholder instead.
+ */
+const MODELLED_LEAGUES = new Set<LeagueId>(['NHL', 'NBA', 'MLB', 'MLS', 'CFL', 'CPL']);
+
+/** Venues a current team in a modelled league plays in today (open-ended tenure). */
 const currentVenueIds = new Set(
-  TEAMS.filter((t) => t.status === 'current').flatMap((t) => t.venues.filter((s) => s.to === undefined).map((s) => s.venueId)),
+  TEAMS.filter((t) => t.status === 'current' && MODELLED_LEAGUES.has(t.league)).flatMap((t) =>
+    t.venues.filter((s) => s.to === undefined).map((s) => s.venueId),
+  ),
 );
 
 describe('stadium models', () => {
@@ -24,7 +32,7 @@ describe('stadium models', () => {
   for (const id of STADIUM_MODEL_IDS) {
     it(`${id} builds a valid low-poly model`, () => {
       const venue = VENUE_BY_ID[id];
-      const tenant = TEAMS.find((t) => t.status === 'current' && t.venues.some((s) => s.venueId === id && s.to === undefined))!;
+      const tenant = TEAMS.find((t) => t.status === 'current' && MODELLED_LEAGUES.has(t.league) && t.venues.some((s) => s.venueId === id && s.to === undefined))!;
       const model = buildStadium({venue, sport: LEAGUES[tenant.league].sport, seatColor: '#336699', accentColor: '#cc3333'});
       expect(model).not.toBeNull();
       if (!model) return;

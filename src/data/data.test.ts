@@ -63,6 +63,12 @@ describe('dataset integrity', () => {
     expect(count('toronto-blue-jays')).toBe(2);
     expect(count('toronto-raptors')).toBe(1);
     expect(count('forge-fc')).toBe(4);
+    expect(count('toronto-rock')).toBe(7);
+    expect(count('calgary-roughnecks')).toBe(3);
+    expect(count('edmonton-stingers')).toBe(2);
+    expect(count('niagara-river-lions')).toBe(2);
+    expect(count('montreal-victoire')).toBe(1);
+    expect(count('vancouver-rise-fc')).toBe(1);
   });
 
   it('has ordered identity eras with valid palettes', () => {

@@ -72,12 +72,34 @@
     stroke-linejoin: round;
     fill: var(--map-label);
     font-family: var(--font-family-body, system-ui);
-    cursor: pointer;
+    text-underline-offset: 2px;
   }
+  /* The ring and the name are one control: hovering either lifts the ring and underlines the name. */
   @media (hover: hover) {
-    .city-label:hover {
+    .city-marker:hover .city-label {
       text-decoration: underline;
-      text-underline-offset: 2px;
+    }
+  }
+  .city-marker:focus-visible .city-label {
+    text-decoration: underline;
+  }
+
+  @keyframes takeover-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  .takeover {
+    animation-name: takeover-in;
+    animation-duration: 450ms;
+    animation-timing-function: ease-out;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .takeover {
+      animation-name: none;
     }
   }
 
@@ -111,7 +133,7 @@
   /* Attached buttons inside a glass group: no fills of their own, hairline dividers between them. */
   .glass-group {
     overflow: hidden;
-    padding: 2px;
+    padding: 3px;
   }
   .glass-group > * + * {
     border-block-start: 1px solid color-mix(in srgb, var(--color-text-primary) 8%, transparent);

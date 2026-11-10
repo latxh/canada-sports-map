@@ -103,7 +103,7 @@ export function VenueSection({entries, title = 'Venues'}: {entries: VenueEntry[]
           viewer(260)
         )
       ) : (
-        <Text type="supporting">3D models are shown for the venues current teams play in.</Text>
+        <Text type="supporting">{v.closed !== undefined ? '3D models are shown for the venues current teams play in.' : 'No 3D model of this venue yet.'}</Text>
       )}
       <MetadataList columns={2} label={{position: 'top'}}>
         <MetadataListItem label="Type">{KIND_LABEL[v.kind]}</MetadataListItem>

@@ -1,25 +1,26 @@
 # Canada Sports Atlas
 
-An interactive map of Canadian professional sports. Every NHL, NBA, MLB, MLS, CFL and CPL team that has played in Canada, current or former, is on it, along with its venues, championships and identity history. Built with the [Astryx](https://github.com/facebook/astryx) design system.
+An interactive map of Canadian professional sports. Every NHL, NBA, MLB, MLS, CFL, CPL, NLL, CEBL, PWHL, WNBA and NSL team that has played in Canada, current or former, is on it, along with its venues, championships and identity history. Built with the [Astryx](https://github.com/facebook/astryx) design system.
 
 ![Desktop map](docs/desktop-map.png)
 
 ## Features
 
-- **Map of Canada.** The map fills the screen. Each sports city is a ring with its name: a solid outline for cities with active teams, a dashed one for cities that only had teams in the past, filled in when selected. Clicking the name works like clicking the ring. Nearby cities (Montréal and Laval, Vancouver and its suburbs, Toronto and Hamilton) merge into a cluster until you zoom in. Pan, zoom, or use the controls to fit all of Canada.
-- **Floating controls.** Frosted-glass buttons float over the map: the site name top left, the league picker and menu top right, and attached zoom controls bottom left.
+- **Map of Canada.** The map fills the screen. Each sports city is a ring with its name: a solid outline for cities with active teams, a dashed one for cities that only had teams in the past, filled in when selected. The ring and the name are one control: hovering either lifts the ring and underlines the name. Nearby cities (Montréal and Laval, Vancouver and its suburbs, Toronto and Hamilton) merge into a cluster until you zoom in. Pan, zoom, or use the controls to fit all of Canada.
+- **Floating controls.** Frosted-glass buttons float over the map: the league picker and menu in a pill centred at the top, and attached zoom controls bottom left. Inner buttons follow the pill's rounded shape.
 - **Floating panel.** Click a city to open its details in a panel that floats over the right side of the map. The panel header is the city or team name with a close button.
 - **Menu.** Appearance (light, dark or system), Share (copies the current view's link), Credits, and a link to the author.
 - **City overview.** A trophy shelf of the city's titles, its active and former teams as logo tiles, a short history, and its venues, with a 3D model of each one a current team plays in.
-- **Trophy cabinet.** Every team page shows one trophy per championship with its year: Stanley Cup, Larry O'Brien Trophy, Commissioner's Trophy, Philip F. Anschutz Trophy (MLS Cup), Grey Cup and North Star Cup. The trophies are original illustrations.
-- **League filter.** A dropdown shows all leagues or just one (NHL, NBA, MLB, MLS, CFL or CPL). The choice is kept in the URL so a view can be shared.
+- **Trophy cabinet.** Every team page shows one trophy per championship with its year: Stanley Cup, Larry O'Brien Trophy, Commissioner's Trophy, Philip F. Anschutz Trophy (MLS Cup), Grey Cup, North Star Cup, NLL Cup, CEBL championship trophy, Walter Cup, WNBA championship trophy and Diana B. Matheson Cup. The trophies are original illustrations.
+- **League filter.** A fixed-width dropdown shows all leagues or just one (NHL, NBA, MLB, MLS, CFL, CPL, NLL, CEBL, PWHL, WNBA or NSL). The choice is kept in the URL so a view can be shared.
+- **Logo takeover.** When a team is the only current Canadian team in its league (the Raptors, the Blue Jays, the Tempo), its page fills the map of Canada with its logo.
 - **Official logos.** Team and league logos come from the files their Wikipedia articles use (see Credits).
 - **Team pages.**
   - *Overview*: summary, what happened to the team, colours, every championship year and other honours.
   - *History*: a timeline of milestones.
   - *Identity*: logo history, home and away uniforms for each era, and the rink, court, field or pitch for each era.
   - *Venues*: every home the team has had, with a 3D model of the current one.
-- **3D models of all 24 current venues.** Every stadium and arena a current team plays in has its own hand-built, low-poly model, drawn to real dimensions from OpenStreetMap footprints and reference photos, so models are to scale with each other: Rogers Centre's roof panels slide and swing open, BC Place's centre gathers into its hub under 36 masts, the Saddledome keeps its saddle, TD Place its timber veil, Princess Auto Stadium its arches and Wanderers Grounds its shipping containers. Fields switch markings for the sport you are looking at (for example soccer or CFL at BMO Field). Models can be viewed full screen; former venues are described but not modelled.
+- **3D models of all 24 current venues.** Every stadium and arena a current team plays in has its own hand-built, low-poly model, drawn to real dimensions from OpenStreetMap footprints and reference photos, so models are to scale with each other: Rogers Centre's roof panels slide and swing open, BC Place's centre gathers into its hub under 36 masts, the Saddledome keeps its saddle, TD Place its timber veil, Princess Auto Stadium its arches and Wanderers Grounds its shipping containers. Fields switch markings for the sport you are looking at (for example soccer or CFL at BMO Field). Models can be viewed full screen; former venues, and venues used only by the NLL, CEBL, PWHL, WNBA and NSL, are described but not modelled yet.
 - **Works on phones.** On small screens the details panel becomes a draggable bottom sheet.
 - Keyboard-accessible map markers and no violations from axe-core.
 
@@ -33,7 +34,7 @@ An interactive map of Canadian professional sports. Every NHL, NBA, MLB, MLS, CF
 
 ## Coverage
 
-The dataset was reviewed in November 2026 and covers 44 teams in 14 cities:
+The dataset was reviewed in November 2026 and covers 80 teams in 20 cities:
 
 | League | Active | Former |
 | --- | --- | --- |
@@ -43,6 +44,11 @@ The dataset was reviewed in November 2026 and covers 44 teams in 14 cities:
 | MLS | Toronto FC, Whitecaps FC, CF Montréal | none |
 | CFL | Lions, Stampeders, Elks, Roughriders, Blue Bombers, Tiger-Cats, Argonauts, Redblacks, Alouettes | Rough Riders, Renegades, Concordes |
 | CPL | Forge, Cavalry, Pacific, Inter Toronto, HFX Wanderers, Atlético Ottawa, Vancouver FC, Supra du Québec | FC Edmonton, Valour |
+| NLL | Rock, Roughnecks, Rush, Warriors, Thunderbirds, FireWolves | Edmonton Rush, Rebel, Express, Ravens, Black Bears |
+| CEBL | Sea Bears, River Lions, Stingers, Mamba, Shooting Stars, Honey Badgers, Surge, Bandits, BlackJacks, Alliance | Hamilton Honey Badgers, Nighthawks, Growlers |
+| PWHL | Victoire, Sceptres, Charge, Goldeneyes, PWHL Hamilton | none |
+| WNBA | Tempo | none |
+| NSL | Rise, AFC Toronto, Roses, Rapid, Wild, Tides | none |
 
 ## Getting started
 

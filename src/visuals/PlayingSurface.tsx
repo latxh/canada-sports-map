@@ -26,6 +26,8 @@ export function PlayingSurface({era, sport, width = 280}: Props) {
       return <Pitch era={era} width={width} />;
     case 'baseball':
       return <Diamond era={era} width={width} />;
+    case 'lacrosse':
+      return <BoxFloor era={era} width={width} />;
   }
 }
 
@@ -208,6 +210,29 @@ function Diamond({era, width}: {era: IdentityEra; width: number}) {
       <line x1="50" y1="76" x2="4" y2="30" stroke="#ffffff" strokeWidth="0.4" />
       <line x1="50" y1="76" x2="96" y2="30" stroke="#ffffff" strokeWidth="0.4" />
       <CentreMark cx={50} cy={24} r={6} era={era} />
+    </svg>
+  );
+}
+
+/** Box lacrosse: turf laid over a hockey rink, with goal creases and a centre faceoff circle. */
+function BoxFloor({era, width}: {era: IdentityEra; width: number}) {
+  const [primary] = era.colors;
+  const turf = '#2f7d3a';
+  const line = '#ffffff';
+  return (
+    <svg width={width} height={(width * 85) / 200} viewBox="-2 -2 204 89" role="img" aria-label="Box lacrosse floor illustration">
+      <rect x="0" y="0" width="200" height="85" rx="28" fill={turf} stroke={primary} strokeWidth="2.5" />
+      <rect x="99" y="0" width="2" height="85" fill={line} opacity={0.85} />
+      <rect x="62" y="0" width="1.2" height="85" fill={line} opacity={0.5} />
+      <rect x="136.8" y="0" width="1.2" height="85" fill={line} opacity={0.5} />
+      <circle cx="100" cy="42.5" r="15" fill="none" stroke={line} strokeWidth="0.8" />
+      <CentreMark cx={100} cy={42.5} r={9} era={era} />
+      {[22, 178].map((x) => (
+        <g key={x}>
+          <circle cx={x} cy={42.5} r="9" fill={mix(turf, '#ffffff', 0.12)} stroke={line} strokeWidth="0.8" />
+          <rect x={x - 1.2} y={39.5} width="2.4" height="6" fill={line} />
+        </g>
+      ))}
     </svg>
   );
 }

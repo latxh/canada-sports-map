@@ -3,7 +3,8 @@ import {LOGOS} from '../data/logos';
 import {latestEra} from '../lib/venues';
 import {TeamBadge} from './TeamBadge';
 
-const asset = (file: string) => `${import.meta.env.BASE_URL}logos/${file}`;
+export const logoAsset = (file: string) => `${import.meta.env.BASE_URL}logos/${file}`;
+const asset = logoAsset;
 
 export type LogoPlate = 'auto' | 'subtle' | 'none';
 
@@ -43,7 +44,7 @@ export function LeagueLogo({
   league,
   size = 20,
   isDecorative = false,
-  plate = 'subtle',
+  plate = 'none',
 }: {
   league: LeagueId;
   size?: number;

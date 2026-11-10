@@ -1,4 +1,4 @@
-import {CITY_BY_ID, LEAGUES, TEAMS, VENUE_BY_ID, VENUES, yearsLabel, type LeagueFilter, type Team} from '../data';
+import {CITY_BY_ID, LEAGUES, TEAMS, VENUE_BY_ID, VENUES, yearsLabel, type LeagueFilter, type LeagueId, type Team} from '../data';
 import {teamMatches} from '../data';
 import {mix} from './color';
 import type {VenueEntry} from '../components/VenueSection';
@@ -55,7 +55,7 @@ export function venueEntriesForCity(cityId: string, league: LeagueFilter): Venue
   return entries.sort((a, b) => a.rank - b.rank);
 }
 
-const LEAGUE_PRIORITY = {MLB: 0, NHL: 1, NBA: 2, CFL: 3, MLS: 4, CPL: 5} as const;
+const LEAGUE_PRIORITY: Record<LeagueId, number> = {MLB: 0, NHL: 1, NBA: 2, CFL: 3, MLS: 4, CPL: 5, PWHL: 6, WNBA: 7, NLL: 8, CEBL: 9, NSL: 10};
 
 function spanOf(team: Team, venueId: string) {
   return team.venues.find((s) => s.venueId === venueId)!;

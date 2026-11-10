@@ -196,6 +196,7 @@ const SURFACE_NAME: Record<Sport, string> = {
   baseball: 'Field',
   football: 'Field',
   soccer: 'Pitch',
+  lacrosse: 'Floor',
 };
 
 const JERSEY_NAME: Record<Sport, string> = {
@@ -204,6 +205,7 @@ const JERSEY_NAME: Record<Sport, string> = {
   baseball: 'Uniform',
   football: 'Jersey',
   soccer: 'Kit',
+  lacrosse: 'Jersey',
 };
 
 export function TeamPanel({
