@@ -105,7 +105,7 @@ export function CreditsDialog({isOpen, onOpenChange}: {isOpen: boolean; onOpenCh
           <LayoutContent>
       <VStack gap={4}>
         <Text>
-          Canada Sports Atlas is an unofficial fan project. It is not affiliated with or endorsed by any league or team shown.
+          Canadian Sports Atlas is an unofficial fan project. It is not affiliated with or endorsed by any league or team shown.
         </Text>
         <VStack gap={1}>
           <SectionTitle>Sources</SectionTitle>

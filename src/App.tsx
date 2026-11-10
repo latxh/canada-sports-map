@@ -231,7 +231,7 @@ export function App() {
       <TrophyDefs />
       <main className="relative h-dvh overflow-hidden bg-body text-primary" aria-label="Map and details">
         <VisuallyHidden>
-          <h1>Canada Sports Atlas: an interactive map of Canadian professional sports teams</h1>
+          <h1>Canadian Sports Atlas: an interactive map of Canadian professional sports teams</h1>
         </VisuallyHidden>
         <SportsMap
           cities={mapCities}

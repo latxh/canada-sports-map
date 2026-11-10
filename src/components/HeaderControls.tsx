@@ -70,7 +70,7 @@ export function SiteMenu({appearance, onAppearanceChange, onOpenCredits}: SiteMe
 
   const share = async () => {
     const url = window.location.href;
-    const data = {title: 'Canada Sports Atlas', text: 'Canadian pro sports, mapped', url};
+    const data = {title: 'Canadian Sports Atlas', text: 'Canadian pro sports, mapped', url};
     const isTouch = window.matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 0;
     // Phones and tablets get the native share sheet. It can be refused (an embedding page
     // without the web-share permission, an unsupported browser), so fall back to copying.
