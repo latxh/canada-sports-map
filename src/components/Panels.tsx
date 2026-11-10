@@ -25,19 +25,21 @@ import {ExternalIcon, PinIcon} from './icons';
 // ── Shared ────────────────────────────────────────────────────────────────
 
 /**
- * Chrome shared by every panel: a sticky one-line header with the title (and an optional
- * quieter aside, like the province) on the left and a close button on the right.
+ * Chrome shared by every panel: a sticky one-line header with an optional back chevron,
+ * the title, and a close button on the right.
  */
 export function PanelFrame({
   title,
-  aside,
+  backLabel,
+  onBack,
   onClose,
   resetKey,
   children,
 }: {
   title: string;
-  /** Shown after the title in smaller grey type, e.g. "ON". */
-  aside?: string;
+  /** Where the back chevron goes, e.g. "Back to Toronto". */
+  backLabel?: string;
+  onBack?: () => void;
   onClose: () => void;
   /** When this changes, the nearest scrolling container returns to the top. */
   resetKey?: string;
@@ -57,14 +59,12 @@ export function PanelFrame({
   }, [resetKey]);
   return (
     <VStack gap={4} ref={rootRef}>
-      <HStack gap={3} vAlign="center" className="sticky -top-4 z-10 -mx-4 -mt-4 bg-surface px-4 pt-4 pb-3">
+      <HStack gap={2} vAlign="center" className="glass-panel-header sticky -top-4 z-10 -mx-4 -mt-4 px-4 pt-4 pb-3">
+        {onBack && (
+          <IconButton size="sm" variant="ghost" label={backLabel ?? 'Back'} tooltip={backLabel ?? 'Back'} icon={<Icon icon="chevronLeft" />} onClick={onBack} className="-ms-1.5" />
+        )}
         <Heading level={2} maxLines={1} className="min-w-0 flex-1">
           {title}
-          {aside ? (
-            <Text color="secondary" size="lg" weight="normal">
-              {` ${aside}`}
-            </Text>
-          ) : null}
         </Heading>
         <IconButton size="sm" variant="ghost" label="Close panel" tooltip="Close" icon={<Icon icon="close" />} onClick={onClose} />
       </HStack>
@@ -99,7 +99,7 @@ function TeamTile({team, onOpen}: {team: Team; onOpen: (id: string) => void}) {
   return (
     <ClickableCard label={team.name} onClick={() => onOpen(team.id)} padding={2} variant="transparent">
       <VStack gap={2} hAlign="center">
-        <span className={isFormer ? 'opacity-80 grayscale-[35%]' : undefined}>
+        <span className={isFormer ? 'team-former' : undefined}>
           <TeamLogo team={team} size={76} />
         </span>
         <HStack gap={1} vAlign="center" hAlign="center">
@@ -133,7 +133,7 @@ export function CityPanel({
   const hasTitles = teams.some((t) => t.championships.length > 0);
 
   return (
-    <PanelFrame title={city.name} aside={city.province} onClose={onClose} resetKey={`city:${cityId}`}>
+    <PanelFrame title={city.name} onClose={onClose} resetKey={`city:${cityId}`}>
       <Section title="Teams">
         {teams.length > 0 ? (
           <Grid columns={3} gap={1}>
@@ -193,10 +193,13 @@ function teamLinks(team: Team) {
 
 export function TeamPanel({
   teamId,
+  backCityId,
   onOpenCity,
   onClose,
 }: {
   teamId: string;
+  /** Set when the team was opened from a city panel: shows a back chevron to that city. */
+  backCityId?: string;
   onOpenCity: (id: string) => void;
   onClose: () => void;
 }) {
@@ -209,12 +212,17 @@ export function TeamPanel({
   const photos = teamPhotos(team);
 
   return (
-    <PanelFrame title={team.name} onClose={onClose} resetKey={`team:${teamId}`}>
+    <PanelFrame
+      title={team.name}
+      backLabel={backCityId ? `Back to ${CITY_BY_ID[backCityId]?.name ?? 'city'}` : undefined}
+      onBack={backCityId ? () => onOpenCity(backCityId) : undefined}
+      onClose={onClose}
+      resetKey={`team:${teamId}`}>
       {/* Hero: the logo, big, on a wash of the team's colour. */}
       <VStack
         gap={3}
         hAlign="center"
-        className="rounded-2xl px-4 pt-5 pb-4"
+        className="card-radius px-4 pt-5 pb-4"
         style={{background: `linear-gradient(160deg, color-mix(in srgb, ${era.colors[0]} 20%, var(--color-background-surface)), color-mix(in srgb, ${era.colors[0]} 4%, var(--color-background-surface)))`}}>
         <TeamLogo team={team} size={132} />
         <HStack gap={2} wrap="wrap" vAlign="center" hAlign="center">

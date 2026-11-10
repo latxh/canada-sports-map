@@ -604,6 +604,7 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
                     teamCount={c.teamCount}
                     leagues={c.leagues}
                     isSelected={c.containsSelected}
+                    isFormer={c.currentCount === 0}
                     onActivate={() => zoomToCluster(c.members)}
                     label={labelById.get(c.head.city.id)}
                   />
@@ -668,11 +669,10 @@ function CityMarker({x, y, r, city, teamCount, currentCount, isSelected, onSelec
       <circle className="city-hit" r={Math.max(14, ringR + 6)} />
       {isSelected && <circle className="city-pulse" r={ringR} fill="none" stroke="var(--map-selected)" strokeWidth={2} />}
       <g className="city-core">
-        <OutlineRing r={ringR} dashed={defunctOnly} isSelected={isSelected} />
-        {isSelected && <circle r={ringR - 3.2} fill="var(--map-selected)" />}
+        <CityDot r={ringR - 1} isFormer={defunctOnly} isSelected={isSelected} />
         <circle className="city-focus" r={ringR + 4} fill="none" stroke="transparent" />
       </g>
-      {label && <MarkerLabel label={label} x={x} y={y} />}
+      {label && <MarkerLabel label={label} x={x} y={y} isFormer={defunctOnly} />}
     </g>
   );
 }
@@ -684,7 +684,7 @@ function labelText(label: PlacedLabel): string {
 }
 
 /** The city name, inside the marker's group so the ring and the name hover and click as one. */
-function MarkerLabel({label, x, y}: {label: PlacedLabel; x: number; y: number}) {
+function MarkerLabel({label, x, y, isFormer = false}: {label: PlacedLabel; x: number; y: number; isFormer?: boolean}) {
   const {box} = label;
   return (
     <>
@@ -694,7 +694,7 @@ function MarkerLabel({label, x, y}: {label: PlacedLabel; x: number; y: number}) 
         y={label.y - y}
         textAnchor={label.anchor}
         dominantBaseline="central"
-        className="city-label"
+        className={isFormer && !label.isSelected ? 'city-label city-label-former' : 'city-label'}
         fontSize={LABEL_FONT}
         fontWeight={label.isSelected ? 700 : 600}>
         {label.text}
@@ -727,16 +727,13 @@ function TakeoverLayer({takeover, bounds, clipId}: {takeover: MapTakeover; bound
   );
 }
 
-function OutlineRing({r, dashed, isSelected, faint = false}: {r: number; dashed: boolean; isSelected: boolean; faint?: boolean}) {
+/** A solid city dot: dark for cities with active teams, light grey for former-only cities, blue when selected. */
+function CityDot({r, isFormer, isSelected}: {r: number; isFormer: boolean; isSelected: boolean}) {
   return (
     <circle
       r={r}
-      fill={faint ? 'none' : 'var(--map-halo)'}
-      fillOpacity={0.85}
-      stroke={isSelected ? 'var(--map-selected)' : 'var(--color-text-primary)'}
-      strokeOpacity={faint ? 0.45 : 1}
-      strokeWidth={faint ? 1.25 : 2.25}
-      strokeDasharray={dashed ? '3.2 2.6' : undefined}
+      className={isSelected ? 'city-dot city-dot-selected' : isFormer ? 'city-dot city-dot-former' : 'city-dot'}
+      strokeWidth={1.75}
     />
   );
 }
@@ -812,8 +809,10 @@ function ClusterMarker({
   isSelected,
   onActivate,
   label,
+  isFormer = false,
 }: {
   label?: PlacedLabel;
+  isFormer?: boolean;
   x: number;
   y: number;
   r: number;
@@ -843,12 +842,10 @@ function ClusterMarker({
       }}>
       <circle className="city-hit" r={Math.max(14, ringR + 8)} />
       <g className="city-core">
-        <OutlineRing r={ringR + 3} dashed={false} isSelected={isSelected} faint />
-        <OutlineRing r={ringR} dashed={false} isSelected={isSelected} />
-        {isSelected && <circle r={ringR - 3.2} fill="var(--map-selected)" />}
+        <CityDot r={ringR + 0.5} isFormer={isFormer} isSelected={isSelected} />
         <circle className="city-focus" r={ringR + 6} fill="none" stroke="transparent" />
       </g>
-      {label && <MarkerLabel label={label} x={x} y={y} />}
+      {label && <MarkerLabel label={label} x={x} y={y} isFormer={isFormer} />}
     </g>
   );
 }

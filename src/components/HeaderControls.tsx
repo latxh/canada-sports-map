@@ -1,4 +1,4 @@
-import type {ReactNode, SVGProps} from 'react';
+import type {ReactNode} from 'react';
 import {Selector} from '@astryxdesign/core/Selector';
 import {DropdownMenu} from '@astryxdesign/core/DropdownMenu';
 import {IconButton} from '@astryxdesign/core/IconButton';
@@ -8,12 +8,11 @@ import {Text} from '@astryxdesign/core/Text';
 import {SegmentedControl, SegmentedControlItem} from '@astryxdesign/core/SegmentedControl';
 import {useToast} from '@astryxdesign/core/Toast';
 import {LEAGUES, LEAGUE_ORDER, type LeagueFilter, type LeagueId} from '../data';
-import {InfoIcon, MapleLeafIcon, MonitorIcon, MoonIcon, ShareIcon, SunIcon, UserIcon} from './icons';
+import {CanadaFlag, InfoIcon, MonitorIcon, MoonIcon, ShareIcon, SunIcon, UserIcon} from './icons';
 import {LeagueLogo} from '../visuals/Logos';
 
 export type Appearance = 'light' | 'dark' | 'system';
 
-const AllIcon = (p: SVGProps<SVGSVGElement>) => <MapleLeafIcon {...p} style={{color: 'var(--maple)'}} />;
 
 export function LeagueSelect({value, onChange, isCompact}: {value: LeagueFilter; onChange: (v: LeagueFilter) => void; isCompact: boolean}) {
   return (
@@ -28,7 +27,7 @@ export function LeagueSelect({value, onChange, isCompact}: {value: LeagueFilter;
       value={value}
       onChange={(v) => onChange((v ?? 'all') as LeagueFilter)}
       options={[
-        {value: 'all', label: isCompact ? 'All' : 'All leagues', icon: AllIcon},
+        {value: 'all', label: isCompact ? 'All' : 'All cities'},
         {type: 'divider'},
         ...LEAGUE_ORDER.map((l) => ({value: l, label: l, description: LEAGUES[l].name})),
       ]}
@@ -46,7 +45,7 @@ function LeagueOptionRow({value, label, isCompact}: {value?: string; label: Reac
       {isLeague ? (
         <LeagueLogo league={value as LeagueId} size={isCompact ? 20 : 26} isDecorative />
       ) : (
-        <Icon icon={MapleLeafIcon} color="red" size={isCompact ? 'sm' : 'md'} />
+        <CanadaFlag width={isCompact ? 22 : 28} />
       )}
       <Text weight={isCompact ? 'medium' : 'normal'}>{label}</Text>
     </HStack>
@@ -65,15 +64,21 @@ export function SiteMenu({appearance, onAppearanceChange, onOpenCredits}: SiteMe
   const share = async () => {
     const url = window.location.href;
     const data = {title: 'Canada Sports Atlas', text: 'Canadian pro sports, mapped', url};
-    try {
-      if (navigator.share && window.matchMedia('(pointer: coarse)').matches) {
+    const isTouch = window.matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 0;
+    // Phones and tablets get the native share sheet. It can be refused (an embedding page
+    // without the web-share permission, an unsupported browser), so fall back to copying.
+    if (isTouch && typeof navigator.share === 'function' && (!navigator.canShare || navigator.canShare(data))) {
+      try {
         await navigator.share(data);
         return;
+      } catch (err) {
+        if ((err as Error)?.name === 'AbortError') return;
       }
+    }
+    try {
       await navigator.clipboard.writeText(url);
       showToast({body: 'Link copied to clipboard', uniqueID: 'share'});
-    } catch (err) {
-      if ((err as Error)?.name === 'AbortError') return;
+    } catch {
       showToast({body: `Copy this link: ${url}`, uniqueID: 'share', isAutoHide: false});
     }
   };

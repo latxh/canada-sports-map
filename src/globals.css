@@ -68,6 +68,25 @@
     stroke-width: 3;
   }
 
+  .city-dot {
+    fill: var(--color-text-primary);
+    stroke: var(--map-halo);
+  }
+  .city-dot-former {
+    fill: color-mix(in srgb, var(--color-text-secondary) 55%, var(--map-land));
+  }
+  .city-dot-selected {
+    fill: var(--map-selected);
+  }
+  /* Former teams: a lighter, grey logo. */
+  .team-former {
+    filter: grayscale(1);
+    opacity: 0.55;
+  }
+  .city-label-former {
+    fill: var(--color-text-secondary);
+  }
+
   .city-label {
     paint-order: stroke;
     stroke: var(--map-halo);
@@ -185,6 +204,34 @@
     overflow: hidden;
     padding: 3px;
     gap: 2px;
+  }
+  /* ButtonGroup draws dividers between attached buttons; round buttons with air between them need none. */
+  .glass-group > * {
+    border: 0 !important;
+  }
+
+  /* One corner radius for every card inside the panel, matching Astryx cards. */
+  .card-radius {
+    border-radius: var(--radius-container, 0.75rem);
+  }
+
+  /* The floating details panel: frosted glass, a little more opaque than the controls so text stays easy to read. */
+  .glass-panel {
+    background: color-mix(in srgb, var(--color-background-surface) 72%, transparent);
+    -webkit-backdrop-filter: blur(24px) saturate(1.6);
+    backdrop-filter: blur(24px) saturate(1.6);
+    border: 1px solid color-mix(in srgb, var(--color-text-primary) 9%, transparent);
+  }
+  .glass-panel-header {
+    background: color-mix(in srgb, var(--color-background-surface) 55%, transparent);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    .glass-panel,
+    .glass-panel-header {
+      background: var(--color-background-surface);
+    }
   }
 
   .scrollbar-none {

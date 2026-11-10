@@ -98,6 +98,17 @@ export function App() {
 
   const openCity = useCallback((id: string) => navigate({kind: 'city', id}), [navigate]);
   const openTeam = useCallback((id: string) => navigate({kind: 'team', id}), [navigate]);
+  // A team opened from a city panel remembers the city, for the back chevron.
+  const openTeamFromCity = useCallback((id: string) => navigate({kind: 'team', id, from: route.kind === 'city' ? route.id : undefined}), [navigate, route]);
+  // On the map: with a league picked, a city with just one team in it opens straight to that team.
+  const selectCityOnMap = useCallback(
+    (id: string) => {
+      const teams = league === 'all' ? [] : (mapCities.find((c) => c.city.id === id)?.teams ?? []);
+      if (teams.length === 1) openTeam(teams[0].id);
+      else openCity(id);
+    },
+    [league, mapCities, openCity, openTeam],
+  );
   const closePanel = useCallback(() => navigate({kind: 'home'}), [navigate]);
 
   const isPanelOpen = route.kind !== 'home';
@@ -108,6 +119,7 @@ export function App() {
       <TeamPanel
         key={route.id}
         teamId={route.id}
+        backCityId={route.from}
         onOpenCity={openCity}
         onClose={closePanel}
       />
@@ -118,7 +130,7 @@ export function App() {
         key={route.id}
         cityId={route.id}
         league={league}
-        onOpenTeam={openTeam}
+        onOpenTeam={openTeamFromCity}
         onClose={closePanel}
       />
     );
@@ -155,7 +167,7 @@ export function App() {
         <SportsMap
           cities={mapCities}
           selectedCityId={selectedCityId}
-          onSelectCity={openCity}
+          onSelectCity={selectCityOnMap}
           bottomInset={bottomInset}
           rightInset={rightInset}
           topInset={CHROME_H - PANEL_GUTTER}
@@ -174,7 +186,7 @@ export function App() {
           <aside
             key={routeKey}
             aria-label="Details"
-            className="absolute overflow-y-auto overscroll-contain rounded-2xl border border-border bg-surface p-4"
+            className="glass-panel absolute overflow-y-auto overscroll-contain rounded-2xl p-4"
             style={{top: panelTop, right: PANEL_GUTTER, bottom: PANEL_GUTTER, width: PANEL_WIDTH, boxShadow: '0 1px 3px rgb(0 0 0 / 0.06)'}}>
             {panel}
           </aside>

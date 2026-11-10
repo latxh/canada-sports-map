@@ -93,7 +93,8 @@ export function VenueSection({entries, title = 'Venues'}: {entries: VenueEntry[]
           isFullscreen ? undefined : (
             <IconButton
               size="sm"
-              variant="secondary"
+              variant="ghost"
+              className="rounded-full"
               label={`Open ${v.name} 3D model full screen`}
               tooltip="Full screen"
               icon={<Icon icon={ExpandIcon} />}

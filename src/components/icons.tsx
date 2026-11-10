@@ -136,3 +136,22 @@ export const ExternalIcon = (p: SVGProps<SVGSVGElement>) => (
     <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
   </svg>
 );
+
+/** The Canadian flag (2:1), drawn with the same simplified maple leaf. */
+export function CanadaFlag({width = 26, title}: {width?: number; title?: string}) {
+  return (
+    <svg
+      viewBox="0 0 48 24"
+      width={width}
+      height={width / 2}
+      role={title ? 'img' : undefined}
+      aria-label={title}
+      aria-hidden={title ? undefined : true}
+      className="shrink-0">
+      <rect x="0.5" y="0.5" width="47" height="23" rx="2.5" fill="#ffffff" stroke="rgb(0 0 0 / 0.12)" />
+      <path d="M3 0.5 H12 V23.5 H3 A2.5 2.5 0 0 1 0.5 21 V3 A2.5 2.5 0 0 1 3 0.5 Z" fill="#d52b1e" />
+      <path d="M36 0.5 H45 A2.5 2.5 0 0 1 47.5 3 V21 A2.5 2.5 0 0 1 45 23.5 H36 Z" fill="#d52b1e" />
+      <path d={MAPLE_LEAF_PATH_24} fill="#d52b1e" transform="translate(15.6 2.4) scale(0.7)" />
+    </svg>
+  );
+}

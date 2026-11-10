@@ -404,7 +404,7 @@ export function TrophyCabinet({team}: {team: Team}) {
   const name = TROPHY_NAME[league];
   if (titles.length === 0) {
     return (
-      <div className="flex items-center gap-3 rounded-xl bg-[var(--color-background-muted)] p-3">
+      <div className="card-radius flex items-center gap-3 bg-[var(--color-background-muted)] p-3">
         <TrophyArt league={league} height={56} isMuted />
         <div className="flex flex-col">
           <span className="text-sm font-semibold text-primary">No {name} yet</span>
@@ -415,7 +415,7 @@ export function TrophyCabinet({team}: {team: Team}) {
   }
   const size = titles.length > 12 ? 52 : titles.length > 4 ? 60 : 76;
   return (
-    <div className="rounded-xl bg-[var(--color-background-muted)] p-3">
+    <div className="card-radius bg-[var(--color-background-muted)] p-3">
       <ul
         className="grid justify-items-center gap-x-1 gap-y-2"
         style={{gridTemplateColumns: `repeat(auto-fill, minmax(${Math.round(size * 0.78)}px, 1fr))`}}
@@ -442,7 +442,7 @@ export function TitleCabinet({teams}: {teams: Team[]}) {
   if (items.length === 0) return null;
   const size = items.length > 24 ? 40 : items.length > 10 ? 48 : 60;
   return (
-    <div className="rounded-xl bg-[var(--color-background-muted)] p-3">
+    <div className="card-radius bg-[var(--color-background-muted)] p-3">
       <ul
         className="grid justify-items-center gap-x-1 gap-y-2"
         style={{gridTemplateColumns: `repeat(auto-fill, minmax(${Math.round(size * 0.8)}px, 1fr))`}}

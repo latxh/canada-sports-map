@@ -5,7 +5,6 @@ import * as THREE from 'three';
 import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment.js';
 import {Button} from '@astryxdesign/core/Button';
 import {EmptyState} from '@astryxdesign/core/EmptyState';
-import {HStack} from '@astryxdesign/core/HStack';
 import {SegmentedControl, SegmentedControlItem} from '@astryxdesign/core/SegmentedControl';
 import type {Sport, Venue} from '../data';
 import {buildStadium, type StadiumModel} from './buildStadium';
@@ -66,13 +65,13 @@ export default function StadiumViewer({venue, sport, seatColor, accentColor, hei
   return (
     <div className="flex flex-col gap-2">
       <div
-        className="relative overflow-hidden rounded-lg border border-border"
+        className="card-radius relative overflow-hidden border border-border"
         style={{
           height,
           background: 'linear-gradient(180deg, color-mix(in srgb, var(--color-background-blue) 70%, var(--color-background-surface)) 0%, var(--color-background-surface) 100%)',
-        }}
-        role="img"
-        aria-label={`Interactive 3D model of ${venue.name}. Drag to orbit${isFullscreen ? ', pinch or scroll to zoom' : ''}.`}>
+        }}>
+        {/* The model is one image to assistive tech; the roof and full-screen controls sit beside it, not inside. */}
+        <div className="absolute inset-0" role="img" aria-label={`Interactive 3D model of ${venue.name}. Drag to orbit${isFullscreen ? ', pinch or scroll to zoom' : ''}.`}>
         {gl === 'ok' ? (
           <Canvas
             key={canvasKey}
@@ -122,18 +121,19 @@ export default function StadiumViewer({venue, sport, seatColor, accentColor, hei
             />
           </div>
         )}
+        </div>
+        {hasControls && gl === 'ok' && ((hasRoof && isRetractable) || endControls) && (
+          <div className="glass absolute right-2 bottom-2 flex items-center gap-1 rounded-full p-1">
+            {hasRoof && isRetractable && (
+              <SegmentedControl size="sm" label="Retractable roof" value={roofOpen ? 'open' : 'closed'} onChange={(v) => setRoofOpen(v === 'open')}>
+                <SegmentedControlItem value="closed" label="Closed" />
+                <SegmentedControlItem value="open" label="Open" />
+              </SegmentedControl>
+            )}
+            {endControls}
+          </div>
+        )}
       </div>
-      {hasControls && gl === 'ok' && ((hasRoof && isRetractable) || endControls) && (
-        <HStack gap={2} vAlign="center" hAlign="end">
-          {hasRoof && isRetractable && (
-            <SegmentedControl size="sm" label="Retractable roof" value={roofOpen ? 'open' : 'closed'} onChange={(v) => setRoofOpen(v === 'open')}>
-              <SegmentedControlItem value="closed" label="Closed" />
-              <SegmentedControlItem value="open" label="Open" />
-            </SegmentedControl>
-          )}
-          {endControls}
-        </HStack>
-      )}
     </div>
   );
 }

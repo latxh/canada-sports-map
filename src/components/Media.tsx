@@ -17,7 +17,7 @@ export function PhotoFigure({photo, height = 180, width}: {photo: MediaPhoto; he
         alt={photo.caption}
         loading="lazy"
         decoding="async"
-        className="block w-full rounded-lg object-cover"
+        className="card-radius block w-full object-cover"
         style={{height, width}}
       />
       <Text type="supporting" size="xsm" maxLines={1}>
