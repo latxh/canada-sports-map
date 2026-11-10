@@ -9,7 +9,10 @@ import type {Topology, GeometryCollection} from 'topojson-specification';
 import {IconButton} from '@astryxdesign/core/IconButton';
 import {ButtonGroup} from '@astryxdesign/core/ButtonGroup';
 import {Icon} from '@astryxdesign/core/Icon';
-import {CITIES, CITY_BY_ID, LEAGUE_ORDER, type City, type LeagueId, type Team} from '../data';
+import {CITIES, CITY_BY_ID, LEAGUE_ORDER, compareTeams, type City, type LeagueId, type Team} from '../data';
+import {latestEra} from '../lib/venues';
+import {ClosestLayer, siteColor, type Site} from './ClosestLayer';
+import {distanceKm, formatKm, type LatLon, type PinDistance} from './MapTools';
 import {FitIcon, MinusIcon, PlusIcon} from './icons';
 import {POPULATION, POPULATION_SOURCE} from '../data/population';
 import type {MapView} from './HeaderControls';
@@ -117,6 +120,14 @@ interface Props {
   takeover?: MapTakeover | null;
   /** Visualisation on top of the sports cities. In 'timeline', every team passed in counts as active. */
   view?: MapView;
+  /** Pin tool: while on, a click on the map drops (or moves) the pin. */
+  isPinMode?: boolean;
+  pin?: LatLon | null;
+  /** Distance and colour for each city from the pin, for the arcs. */
+  pinTargets?: PinDistance[];
+  onDropPin?: (p: LatLon) => void;
+  /** Colour the map by its closest team. */
+  showClosest?: boolean;
 }
 
 export interface MapTakeover {
@@ -138,7 +149,21 @@ const DETAIL_K = 1.9;
 /** The most a "show all cities" view zooms in, so the country never feels cropped. */
 const HOME_MAX_K = 1.3;
 
-export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0, rightInset = 0, topInset = 0, takeover = null, view = 'teams'}: Props) {
+export function SportsMap({
+  cities,
+  selectedCityId,
+  onSelectCity,
+  bottomInset = 0,
+  rightInset = 0,
+  topInset = 0,
+  takeover = null,
+  view = 'teams',
+  isPinMode = false,
+  pin = null,
+  pinTargets = [],
+  onDropPin,
+  showClosest = false,
+}: Props) {
   const allActive = view === 'timeline';
   const clipId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -391,6 +416,59 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
       .filter((m): m is NonNullable<typeof m> => m !== null);
   }, [cities, projection, allActive]);
 
+  /** The team each city 'owns' in the closest-team view: its top active team (league order). */
+  const closestSites = useMemo(() => {
+    if (!projection || !showClosest) return [];
+    return cities
+      .map(({city, teams}) => {
+        const active = teams.filter((t) => allActive || t.status === 'current').sort(compareTeams);
+        const p = projection([city.lon, city.lat]);
+        if (!active.length || !p) return null;
+        const era = latestEra(active[0]);
+        return {x: p[0], y: p[1], rgb: siteColor(era.colors), city, team: active[0], count: active.length};
+      })
+      .filter((s): s is NonNullable<typeof s> => s !== null);
+  }, [projection, cities, showClosest, allActive]);
+  const closestFieldSites = useMemo<Site[]>(() => closestSites.map(({x, y, rgb}) => ({x, y, rgb})), [closestSites]);
+
+  /** Hover (or tap) readout for the closest-team view. */
+  const [probe, setProbe] = useState<{x: number; y: number; text: string; sub: string} | null>(null);
+  const probeAt = useCallback(
+    (clientX: number, clientY: number) => {
+      const el = containerRef.current;
+      if (!el || !projection || closestSites.length === 0) return;
+      const rect = el.getBoundingClientRect();
+      const sx = clientX - rect.left;
+      const sy = clientY - rect.top;
+      const [mx, my] = transformRef.current.invert([sx, sy]);
+      const ll = projection.invert?.([mx, my]);
+      if (!ll) return;
+      let best = closestSites[0];
+      let bd = Infinity;
+      for (const site of closestSites) {
+        const d = (site.x - mx) ** 2 + (site.y - my) ** 2;
+        if (d < bd) [best, bd] = [site, d];
+      }
+      const km = distanceKm({lon: ll[0], lat: ll[1]}, best.city);
+      setProbe({
+        x: sx,
+        y: sy,
+        text: best.team.name,
+        sub: `${best.city.name}${best.count > 1 ? ` · +${best.count - 1} more team${best.count > 2 ? 's' : ''}` : ''} · ${formatKm(km)}`,
+      });
+    },
+    [projection, closestSites],
+  );
+  useEffect(() => {
+    if (!showClosest) setProbe(null);
+  }, [showClosest]);
+  // On touch screens the readout from a tap fades after a few seconds.
+  useEffect(() => {
+    if (!probe || window.matchMedia('(hover: hover)').matches) return;
+    const id = window.setTimeout(() => setProbe(null), 3500);
+    return () => window.clearTimeout(id);
+  }, [probe]);
+
   /** Every metro area in k=1 map pixels, for the population view. */
   const popPoints = useMemo(() => {
     if (!projection) return [];
@@ -401,6 +479,9 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
   }, [projection]);
 
   const showDetail = !!detailPaths && !takeover && transform.k >= DETAIL_K;
+  const markerById = useMemo(() => new Map(markers.map((m) => [m.city.id, m])), [markers]);
+  const pinPoint = useMemo(() => (pin && projection ? projection([pin.lon, pin.lat]) : null), [pin, projection]);
+  const pinScreen = pinPoint ? ([transform.applyX(pinPoint[0]), transform.applyY(pinPoint[1])] as const) : null;
 
   const placed = useMemo(() => {
     const items = markers.map((m) => {
@@ -517,10 +598,32 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
   const riverRank = transform.k < 3 ? 5 : transform.k < 5 ? 7 : 9;
 
   return (
-    <div ref={containerRef} className="relative h-full w-full overflow-hidden" style={{background: 'var(--map-water)'}}>
+    <div
+      ref={containerRef}
+      className="relative h-full w-full overflow-hidden"
+      style={{background: 'var(--map-water)'}}
+      onPointerMove={(e) => {
+        if (showClosest && e.pointerType === 'mouse' && e.buttons === 0) probeAt(e.clientX, e.clientY);
+      }}
+      onPointerLeave={(e) => {
+        // A finger "leaves" right after every tap; only a mouse leaving should hide the readout.
+        if (e.pointerType === 'mouse') setProbe(null);
+      }}
+      onPointerUp={(e) => {
+        if (showClosest && e.pointerType !== 'mouse' && !isPinMode) probeAt(e.clientX, e.clientY);
+      }}>
       {size && paths && (
         <svg
           ref={svgRef}
+          onClick={(e) => {
+            if (!isPinMode || !onDropPin || !projection) return;
+            if ((e.target as Element).closest('.city-marker')) return;
+            const rect = e.currentTarget.getBoundingClientRect();
+            const [mx, my] = transformRef.current.invert([e.clientX - rect.left, e.clientY - rect.top]);
+            const ll = projection.invert?.([mx, my]);
+            if (ll) onDropPin({lon: ll[0], lat: ll[1]});
+          }}
+          style={isPinMode ? {cursor: 'crosshair'} : undefined}
           className="map-svg block"
           width={size.w}
           height={size.h}
@@ -582,6 +685,17 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
                 ))}
           </g>
 
+          {showClosest && !takeover && closestFieldSites.length > 0 && (
+            <ClosestLayer
+              width={size.w}
+              height={size.h}
+              transform={transform}
+              sites={closestFieldSites}
+              provinces={(showDetail && detailPaths ? detailPaths.provinces : paths.provinces).map((p) => p.d)}
+              lakes={showDetail && detailPaths ? detailPaths.lakes : paths.lakes}
+            />
+          )}
+
           {/* Province names: faint, screen-space so they stay readable at any zoom. */}
           <g aria-hidden="true">
             {placed.provinceLabels.map((p) => (
@@ -627,6 +741,28 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
                     {b.titles}
                   </text>
                 ))}
+            </g>
+          )}
+
+          {/* Pin arcs: one flight path from the pin to every city on the map, green (near) to red (far). */}
+          {pin && pinScreen && (
+            <g aria-hidden="true" pointerEvents="none" key={`${pin.lat},${pin.lon}`}>
+              {pinTargets.map((target, i) => {
+                const m = markerById.get(target.id);
+                if (!m) return null;
+                const cx = transform.applyX(m.px);
+                const cy = transform.applyY(m.py);
+                return (
+                  <path
+                    key={target.id}
+                    d={arcPath(pinScreen[0], pinScreen[1], cx, cy)}
+                    pathLength={1}
+                    className="pin-arc"
+                    stroke={target.color}
+                    style={{animationDelay: `${Math.min(900, i * 35)}ms`}}
+                  />
+                );
+              })}
             </g>
           )}
 
@@ -685,7 +821,21 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
               )}
           </g>
 
+          {pin && pinScreen && (
+            <g transform={`translate(${pinScreen[0]},${pinScreen[1]})`} className="map-pin" role="img" aria-label={`Pin at ${pin.lat.toFixed(2)}, ${pin.lon.toFixed(2)}`}>
+              <circle r={10} className="map-pin-pulse" />
+              <path d="M0 0 C -2 -6 -9 -10 -9 -17 A 9 9 0 1 1 9 -17 C 9 -10 2 -6 0 0 Z" className="map-pin-body" />
+              <circle cy={-17} r={3.4} fill="var(--map-halo)" />
+            </g>
+          )}
         </svg>
+      )}
+
+      {probe && (
+        <div className="glass glass-strong card-radius pointer-events-none absolute z-10 px-2.5 py-1.5" style={{left: Math.min(probe.x + 14, (size?.w ?? 0) - 240), top: probe.y + 14}}>
+          <div className="text-sm font-semibold text-primary">{probe.text}</div>
+          <div className="text-xs text-secondary tabular-nums">{probe.sub}</div>
+        </div>
       )}
 
       <div className="absolute left-3" style={{bottom: bottomInset + 12, transition: 'bottom 200ms ease'}}>
@@ -701,6 +851,20 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
       )}
     </div>
   );
+}
+
+/** A flight-path arc from (x0, y0) to (x1, y1): a quadratic curve bowed upward, higher for longer hops. */
+function arcPath(x0: number, y0: number, x1: number, y1: number) {
+  const dx = x1 - x0;
+  const dy = y1 - y0;
+  const len = Math.hypot(dx, dy) || 1;
+  let nx = -dy / len;
+  let ny = dx / len;
+  if (ny > 0) [nx, ny] = [-nx, -ny];
+  const h = Math.min(160, len * 0.22);
+  const qx = (x0 + x1) / 2 + nx * h;
+  const qy = (y0 + y1) / 2 + ny * h;
+  return `M${x0.toFixed(1)} ${y0.toFixed(1)} Q${qx.toFixed(1)} ${qy.toFixed(1)} ${x1.toFixed(1)} ${y1.toFixed(1)}`;
 }
 
 /** Population circle radius in screen pixels: area ∝ people, growing gently with zoom. */
@@ -729,7 +893,7 @@ function MapLegend({view, k, total, style}: {view: 'population' | 'titles'; k: n
   const scale = maxR / refs[0].r;
   const size = maxR * 2 + 4;
   return (
-    <div className="glass card-radius pointer-events-none absolute flex items-end gap-3 px-3 py-2" style={{...style, transition: 'bottom 200ms ease, right 200ms ease'}}>
+    <div className="glass glass-strong card-radius pointer-events-none absolute flex items-end gap-3 px-3 py-2" style={{...style, transition: 'bottom 200ms ease, right 200ms ease'}}>
       <svg width={size} height={size} aria-hidden="true">
         {refs.map((ref) => (
           <circle key={ref.v} cx={size / 2} cy={size - 2 - ref.r * scale} r={ref.r * scale} className={view === 'population' ? 'pop-bubble' : 'title-bubble'} />

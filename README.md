@@ -17,6 +17,9 @@ An interactive map of Canadian professional sports. Every NHL, NBA, MLB, MLS, CF
   - *Population*: a circle for each of Canada's 152 metro areas and agglomerations, sized by its 2021 Census population (Statistics Canada).
   - *Championships*: a gold circle for each city, sized by the titles its teams have won (follows the league filter).
   - *Timeline*: a year slider with play/pause; the map shows only the teams playing in that year, from 1873 to today.
+- **Map tools.** Two toggles sit beside the map-view button:
+  - *Drop a pin*: tap anywhere (or use your location) and arcs fly from the pin to every city on the map, green for the nearest through yellow to red for the farthest, with a card of the nearest cities and the farthest one in great-circle kilometres. The pin is kept in the URL (`?pin=lat,lon`).
+  - *Closest team*: every spot in Canada coloured by its nearest team (the nearest sports city's top team under All cities, or the nearest team in the chosen league) as a living ordered-dither pattern, with ripples travelling out from each city. Hover or tap for the team and the distance. Works with the timeline, so territories change through history.
 - **Logo takeover.** When a team is the only current Canadian team in its league (the Raptors, the Blue Jays, the Tempo), filtering to its league or opening its page fills the map of Canada with its logo.
 - **Official logos.** Team and league logos come from the files their Wikipedia articles use (see Credits).
 - **Team pages.** A hero card (logo, league, years, city), then the *Trophy Cabinet*, *Venues* (every home the team has had), carousels of logos through the years, home and away uniforms and the rink, court, field or pitch for each era, a photo carousel from Wikimedia Commons, and link buttons to Wikipedia and logo and court archives.

@@ -12,6 +12,7 @@ import {CityPanel, TeamPanel} from './components/Panels';
 import {CreditsDialog} from './components/CreditsDialog';
 import {LeagueSelect, MAP_VIEWS, MapViewMenu, SiteMenu, type Appearance, type MapView} from './components/HeaderControls';
 import {TimelineBar, TIMELINE_MAX, TIMELINE_MIN} from './components/TimelineBar';
+import {ClosestCard, MapToolToggles, PinCard, distanceColor, distanceKm, type LatLon, type PinDistance} from './components/MapTools';
 import {DESKTOP_QUERY, useMediaQuery} from './hooks/useMediaQuery';
 import {TrophyDefs} from './visuals/Trophies';
 import {useHashRoute} from './hooks/useHashRoute';
@@ -76,6 +77,11 @@ function initialView(): MapView {
   return param && (MAP_VIEWS as string[]).includes(param) ? (param as MapView) : 'teams';
 }
 
+function initialPin(): LatLon | null {
+  const [lat, lon] = (new URLSearchParams(window.location.search).get('pin') ?? '').split(',').map(Number);
+  return Number.isFinite(lat) && Number.isFinite(lon) && Math.abs(lat) <= 90 && Math.abs(lon) <= 180 ? {lat, lon} : null;
+}
+
 function initialYear(): number {
   const param = Number(new URLSearchParams(window.location.search).get('year'));
   return Number.isInteger(param) && param >= TIMELINE_MIN && param <= TIMELINE_MAX ? param : TIMELINE_MAX;
@@ -86,6 +92,10 @@ export function App() {
   const [league, setLeague] = useState<LeagueFilter>(initialLeague);
   const [view, setView] = useState<MapView>(initialView);
   const [year, setYear] = useState<number>(initialYear);
+  const [pin, setPin] = useState<LatLon | null>(initialPin);
+  const [isPinMode, setIsPinMode] = useState(() => initialPin() !== null);
+  const [locateError, setLocateError] = useState(false);
+  const [showClosest, setShowClosest] = useState(() => new URLSearchParams(window.location.search).get('closest') === '1');
   const [isCreditsOpen, setIsCreditsOpen] = useState(false);
   const isDesktop = useMediaQuery(DESKTOP_QUERY);
   const [route, navigate] = useHashRoute();
@@ -104,9 +114,13 @@ export function App() {
     else params.set('view', view);
     if (view === 'timeline' && year !== TIMELINE_MAX) params.set('year', String(year));
     else params.delete('year');
+    if (pin) params.set('pin', `${pin.lat.toFixed(3)},${pin.lon.toFixed(3)}`);
+    else params.delete('pin');
+    if (showClosest) params.set('closest', '1');
+    else params.delete('closest');
     const qs = params.toString();
     safely(() => history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}${window.location.hash}`), undefined);
-  }, [league, view, year]);
+  }, [league, view, year, pin, showClosest]);
 
   // The timeline shows only the teams playing in the chosen year.
   const mapCities = useMemo(() => {
@@ -117,6 +131,33 @@ export function App() {
       .filter((c) => c.teams.length > 0);
   }, [league, view, year]);
   const timelineTeams = useMemo(() => mapCities.reduce((n, c) => n + c.teams.length, 0), [mapCities]);
+
+  // Pin tool: every city on the map, nearest first, coloured green (near) to red (far).
+  const pinTargets = useMemo<PinDistance[]>(() => {
+    if (!pin) return [];
+    const list = mapCities.map(({city}) => ({id: city.id, name: city.name, km: distanceKm(pin, city), color: ''}));
+    list.sort((a, b) => a.km - b.km);
+    const min = list[0]?.km ?? 0;
+    const max = list[list.length - 1]?.km ?? 1;
+    return list.map((d) => ({...d, color: distanceColor(max > min ? (d.km - min) / (max - min) : 0)}));
+  }, [pin, mapCities]);
+  const setPinMode = useCallback((on: boolean) => {
+    setIsPinMode(on);
+    setLocateError(false);
+    if (!on) setPin(null);
+  }, []);
+  const locate = useCallback(() => {
+    setLocateError(false);
+    if (!navigator.geolocation) {
+      setLocateError(true);
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => setPin({lat: pos.coords.latitude, lon: pos.coords.longitude}),
+      () => setLocateError(true),
+      {enableHighAccuracy: false, timeout: 8000, maximumAge: 600000},
+    );
+  }, []);
 
   const selectedCityId =
     route.kind === 'city' ? route.id : route.kind === 'team' ? (TEAM_BY_ID[route.id]?.cityId ?? null) : null;
@@ -179,14 +220,14 @@ export function App() {
   // A team page shows its own takeover; otherwise filtering to a one-team league shows that team's.
   const takeover = useMemo(
     () =>
-      view !== 'teams'
+      view !== 'teams' || isPinMode || showClosest
         ? null
         : route.kind === 'team'
           ? takeoverFor(TEAM_BY_ID[route.id])
           : league === 'all'
             ? null
             : takeoverFor(soleCurrentTeam(league)),
-    [route, league, view],
+    [route, league, view, isPinMode, showClosest],
   );
 
   return (
@@ -205,7 +246,28 @@ export function App() {
           topInset={CHROME_H - PANEL_GUTTER}
           takeover={takeover}
           view={view}
+          isPinMode={isPinMode}
+          pin={pin}
+          pinTargets={pinTargets}
+          onDropPin={setPin}
+          showClosest={showClosest}
         />
+
+        {(isPinMode || showClosest) && (
+          <div className="pointer-events-none absolute left-3 flex flex-col gap-2" style={{top: CHROME_H}}>
+            {isPinMode && (
+              <PinCard
+                distances={pinTargets}
+                hasPin={pin !== null}
+                onLocate={locate}
+                locateError={locateError}
+                onClear={() => setPin(null)}
+                onOpenCity={openCity}
+              />
+            )}
+            {showClosest && <ClosestCard league={league} />}
+          </div>
+        )}
 
         {view === 'timeline' && (
           <TimelineBar
@@ -222,6 +284,7 @@ export function App() {
           <div className="glass pointer-events-auto flex items-center gap-0.5 rounded-full p-1">
             <LeagueSelect value={league} onChange={setLeague} isCompact={!isDesktop} />
             <MapViewMenu value={view} onChange={setView} />
+            <MapToolToggles isPinMode={isPinMode} onPinModeChange={setPinMode} showClosest={showClosest} onShowClosestChange={setShowClosest} />
             <SiteMenu appearance={appearance} onAppearanceChange={setAppearance} onOpenCredits={() => setIsCreditsOpen(true)} />
           </div>
         </nav>

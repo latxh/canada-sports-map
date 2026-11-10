@@ -105,6 +105,52 @@
     fill: light-dark(#7a5600, #ffd76a);
   }
 
+  /* Closest-team dither: crisp square dots, fading in. */
+  .closest-layer {
+    display: block;
+    image-rendering: pixelated;
+    animation: takeover-in 500ms ease-out;
+  }
+
+  /* Pin tool. */
+  .pin-arc {
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    opacity: 0.9;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: pin-arc-draw 700ms ease-out forwards;
+  }
+  @keyframes pin-arc-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  .map-pin-body {
+    fill: var(--map-selected);
+    stroke: var(--map-halo);
+    stroke-width: 1.5;
+  }
+  .map-pin-pulse {
+    fill: none;
+    stroke: var(--map-selected);
+    stroke-width: 2;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: pulse-ring 1.8s ease-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pin-arc {
+      animation: none;
+      stroke-dashoffset: 0;
+    }
+    .map-pin-pulse,
+    .closest-layer {
+      animation: none;
+    }
+  }
+
   /* Former teams: a lighter, grey logo. */
   .team-former {
     filter: grayscale(1);
@@ -235,6 +281,11 @@
   /* ButtonGroup draws dividers between attached buttons; round buttons with air between them need none. */
   .glass-group > * {
     border: 0 !important;
+  }
+
+  /* Glass that stays readable over busy map layers (the closest-team dither, arcs). */
+  .glass-strong {
+    background: color-mix(in srgb, var(--color-background-surface) 90%, transparent);
   }
 
   /* One corner radius for every card inside the panel, matching Astryx cards. */

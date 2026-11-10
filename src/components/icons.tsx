@@ -191,3 +191,25 @@ export const PauseIcon = (p: SVGProps<SVGSVGElement>) => (
     <path d="M8 4.5v15M16 4.5v15" strokeWidth="3" />
   </svg>
 );
+
+export const TerritoryIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M3 12c3-1 5-4 6-8M21 10c-4 0-7 3-8 11M9 4c2 3 3 5 4 8l8-2" />
+    <g fill="currentColor" stroke="none">
+      <circle cx="5" cy="6" r="1" />
+      <circle cx="7" cy="16" r="1" />
+      <circle cx="4" cy="19" r="1" />
+      <circle cx="17" cy="5" r="1" />
+      <circle cx="18" cy="16" r="1" />
+      <circle cx="15" cy="19" r="1" />
+    </g>
+  </svg>
+);
+
+export const LocateIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <circle cx="12" cy="12" r="7" />
+    <circle cx="12" cy="12" r="2.5" fill="currentColor" />
+    <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
+  </svg>
+);
