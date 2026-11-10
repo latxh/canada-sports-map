@@ -25,8 +25,8 @@ const COLLAR_BASE = {
 };
 
 /** Box lacrosse jerseys are cut like football jerseys, short-sleeved over shoulder pads. */
-const BODY: Record<Sport, string> = {...BODY_BASE, lacrosse: BODY_BASE.football};
-const COLLAR: Record<Sport, string> = {...COLLAR_BASE, lacrosse: COLLAR_BASE.football};
+const BODY: Record<Sport, string> = {...BODY_BASE, lacrosse: BODY_BASE.football, esports: BODY_BASE.soccer};
+const COLLAR: Record<Sport, string> = {...COLLAR_BASE, lacrosse: COLLAR_BASE.football, esports: COLLAR_BASE.soccer};
 
 interface Props {
   era: IdentityEra;

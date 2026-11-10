@@ -168,6 +168,7 @@ const SURFACES: Record<Sport, string> = {
   football: 'Fields',
   soccer: 'Pitches',
   lacrosse: 'Floors',
+  esports: 'Stages',
 };
 
 const JERSEYS: Record<Sport, string> = {
@@ -177,6 +178,7 @@ const JERSEYS: Record<Sport, string> = {
   football: 'Jerseys',
   soccer: 'Kits',
   lacrosse: 'Jerseys',
+  esports: 'Jerseys',
 };
 
 /** Links out for each team: its article, the league's logo archive, and court/uniform archives where they exist. */

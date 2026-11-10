@@ -63,7 +63,7 @@ export function venueEntriesForCity(cityId: string, league: LeagueFilter, {activ
   return entries.sort((a, b) => a.rank - b.rank);
 }
 
-const LEAGUE_PRIORITY: Record<LeagueId, number> = {MLB: 0, NHL: 1, NBA: 2, CFL: 3, MLS: 4, CPL: 5, PWHL: 6, WNBA: 7, NLL: 8, CEBL: 9, NSL: 10};
+const LEAGUE_PRIORITY: Record<LeagueId, number> = {MLB: 0, NHL: 1, NBA: 2, CFL: 3, MLS: 4, CPL: 5, PWHL: 6, WNBA: 7, NLL: 8, CEBL: 9, NSL: 10, CDL: 11};
 
 function spanOf(team: Team, venueId: string) {
   return team.venues.find((s) => s.venueId === venueId)!;

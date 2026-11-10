@@ -1,6 +1,6 @@
 # Canada Sports Atlas
 
-An interactive map of Canadian professional sports. Every NHL, NBA, MLB, MLS, CFL, CPL, NLL, CEBL, PWHL, WNBA and NSL team that has played in Canada, current or former, is on it, along with its venues, championships and identity history. Built with the [Astryx](https://github.com/facebook/astryx) design system.
+An interactive map of Canadian professional sports. Every NHL, NBA, MLB, MLS, CFL, CPL, NLL, CEBL, PWHL, WNBA, NSL and Call of Duty League team that has played in Canada, current or former, is on it, along with its venues, championships and identity history. Built with the [Astryx](https://github.com/facebook/astryx) design system.
 
 ![Desktop map](docs/desktop-map.png)
 
@@ -12,7 +12,7 @@ An interactive map of Canadian professional sports. Every NHL, NBA, MLB, MLS, CF
 - **Menu.** Appearance (light, dark or system), Share (copies the current view's link), Credits, and a link to the author.
 - **City overview.** *Teams* (logo tiles with league and years), a *Trophy Cabinet* with one trophy per title, and *Venues*: a dropdown of the venues current teams play in, each with its 3D model (or photo) and four cards for year opened, capacity, surface and roof. Wikipedia links sit at the bottom as full-width buttons.
 - **Trophy cabinet.** Cities and teams show one trophy per championship with its year: Stanley Cup, Larry O'Brien Trophy, Commissioner's Trophy, Philip F. Anschutz Trophy (MLS Cup), Grey Cup, North Star Cup, NLL Cup, CEBL championship trophy, Walter Cup, WNBA championship trophy and Diana B. Matheson Cup. The trophies are original illustrations drawn from reference photos of the real ones.
-- **League filter.** A fixed-width dropdown shows all leagues or just one (NHL, NBA, MLB, MLS, CFL, CPL, NLL, CEBL, PWHL, WNBA or NSL). The choice is kept in the URL so a view can be shared.
+- **League filter.** A fixed-width dropdown shows all leagues or just one (NHL, NBA, MLB, MLS, CFL, CPL, NLL, CEBL, PWHL, WNBA, NSL or CDL). The choice is kept in the URL so a view can be shared.
 - **Logo takeover.** When a team is the only current Canadian team in its league (the Raptors, the Blue Jays, the Tempo), filtering to its league or opening its page fills the map of Canada with its logo.
 - **Official logos.** Team and league logos come from the files their Wikipedia articles use (see Credits).
 - **Team pages.** A hero card (logo, league, years, city), then the *Trophy Cabinet*, *Venues* (every home the team has had), carousels of logos through the years, home and away uniforms and the rink, court, field or pitch for each era, a photo carousel from Wikimedia Commons, and link buttons to Wikipedia and logo and court archives.
@@ -30,7 +30,7 @@ An interactive map of Canadian professional sports. Every NHL, NBA, MLB, MLS, CF
 
 ## Coverage
 
-The dataset was reviewed in November 2026 and covers 80 teams in 20 cities:
+The dataset was reviewed in November 2026 and covers 82 teams in 20 cities:
 
 | League | Active | Former |
 | --- | --- | --- |
@@ -45,6 +45,7 @@ The dataset was reviewed in November 2026 and covers 80 teams in 20 cities:
 | PWHL | Victoire, Sceptres, Charge, Goldeneyes, PWHL Hamilton | none |
 | WNBA | Tempo | none |
 | NSL | Rise, AFC Toronto, Roses, Rapid, Wild, Tides | none |
+| CDL | Toronto KOI (formerly Ultra), Vancouver Surge | none |
 
 ## Getting started
 

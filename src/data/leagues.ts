@@ -111,6 +111,16 @@ export const LEAGUES: Record<LeagueId, League> = {
     wikipedia: 'https://en.wikipedia.org/wiki/Northern_Super_League',
     sportsLogos: 'https://www.sportslogos.net/',
   },
+  CDL: {
+    id: 'CDL',
+    name: 'Call of Duty League',
+    sport: 'esports',
+    trophy: 'CDL Championship',
+    color: '#111827',
+    founded: 2020,
+    wikipedia: 'https://en.wikipedia.org/wiki/Call_of_Duty_League',
+    sportsLogos: 'https://www.sportslogos.net/',
+  },
 };
 
-export const LEAGUE_ORDER: LeagueId[] = ['NHL', 'NBA', 'MLB', 'MLS', 'CFL', 'CPL', 'NLL', 'CEBL', 'PWHL', 'WNBA', 'NSL'];
+export const LEAGUE_ORDER: LeagueId[] = ['NHL', 'NBA', 'MLB', 'MLS', 'CFL', 'CPL', 'NLL', 'CEBL', 'PWHL', 'WNBA', 'NSL', 'CDL'];

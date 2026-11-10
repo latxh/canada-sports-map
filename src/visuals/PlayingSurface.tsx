@@ -28,6 +28,8 @@ export function PlayingSurface({era, sport, width = 280}: Props) {
       return <Diamond era={era} width={width} />;
     case 'lacrosse':
       return <BoxFloor era={era} width={width} />;
+    case 'esports':
+      return <Stage era={era} width={width} />;
   }
 }
 
@@ -233,6 +235,35 @@ function BoxFloor({era, width}: {era: IdentityEra; width: number}) {
           <rect x={x - 1.2} y={39.5} width="2.4" height="6" fill={line} />
         </g>
       ))}
+    </svg>
+  );
+}
+
+/** An esports stage: the big screen, and a desk of four players for each team, lit in the team's colours. */
+function Stage({era, width}: {era: IdentityEra; width: number}) {
+  const [primary, secondary = '#ffffff'] = era.colors;
+  const desk = (x: number, color: string) => (
+    <g>
+      <rect x={x} y={56} width={64} height={10} rx={2} fill="#1f2430" stroke={color} strokeWidth="1.2" />
+      {[0, 1, 2, 3].map((i) => (
+        <g key={i}>
+          <rect x={x + 3 + i * 15.5} y={48} width={12} height={8} rx={1} fill="#0b0d12" stroke={color} strokeWidth="0.6" />
+          <circle cx={x + 9 + i * 15.5} cy={70} r={3.2} fill={color} opacity={0.85} />
+        </g>
+      ))}
+    </g>
+  );
+  return (
+    <svg width={width} height={(width * 85) / 200} viewBox="-2 -2 204 89" role="img" aria-label="Esports stage illustration">
+      <rect x="0" y="0" width="200" height="85" rx="10" fill="#0f1218" />
+      <rect x="40" y="6" width="120" height="34" rx="2" fill={mix(primary, '#000000', 0.35)} stroke={secondary} strokeWidth="1" />
+      <rect x="44" y="10" width="112" height="26" rx="1" fill={mix(primary, '#ffffff', 0.12)} opacity={0.9} />
+      <text x="100" y="27" textAnchor="middle" fontSize="9" fontWeight={700} fill={readableOn(mix(primary, '#ffffff', 0.12))} letterSpacing="0.1em">
+        {era.mark}
+      </text>
+      {desk(18, primary)}
+      {desk(118, ['#ffffff', '#000000'].includes(secondary.toLowerCase()) ? mix(primary, '#ffffff', 0.5) : secondary)}
+      <path d="M0 78 H200" stroke={primary} strokeWidth="2" opacity={0.7} />
     </svg>
   );
 }

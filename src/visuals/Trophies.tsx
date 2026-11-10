@@ -332,6 +332,20 @@ function MathesonCup() {
   );
 }
 
+function CdlTrophy() {
+  // A tall, angular silver trophy on a black base.
+  return (
+    <g stroke={EDGE} strokeWidth={0.5} strokeLinejoin="round">
+      <path d="M15 76 H45 L47 92.5 H13 Z" fill="#17191d" />
+      <rect x="12.5" y="91.5" width="35" height="3" rx="0.8" fill={G.silverDark} />
+      <path d="M16.5 76 H43.5 L41 72 H19 Z" fill={G.silverDark} />
+      <path d="M30 4 L41 18 L35 72 H25 L19 18 Z" fill={G.silver} />
+      <path d="M30 4 L30 72 M19 18 L41 18" stroke="rgb(0 0 0 / 0.22)" strokeWidth={0.6} />
+      <path d="M27 12 L23 20 L27.5 68" stroke="rgb(255 255 255 / 0.75)" strokeWidth={1.1} fill="none" />
+    </g>
+  );
+}
+
 const ART: Record<LeagueId, () => ReactNode> = {
   NHL: StanleyCup,
   NBA: LarryOBrien,
@@ -344,6 +358,7 @@ const ART: Record<LeagueId, () => ReactNode> = {
   PWHL: WalterCup,
   WNBA: WnbaTrophy,
   NSL: MathesonCup,
+  CDL: CdlTrophy,
 };
 
 /** The trophy each league's champion lifts, by its proper name. */
@@ -359,6 +374,7 @@ export const TROPHY_NAME: Record<LeagueId, string> = {
   PWHL: 'Walter Cup',
   WNBA: 'WNBA Championship',
   NSL: 'Diana B. Matheson Cup',
+  CDL: 'CDL Championship',
 };
 
 export function TrophyArt({league, height = 64, isMuted = false, title}: {league: LeagueId; height?: number; isMuted?: boolean; title?: string}) {

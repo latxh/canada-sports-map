@@ -19,6 +19,7 @@ export const LEAGUE_TOKEN_COLOR: Record<LeagueId, TokenColor> = {
   PWHL: 'purple',
   WNBA: 'orange',
   NSL: 'cyan',
+  CDL: 'gray',
 };
 
 export function LeagueDot({league, size = 10}: {league: LeagueId; size?: number}) {

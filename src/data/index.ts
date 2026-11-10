@@ -6,6 +6,7 @@ import {CFL_TEAMS, CPL_TEAMS} from './teams/cfl-cpl';
 import {NLL_TEAMS} from './teams/nll';
 import {CEBL_TEAMS} from './teams/cebl';
 import {PWHL_TEAMS, WNBA_TEAMS, NSL_TEAMS} from './teams/pwhl-wnba-nsl';
+import {CDL_TEAMS} from './teams/cdl';
 
 export * from './types';
 export {LEAGUES, LEAGUE_ORDER} from './leagues';
@@ -27,6 +28,7 @@ export const TEAMS: Team[] = [
   ...PWHL_TEAMS,
   ...WNBA_TEAMS,
   ...NSL_TEAMS,
+  ...CDL_TEAMS,
 ];
 
 export const TEAM_BY_ID: Record<string, Team> = Object.fromEntries(TEAMS.map((t) => [t.id, t]));
@@ -42,7 +44,7 @@ export function teamsForCity(cityId: string, league: LeagueFilter = 'all'): Team
   return TEAMS.filter((t) => t.cityId === cityId && teamMatches(t, league)).sort(compareTeams);
 }
 
-const LEAGUE_RANK: Record<LeagueId, number> = {NHL: 0, NBA: 1, MLB: 2, MLS: 3, CFL: 4, CPL: 5, NLL: 6, CEBL: 7, PWHL: 8, WNBA: 9, NSL: 10};
+const LEAGUE_RANK: Record<LeagueId, number> = {NHL: 0, NBA: 1, MLB: 2, MLS: 3, CFL: 4, CPL: 5, NLL: 6, CEBL: 7, PWHL: 8, WNBA: 9, NSL: 10, CDL: 11};
 
 export function compareTeams(a: Team, b: Team): number {
   const status = Number(a.status !== 'current') - Number(b.status !== 'current');

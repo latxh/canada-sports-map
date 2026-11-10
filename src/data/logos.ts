@@ -101,4 +101,7 @@ export const LOGOS: Record<string, LogoInfo> = {
   "vancouver-warriors": {"file": "vancouver-warriors.png", "page": "https://en.wikipedia.org/wiki/File:Vancouver_Warriors_Logo.png", "license": "Fair use"},
   "winnipeg-sea-bears": {"file": "winnipeg-sea-bears.png", "page": "https://en.wikipedia.org/wiki/File:Winnipeg_Sea_Bears_logo.png", "license": "Fair use"},
   "hamilton-honey-badgers": {"file": "brampton-honey-badgers.png", "page": "https://en.wikipedia.org/wiki/File:Hamilton_Honey_Badgers_Logo.png", "license": "Fair use"},
+  "toronto-koi": {"file": "toronto-koi.svg", "page": "https://commons.wikimedia.org/wiki/File:Toronto_KOI_logo.svg", "license": "Public domain"},
+  "vancouver-surge": {"file": "vancouver-surge.svg", "page": "https://en.wikipedia.org/wiki/File:Seattle_Surge.svg", "license": "Fair use"},
+  "league-CDL": {"file": "league-CDL.svg", "page": "https://commons.wikimedia.org/wiki/File:CDL_Logo_2023.svg", "license": "Public domain"},
 };
