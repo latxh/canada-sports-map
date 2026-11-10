@@ -29,15 +29,20 @@ const TAKEOVER_BACKGROUND: Record<string, string> = {
   'toronto-tempo': '#b3c7e7',
 };
 
+/** The league's only current Canadian team, if it has exactly one (the Raptors, the Blue Jays, the Tempo). */
+function soleCurrentTeam(league: LeagueId): Team | undefined {
+  const current = TEAMS.filter((t) => t.league === league && t.status === 'current');
+  return current.length === 1 ? current[0] : undefined;
+}
+
 /**
- * When a team is the only current Canadian team in its league (the Raptors, the Blue Jays,
- * the Tempo), its logo takes over the map of Canada while its panel is open.
+ * When a team is the only current Canadian team in its league, its logo takes over the map of
+ * Canada while its page is open or its league is the filter.
  */
 function takeoverFor(team: Team | undefined): MapTakeover | null {
-  if (!team || team.status !== 'current') return null;
-  const peers = TEAMS.filter((t) => t.league === team.league && t.status === 'current');
+  if (!team || team.status !== 'current' || soleCurrentTeam(team.league) !== team) return null;
   const logo = LOGOS[team.id];
-  if (peers.length !== 1 || !logo) return null;
+  if (!logo) return null;
   return {
     id: team.id,
     logoHref: logoAsset(logo.file),
@@ -138,7 +143,11 @@ export function App() {
   const routeKey = route.kind === 'home' ? 'home' : `${route.kind}:${route.id}`;
   // The panel can run to the top of the screen when it clears the centred controls pill.
   const panelTop = viewportW / 2 + PILL_HALF + PANEL_GUTTER < viewportW - PANEL_GUTTER - PANEL_WIDTH ? PANEL_GUTTER : CHROME_H;
-  const takeover = useMemo(() => (route.kind === 'team' ? takeoverFor(TEAM_BY_ID[route.id]) : null), [route]);
+  // A team page shows its own takeover; otherwise filtering to a one-team league shows that team's.
+  const takeover = useMemo(
+    () => (route.kind === 'team' ? takeoverFor(TEAM_BY_ID[route.id]) : league === 'all' ? null : takeoverFor(soleCurrentTeam(league))),
+    [route, league],
+  );
 
   return (
     <Theme theme={neutralTheme} mode={appearance}>

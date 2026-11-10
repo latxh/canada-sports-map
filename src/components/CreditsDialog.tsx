@@ -27,7 +27,7 @@ const SOURCES = [
   {
     name: 'Natural Earth',
     href: 'https://www.naturalearthdata.com/',
-    note: 'Province, coastline and lake boundaries (public domain), simplified for the web.',
+    note: 'Countries, provinces, coastlines, lakes, rivers, towns and geography names (public domain), simplified for the web.',
   },
   {
     name: 'OpenStreetMap',

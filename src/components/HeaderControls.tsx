@@ -23,6 +23,7 @@ export function LeagueSelect({value, onChange, isCompact}: {value: LeagueFilter;
       size="md"
       variant="ghost"
       width={isCompact ? 116 : 152}
+      containerClassName="league-select"
       controlClassName="rounded-full"
       value={value}
       onChange={(v) => onChange((v ?? 'all') as LeagueFilter)}

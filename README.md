@@ -6,14 +6,14 @@ An interactive map of Canadian professional sports. Every NHL, NBA, MLB, MLS, CF
 
 ## Features
 
-- **Map of Canada.** The map fills the screen. Each sports city is a ring with its name: a solid outline for cities with active teams, a dashed one for cities that only had teams in the past, filled in when selected. The ring and the name are one control: hovering either lifts the ring and underlines the name. Nearby cities (Montréal and Laval, Vancouver and its suburbs, Toronto and Hamilton) merge into a cluster until you zoom in. Pan, zoom, or use the controls to fit all of Canada.
-- **Floating controls.** Frosted-glass buttons float over the map: the league picker and menu in a pill centred at the top, and attached zoom controls bottom left. Inner buttons follow the pill's rounded shape.
+- **Map of Canada.** The map fills the screen and opens framed on the band of sports cities across southern Canada, with the rest of the world filled in around it. Zoom in and Canada gains a finer coastline, rivers and lakes, nearby towns, and the names of seas, lakes, mountain ranges and islands. Closing a panel returns to the view you jumped from. The selected city is a blue dot with a blue pulse. Each sports city is a ring with its name: a solid outline for cities with active teams, a dashed one for cities that only had teams in the past, filled in when selected. The ring and the name are one control: hovering either lifts the ring and underlines the name. Nearby cities (Montréal and Laval, Vancouver and its suburbs, Toronto and Hamilton) merge into a cluster until you zoom in. Pan, zoom, or use the controls to fit all of Canada.
+- **Floating controls.** Frosted-glass buttons float over the map: the league picker and menu in a pill centred at the top (the league list opens below it), and round zoom buttons bottom left.
 - **Floating panel.** Click a city to open its details in a panel that floats over the right side of the map. The panel header is the city or team name with a close button.
 - **Menu.** Appearance (light, dark or system), Share (copies the current view's link), Credits, and a link to the author.
 - **City overview.** A trophy shelf of the city's titles, its active and former teams as logo tiles, a short history, and its venues, with a 3D model of each one a current team plays in.
 - **Trophy cabinet.** Every team page shows one trophy per championship with its year: Stanley Cup, Larry O'Brien Trophy, Commissioner's Trophy, Philip F. Anschutz Trophy (MLS Cup), Grey Cup, North Star Cup, NLL Cup, CEBL championship trophy, Walter Cup, WNBA championship trophy and Diana B. Matheson Cup. The trophies are original illustrations.
 - **League filter.** A fixed-width dropdown shows all leagues or just one (NHL, NBA, MLB, MLS, CFL, CPL, NLL, CEBL, PWHL, WNBA or NSL). The choice is kept in the URL so a view can be shared.
-- **Logo takeover.** When a team is the only current Canadian team in its league (the Raptors, the Blue Jays, the Tempo), its page fills the map of Canada with its logo.
+- **Logo takeover.** When a team is the only current Canadian team in its league (the Raptors, the Blue Jays, the Tempo), filtering to its league or opening its page fills the map of Canada with its logo.
 - **Official logos.** Team and league logos come from the files their Wikipedia articles use (see Credits).
 - **Team pages.**
   - *Overview*: summary, what happened to the team, colours, every championship year and other honours.
@@ -82,7 +82,7 @@ Each current venue has a model function in `src/three/models/<city>.ts`, built f
 
 ### Rebuilding the map
 
-`scripts/build-geo.mjs` explains how to download the Natural Earth source files and regenerate `src/data/geo/canada.topo.json`.
+`scripts/build-geo.mjs` explains how to download the Natural Earth source files and regenerate `src/data/geo/canada.topo.json` (base map) and `src/data/geo/canada-detail.topo.json` (the zoomed-in layer, loaded after the map is up).
 
 ### Deploying
 
@@ -93,7 +93,7 @@ Each current venue has a model function in `src/three/models/<city>.ts`, built f
 - **[Wikipedia](https://en.wikipedia.org/)**: team, venue and championship facts, paraphrased (CC BY-SA 4.0). Every team and venue links to its article.
 - **Logos**: `public/logos/` holds the logo files used on each team's and league's Wikipedia article. `src/data/logos.ts` records each file page and its licence. Most are non-free trademarks, used on Wikipedia under fair use.
 - **[SportsLogos.net](https://www.sportslogos.net/)**: reference for logo and uniform history. The app links to its league archives. SportsLogos.net asks automated tools not to collect its content, so no images or data were copied from it.
-- **[Natural Earth](https://www.naturalearthdata.com/)**: boundaries and lakes (public domain).
+- **[Natural Earth](https://www.naturalearthdata.com/)**: countries, provinces, coastlines, lakes, rivers, towns and geography names (public domain).
 - **[OpenStreetMap](https://www.openstreetmap.org/copyright)**: venue footprints, stand layouts and dimensions used as references for the 3D models (© OpenStreetMap contributors, ODbL).
 - **[Wikimedia Commons](https://commons.wikimedia.org/)** photos: used only as visual references for the 3D models; none are included.
 - **[Astryx](https://github.com/facebook/astryx)**, **[three.js](https://threejs.org/)** / **[React Three Fiber](https://r3f.docs.pmnd.rs/)**, **[d3](https://d3js.org/)**, **[TopoJSON](https://github.com/topojson/topojson)**.

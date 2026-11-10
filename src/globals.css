@@ -18,6 +18,9 @@
     --map-border: var(--color-border-emphasized);
     --map-label: var(--color-text-primary);
     --map-halo: var(--color-background-surface);
+    --map-selected: var(--color-data-categorical-blue);
+    --map-river: color-mix(in srgb, var(--color-icon-blue) 30%, var(--map-water));
+    --map-water-label: color-mix(in srgb, var(--color-icon-blue) 60%, var(--color-text-secondary));
     --maple: #d52b1e;
   }
 
@@ -84,6 +87,53 @@
     text-decoration: underline;
   }
 
+  /* Geography labels and towns: quiet context beneath the city markers. */
+  .geo-label {
+    paint-order: stroke;
+    stroke: var(--map-halo);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+    font-family: var(--font-family-body, system-ui);
+    pointer-events: none;
+  }
+  .geo-label-water {
+    fill: var(--map-water-label);
+    stroke: var(--map-water);
+    font-style: italic;
+  }
+  .geo-label-ocean {
+    letter-spacing: 0.18em;
+    opacity: 0.8;
+  }
+  .geo-label-land {
+    fill: var(--color-text-secondary);
+    opacity: 0.75;
+  }
+  .geo-label-range {
+    letter-spacing: 0.16em;
+  }
+  .town-dot {
+    fill: var(--color-text-secondary);
+    stroke: var(--map-halo);
+    stroke-width: 1;
+  }
+  .town-label {
+    paint-order: stroke;
+    stroke: var(--map-halo);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+    fill: var(--color-text-secondary);
+    font-family: var(--font-family-body, system-ui);
+  }
+
+  /* League picker: open below the pill (not over it), and only as tall as the list or the screen allows. */
+  .league-select [data-astryx-layer-root] {
+    margin-block-start: 11px !important;
+  }
+  .league-select [role='listbox'] {
+    max-block-size: min(30rem, calc(100dvh - 5.5rem)) !important;
+  }
+
   @keyframes takeover-in {
     from {
       opacity: 0;
@@ -130,13 +180,11 @@
       background: color-mix(in srgb, var(--color-background-surface) 92%, transparent);
     }
   }
-  /* Attached buttons inside a glass group: no fills of their own, hairline dividers between them. */
+  /* Buttons inside a glass group: round, with a little air between them. */
   .glass-group {
     overflow: hidden;
     padding: 3px;
-  }
-  .glass-group > * + * {
-    border-block-start: 1px solid color-mix(in srgb, var(--color-text-primary) 8%, transparent);
+    gap: 2px;
   }
 
   .scrollbar-none {

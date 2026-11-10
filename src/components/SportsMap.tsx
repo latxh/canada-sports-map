@@ -9,14 +9,24 @@ import type {Topology, GeometryCollection} from 'topojson-specification';
 import {IconButton} from '@astryxdesign/core/IconButton';
 import {ButtonGroup} from '@astryxdesign/core/ButtonGroup';
 import {Icon} from '@astryxdesign/core/Icon';
-import {LEAGUE_ORDER, type City, type LeagueId, type Team} from '../data';
+import {CITIES, CITY_BY_ID, LEAGUE_ORDER, type City, type LeagueId, type Team} from '../data';
 import {FitIcon, MinusIcon, PlusIcon} from './icons';
 
 type GeoProps = {name: string; code?: string};
 interface Geo {
   provinces: FeatureCollection<Geometry, GeoProps>;
   neighbours: FeatureCollection<Geometry, GeoProps>;
+  world: FeatureCollection<Geometry, GeoProps>;
   lakes: FeatureCollection<Geometry, GeoProps>;
+}
+
+type GeoLabelKind = 'ocean' | 'water' | 'range' | 'region' | 'island';
+interface Detail {
+  provinces: FeatureCollection<Geometry, GeoProps>;
+  lakes: FeatureCollection<Geometry, {rank: number}>;
+  rivers: FeatureCollection<Geometry, {rank: number}>;
+  towns: {name: string; z: number; lon: number; lat: number}[];
+  labels: {name: string; kind: GeoLabelKind; z: number; lon: number; lat: number}[];
 }
 
 let geoPromise: Promise<Geo> | null = null;
@@ -26,16 +36,65 @@ function loadGeo(): Promise<Geo> {
     const topo = mod.default as unknown as Topology<{
       provinces: GeometryCollection<GeoProps>;
       neighbours: GeometryCollection<GeoProps>;
+      world: GeometryCollection<GeoProps>;
       lakes: GeometryCollection<GeoProps>;
     }>;
     return {
       provinces: feature(topo, topo.objects.provinces) as FeatureCollection<Geometry, GeoProps>,
       neighbours: feature(topo, topo.objects.neighbours) as FeatureCollection<Geometry, GeoProps>,
+      world: feature(topo, topo.objects.world) as FeatureCollection<Geometry, GeoProps>,
       lakes: feature(topo, topo.objects.lakes) as FeatureCollection<Geometry, GeoProps>,
     };
   });
   return geoPromise;
 }
+
+let detailPromise: Promise<Detail> | null = null;
+/** Finer coastline, lakes, rivers, towns and geography labels: a separate, larger chunk fetched after the map is up. */
+function loadDetail(): Promise<Detail> {
+  detailPromise ??= import('../data/geo/canada-detail.topo.json').then((mod) => {
+    const topo = mod.default as unknown as Topology<{
+      provinces: GeometryCollection<GeoProps>;
+      lakes: GeometryCollection<{rank: number}>;
+      rivers: GeometryCollection<{rank: number}>;
+      towns: GeometryCollection<{name: string; z: number}>;
+      labels: GeometryCollection<{name: string; kind: GeoLabelKind; z: number}>;
+    }>;
+    const points = <P,>(fc: FeatureCollection<Geometry, P>) =>
+      fc.features.flatMap((f) => (f.geometry.type === 'Point' ? [{...f.properties, lon: f.geometry.coordinates[0], lat: f.geometry.coordinates[1]}] : []));
+    return {
+      provinces: feature(topo, topo.objects.provinces) as FeatureCollection<Geometry, GeoProps>,
+      lakes: feature(topo, topo.objects.lakes) as FeatureCollection<Geometry, {rank: number}>,
+      rivers: feature(topo, topo.objects.rivers) as FeatureCollection<Geometry, {rank: number}>,
+      towns: points(feature(topo, topo.objects.towns) as FeatureCollection<Geometry, {name: string; z: number}>),
+      labels: points(feature(topo, topo.objects.labels) as FeatureCollection<Geometry, {name: string; kind: GeoLabelKind; z: number}>),
+    };
+  });
+  return detailPromise;
+}
+
+interface PlacedGeoLabel {
+  key: string;
+  kind: GeoLabelKind;
+  text: string;
+  x: number;
+  y: number;
+}
+
+interface PlacedTown {
+  key: string;
+  name: string;
+  x: number;
+  y: number;
+}
+
+const GEO_LABEL_STYLE: Record<GeoLabelKind, {size: number; upper: boolean; className: string}> = {
+  ocean: {size: 13, upper: false, className: 'geo-label geo-label-water geo-label-ocean'},
+  water: {size: 11, upper: false, className: 'geo-label geo-label-water'},
+  range: {size: 10, upper: true, className: 'geo-label geo-label-land geo-label-range'},
+  region: {size: 10, upper: true, className: 'geo-label geo-label-land'},
+  island: {size: 10.5, upper: false, className: 'geo-label geo-label-land'},
+};
 
 export interface MapCity {
   city: City;
@@ -70,6 +129,10 @@ interface Size {
 
 const MAX_ZOOM = 40;
 const LABEL_FONT = 13;
+/** Zoom (1 = all of Canada) from which the detailed coastline, rivers, towns and geography labels show. */
+const DETAIL_K = 1.9;
+/** The most a "show all cities" view zooms in, so the country never feels cropped. */
+const HOME_MAX_K = 1.3;
 
 export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0, rightInset = 0, topInset = 0, takeover = null}: Props) {
   const clipId = useId();
@@ -78,7 +141,9 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
   const zoomRef = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   const [size, setSize] = useState<Size | null>(null);
   const [transform, setTransform] = useState<ZoomTransform>(zoomIdentity);
+  const transformRef = useRef<ZoomTransform>(zoomIdentity);
   const [geo, setGeo] = useState<Geo | null>(null);
+  const [detail, setDetail] = useState<Detail | null>(null);
   useEffect(() => {
     let alive = true;
     loadGeo().then((g) => alive && setGeo(g));
@@ -86,6 +151,16 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
       alive = false;
     };
   }, []);
+  // The detailed layer downloads in the background once the base map is up.
+  useEffect(() => {
+    if (!geo) return;
+    let alive = true;
+    const id = window.setTimeout(() => loadDetail().then((d) => alive && setDetail(d)), 400);
+    return () => {
+      alive = false;
+      window.clearTimeout(id);
+    };
+  }, [geo]);
 
   useLayoutEffect(() => {
     const el = containerRef.current;
@@ -126,15 +201,68 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
         area: gen.area(f),
       })),
       neighbours: geo.neighbours.features.map((f) => gen(f) ?? ''),
+      world: geo.world.features.map((f) => gen(f) ?? ''),
       lakes: geo.lakes.features.map((f) => gen(f) ?? ''),
       bounds: gen.bounds(geo.provinces),
     };
   }, [projection, geo]);
 
+  const detailPaths = useMemo(() => {
+    if (!projection || !detail) return null;
+    const gen = geoPath(projection);
+    const at = (lon: number, lat: number) => projection([lon, lat]) ?? [NaN, NaN];
+    // Towns that are already sports cities on the map are left out.
+    const cityPoints = CITIES.map((c) => at(c.lon, c.lat));
+    return {
+      provinces: detail.provinces.features.map((f) => ({id: f.properties.code ?? f.properties.name, name: f.properties.name, d: gen(f) ?? ''})),
+      lakes: detail.lakes.features.map((f) => gen(f) ?? ''),
+      rivers: detail.rivers.features.map((f) => ({d: gen(f) ?? '', rank: f.properties.rank})),
+      towns: detail.towns
+        .map((t) => ({...t, p: at(t.lon, t.lat)}))
+        .filter((t) => Number.isFinite(t.p[0]) && !cityPoints.some((q) => Math.hypot(q[0] - t.p[0], q[1] - t.p[1]) < 4)),
+      labels: detail.labels.map((l) => ({...l, p: at(l.lon, l.lat)})).filter((l) => Number.isFinite(l.p[0])),
+    };
+  }, [projection, detail]);
+
   const hasMap = paths !== null;
 
-  /** The "whole country" view, shrunk to fit the part of the map not covered by panels. */
+  /** Every sports city, in k=1 map pixels: the "show all cities" view frames this band. */
+  const cityBand = useMemo(() => {
+    if (!projection) return null;
+    let x0 = Infinity;
+    let y0 = Infinity;
+    let x1 = -Infinity;
+    let y1 = -Infinity;
+    for (const c of CITIES) {
+      const p = projection([c.lon, c.lat]);
+      if (!p) continue;
+      x0 = Math.min(x0, p[0]);
+      y0 = Math.min(y0, p[1]);
+      x1 = Math.max(x1, p[0]);
+      y1 = Math.max(y1, p[1]);
+    }
+    return Number.isFinite(x0) ? {x0, y0, x1, y1} : null;
+  }, [projection]);
+
+  /** The "show all cities" view: the band of cities across southern Canada, centred in the uncovered part of the map. */
   const homeTransform = useCallback(() => {
+    if (!size || !cityBand) return zoomIdentity;
+    const w2 = size.w - rightInset;
+    const h2 = size.h - bottomInset - topInset;
+    // Room for the names that sit beside the westernmost and easternmost rings.
+    const padL = Math.min(110, w2 * 0.13);
+    const padR = Math.min(120, w2 * 0.15);
+    const padY = Math.min(80, h2 * 0.12);
+    const bw = Math.max(1, cityBand.x1 - cityBand.x0);
+    const bh = Math.max(1, cityBand.y1 - cityBand.y0);
+    const k = Math.max(0.45, Math.min(HOME_MAX_K, (w2 - padL - padR) / bw, (h2 - padY * 2) / bh));
+    const cx = (cityBand.x0 + cityBand.x1) / 2;
+    const cy = (cityBand.y0 + cityBand.y1) / 2;
+    return zoomIdentity.translate(padL + (w2 - padL - padR) / 2 - k * cx, topInset + h2 / 2 - k * cy).scale(k);
+  }, [size, cityBand, rightInset, bottomInset, topInset]);
+
+  /** The whole country, shrunk to fit the part of the map not covered by panels (used for logo takeovers). */
+  const countryTransform = useCallback(() => {
     if (!size) return zoomIdentity;
     const w2 = size.w - rightInset;
     const h2 = size.h - bottomInset - topInset;
@@ -153,20 +281,29 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
         [-size.w, -size.h],
         [size.w * 2, size.h * 2],
       ])
-      .on('zoom', (event: {transform: ZoomTransform}) => setTransform(event.transform));
+      .on('zoom', (event: {transform: ZoomTransform}) => {
+        transformRef.current = event.transform;
+        setTransform(event.transform);
+      });
     zoomRef.current = behavior;
     const sel = select(svg);
     sel.call(behavior).on('dblclick.zoom', null);
     if (!didInit.current) {
       didInit.current = true;
-      sel.call(behavior.transform, homeTransform());
+      sel.call(behavior.transform, takeover ? countryTransform() : homeTransform());
     }
     return () => {
       sel.on('.zoom', null);
     };
-    // homeTransform is read once at init; later changes animate below.
+    // The start view is read once at init; later changes animate below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [size, hasMap]);
+
+  const animateTo = useCallback((t: ZoomTransform, ms: number) => {
+    const svg = svgRef.current;
+    if (!svg || !zoomRef.current) return;
+    select(svg).transition().duration(ms).call(zoomRef.current.transform, t);
+  }, []);
 
   const zoomBy = useCallback((factor: number) => {
     const svg = svgRef.current;
@@ -174,58 +311,67 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
     select(svg).transition().duration(250).call(zoomRef.current.scaleBy, factor);
   }, []);
 
-  const resetZoom = useCallback(() => {
-    const svg = svgRef.current;
-    if (!svg || !zoomRef.current) return;
-    select(svg).transition().duration(450).call(zoomRef.current.transform, homeTransform());
-  }, [homeTransform]);
-
-  // With no city selected, re-fit the country whenever a panel opens or closes.
-  useEffect(() => {
-    if (selectedCityId || !didInit.current) return;
-    resetZoom();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rightInset, bottomInset, topInset, selectedCityId === null]);
-
-  // During a logo takeover, show the whole country.
   const takeoverId = takeover?.id ?? null;
-  useEffect(() => {
-    if (!takeoverId || !didInit.current) return;
-    resetZoom();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [takeoverId, rightInset, bottomInset, topInset]);
+  const resetZoom = useCallback(() => {
+    animateTo(takeoverId ? countryTransform() : homeTransform(), 450);
+  }, [animateTo, takeoverId, countryTransform, homeTransform]);
 
-  // Fly to the selected city.
-  const lastFlown = useRef<string | null>(null);
+  /** Fly to a city, close enough to separate it from its neighbours. */
+  const flyToCity = useCallback(
+    (cityId: string) => {
+      if (!projection || !size) return;
+      const city = CITY_BY_ID[cityId];
+      if (!city) return;
+      const p = projection([city.lon, city.lat]);
+      if (!p) return;
+      const sep = separationZoom(
+        p,
+        cities.filter((c) => c.city.id !== city.id).map((c) => projection([c.city.lon, c.city.lat])).filter((q): q is [number, number] => !!q),
+      );
+      const k = Math.min(MAX_ZOOM, Math.max(transformRef.current.k, Math.min(size.w, size.h) < 600 ? 3 : 4, sep));
+      const visibleH = size.h - bottomInset - topInset;
+      animateTo(
+        zoomIdentity
+          .translate((size.w - rightInset) / 2, topInset + visibleH / 2)
+          .scale(k)
+          .translate(-p[0], -p[1]),
+        700,
+      );
+    },
+    [projection, size, cities, bottomInset, rightInset, topInset, animateTo],
+  );
+
+  // Where the map should be. Opening a city remembers the view you jumped from, and closing the
+  // panel goes back to it (a cluster you had zoomed into stays zoomed). A logo takeover always
+  // shows the whole country.
+  const jumpPoint = useRef<ZoomTransform | null>(null);
+  const prevSelected = useRef<string | null>(null);
+  const prevTakeover = useRef<string | null>(null);
   useEffect(() => {
+    if (!didInit.current || !projection) return;
+    const wasSelected = prevSelected.current;
+    const selectionChanged = wasSelected !== selectedCityId;
+    const takeoverChanged = prevTakeover.current !== takeoverId;
+    prevSelected.current = selectedCityId;
+    prevTakeover.current = takeoverId;
+    if (selectionChanged && !wasSelected && selectedCityId) jumpPoint.current = transformRef.current;
     if (takeoverId) {
-      lastFlown.current = null;
+      animateTo(countryTransform(), 450);
       return;
     }
-    if (!selectedCityId || !projection || !size || !svgRef.current || !zoomRef.current) {
-      if (!selectedCityId) lastFlown.current = null;
+    if (selectedCityId) {
+      if (selectionChanged || takeoverChanged) flyToCity(selectedCityId);
       return;
     }
-    if (lastFlown.current === selectedCityId) return;
-    lastFlown.current = selectedCityId;
-    const city = cities.find((c) => c.city.id === selectedCityId)?.city;
-    if (!city) return;
-    const p = projection([city.lon, city.lat]);
-    if (!p) return;
-    const sep = separationZoom(
-      p,
-      cities.filter((c) => c.city.id !== city.id).map((c) => projection([c.city.lon, c.city.lat])).filter((q): q is [number, number] => !!q),
-    );
-    const k = Math.min(MAX_ZOOM, Math.max(transform.k, Math.min(size.w, size.h) < 600 ? 3 : 4, sep));
-    const visibleH = size.h - bottomInset - topInset;
-    const t = zoomIdentity
-      .translate((size.w - rightInset) / 2, topInset + visibleH / 2)
-      .scale(k)
-      .translate(-p[0], -p[1]);
-    select(svgRef.current).transition().duration(700).call(zoomRef.current.transform, t);
-    // transform intentionally omitted: we only fly when the selection changes.
+    if (selectionChanged && wasSelected) {
+      animateTo(jumpPoint.current ?? homeTransform(), 600);
+      jumpPoint.current = null;
+      return;
+    }
+    // Nothing selected and the space around the map changed (or a takeover ended): frame the cities again.
+    animateTo(homeTransform(), 450);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCityId, projection, size, bottomInset, rightInset, topInset, cities, takeoverId]);
+  }, [selectedCityId, takeoverId, rightInset, bottomInset, topInset, hasMap, size?.w, size?.h]);
 
   const markers = useMemo(() => {
     if (!projection) return [];
@@ -240,6 +386,8 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
       .filter((m): m is NonNullable<typeof m> => m !== null);
   }, [cities, projection]);
 
+  const showDetail = !!detailPaths && !takeover && transform.k >= DETAIL_K;
+
   const placed = useMemo(() => {
     const items = markers.map((m) => {
       const x = transform.applyX(m.px);
@@ -248,8 +396,9 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
       return {...m, x, y, r};
     });
     const clusters = clusterMarkers(items, selectedCityId);
-    const {labels, boxes} = placeLabels(clusters, selectedCityId, size);
-    const provinceLabels = (paths?.provinces ?? [])
+    const visibleClusters = takeover && selectedCityId ? clusters.filter((c) => c.containsSelected) : clusters;
+    const {labels, boxes} = placeLabels(visibleClusters, selectedCityId, size);
+    const provinceLabels = (takeover ? [] : (paths?.provinces ?? []))
       .filter((p) => p.area * transform.k * transform.k > 9000)
       .map((p) => {
         const x = transform.applyX(p.centroid[0]);
@@ -260,15 +409,50 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
         return {id: p.id, x, y, text, fontSize, box: {x0: x - w / 2, y0: y - fontSize, x1: x + w / 2, y1: y + 4}};
       })
       .filter((pl) => !boxes.some((b) => overlaps(b, pl.box)));
-    return {clusters, labels, provinceLabels};
-  }, [markers, transform, selectedCityId, size, paths]);
+    const taken: Box[] = [...boxes, ...provinceLabels.map((p) => p.box)];
+    const onScreen = (b: Box) => !size || (b.x0 >= 0 && b.y0 >= 0 && b.x1 <= size.w && b.y1 <= size.h);
+
+    // Seas, lakes, mountain ranges and islands, most important first.
+    const geoLabels: PlacedGeoLabel[] = [];
+    if (detailPaths && !takeover) {
+      for (const l of detailPaths.labels) {
+        const minK = l.kind === 'ocean' || l.kind === 'water' ? l.z : Math.max(l.z, DETAIL_K);
+        if (transform.k < minK) continue;
+        const style = GEO_LABEL_STYLE[l.kind];
+        const text = style.upper ? l.name.toUpperCase() : l.name;
+        const x = transform.applyX(l.p[0]);
+        const y = transform.applyY(l.p[1]);
+        const w = text.length * style.size * (style.upper ? 0.72 : 0.56);
+        const box = {x0: x - w / 2 - 2, y0: y - style.size * 0.75, x1: x + w / 2 + 2, y1: y + style.size * 0.45};
+        if (!onScreen(box) || taken.some((b) => overlaps(b, box))) continue;
+        taken.push(box);
+        geoLabels.push({key: `${l.kind}-${l.name}`, kind: l.kind, text, x, y});
+      }
+    }
+
+    // Towns: Natural Earth's web-map zoom for each place, mapped onto this map's zoom.
+    const towns: PlacedTown[] = [];
+    if (detailPaths && showDetail) {
+      const townZoom = 3.6 + 1.3 * Math.log2(transform.k);
+      for (const t of detailPaths.towns) {
+        if (t.z > townZoom) continue;
+        const x = transform.applyX(t.p[0]);
+        const y = transform.applyY(t.p[1]);
+        const w = t.name.length * 11 * 0.56;
+        const box = {x0: x - 3, y0: y - 7, x1: x + 6 + w, y1: y + 7};
+        if (!onScreen(box) || taken.some((b) => overlaps(b, box))) continue;
+        taken.push(box);
+        towns.push({key: `${t.name}-${t.lon}`, name: t.name, x, y});
+      }
+    }
+    return {clusters: visibleClusters, labels, provinceLabels, geoLabels, towns};
+  }, [markers, transform, selectedCityId, size, paths, detailPaths, takeover, showDetail]);
 
   const labelById = useMemo(() => new Map(placed.labels.map((l) => [l.id, l])), [placed.labels]);
 
   const zoomToCluster = useCallback(
     (members: {px: number; py: number}[]) => {
-      const svg = svgRef.current;
-      if (!svg || !zoomRef.current || !size) return;
+      if (!size) return;
       let minD = Infinity;
       for (let i = 0; i < members.length; i++)
         for (let j = i + 1; j < members.length; j++)
@@ -276,15 +460,18 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
       const k = Math.min(MAX_ZOOM, Math.max(transform.k * 1.5, (SEPARATION_PX / minD) * 1.15));
       const cx = members.reduce((a, m) => a + m.px, 0) / members.length;
       const cy = members.reduce((a, m) => a + m.py, 0) / members.length;
-      const t = zoomIdentity
-        .translate((size.w - rightInset) / 2, topInset + (size.h - bottomInset - topInset) / 2)
-        .scale(k)
-        .translate(-cx, -cy);
-      select(svg).transition().duration(600).call(zoomRef.current.transform, t);
+      animateTo(
+        zoomIdentity
+          .translate((size.w - rightInset) / 2, topInset + (size.h - bottomInset - topInset) / 2)
+          .scale(k)
+          .translate(-cx, -cy),
+        600,
+      );
     },
-    [size, transform.k, bottomInset, rightInset, topInset],
+    [size, transform.k, bottomInset, rightInset, topInset, animateTo],
   );
 
+  const riverRank = transform.k < 3 ? 5 : transform.k < 5 ? 7 : 9;
 
   return (
     <div ref={containerRef} className="relative h-full w-full overflow-hidden" style={{background: 'var(--map-water)'}}>
@@ -309,10 +496,13 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
             </clipPath>
           </defs>
           <g transform={transform.toString()}>
+            {paths.world.map((d, i) => (
+              <path key={`w${i}`} d={d} fill="var(--map-neighbour)" stroke="var(--map-border)" strokeWidth={0.4} vectorEffect="non-scaling-stroke" />
+            ))}
             {paths.neighbours.map((d, i) => (
               <path key={`n${i}`} d={d} fill="var(--map-neighbour)" stroke="var(--map-border)" strokeWidth={0.5} vectorEffect="non-scaling-stroke" />
             ))}
-            {paths.provinces.map((p) => (
+            {(showDetail && detailPaths ? detailPaths.provinces : paths.provinces).map((p) => (
               <path
                 key={p.id}
                 d={p.d}
@@ -338,14 +528,20 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
                   pointerEvents="none"
                 />
               ))}
-            {(takeover ? [] : paths.lakes).map((d, i) => (
+            {(takeover ? [] : showDetail && detailPaths ? detailPaths.lakes : paths.lakes).map((d, i) => (
               <path key={`l${i}`} d={d} fill="var(--map-water)" stroke="none" />
             ))}
+            {showDetail &&
+              detailPaths?.rivers
+                .filter((r) => r.rank <= riverRank)
+                .map((r, i) => (
+                  <path key={`r${i}`} d={r.d} fill="none" stroke="var(--map-river)" strokeWidth={r.rank <= 4 ? 1.2 : 0.8} vectorEffect="non-scaling-stroke" strokeLinecap="round" />
+                ))}
           </g>
 
           {/* Province names: faint, screen-space so they stay readable at any zoom. */}
           <g aria-hidden="true">
-            {(takeover ? [] : placed.provinceLabels).map((p) => (
+            {placed.provinceLabels.map((p) => (
               <text
                 key={`pl-${p.id}`}
                 x={p.x}
@@ -361,10 +557,27 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
             ))}
           </g>
 
+          {/* Seas, lakes, mountains and towns: context only, so hidden from assistive tech. */}
+          <g aria-hidden="true" pointerEvents="none">
+            {placed.geoLabels.map((l) => (
+              <text key={l.key} x={l.x} y={l.y} textAnchor="middle" className={GEO_LABEL_STYLE[l.kind].className} fontSize={GEO_LABEL_STYLE[l.kind].size}>
+                {l.text}
+              </text>
+            ))}
+            {placed.towns.map((t) => (
+              <g key={t.key}>
+                <circle cx={t.x} cy={t.y} r={2.2} className="town-dot" />
+                <text x={t.x + 5} y={t.y} dominantBaseline="central" className="town-label" fontSize={11}>
+                  {t.name}
+                </text>
+              </g>
+            ))}
+          </g>
+
           {/* City markers (nearby cities merge into a cluster until you zoom in) */}
           <g>
             {placed.clusters
-              .filter((c) => !takeover || c.containsSelected)
+              .slice()
               .sort((a, b) => Number(a.containsSelected) - Number(b.containsSelected))
               .map((c) =>
                 c.members.length === 1 ? (
@@ -403,9 +616,9 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
 
       <div className="absolute left-3" style={{bottom: bottomInset + 12, transition: 'bottom 200ms ease'}}>
         <ButtonGroup label="Map zoom" orientation="vertical" className="glass glass-group rounded-full">
-          <IconButton variant="ghost" className="rounded-t-full rounded-b-none" label="Zoom in" tooltip="Zoom in" icon={<Icon icon={PlusIcon} />} onClick={() => zoomBy(1.6)} />
-          <IconButton variant="ghost" className="rounded-none" label="Zoom out" tooltip="Zoom out" icon={<Icon icon={MinusIcon} />} onClick={() => zoomBy(1 / 1.6)} />
-          <IconButton variant="ghost" className="rounded-b-full rounded-t-none" label="Show all of Canada" tooltip="Show all of Canada" icon={<Icon icon={FitIcon} />} onClick={resetZoom} />
+          <IconButton variant="ghost" className="rounded-full" label="Zoom in" tooltip="Zoom in" icon={<Icon icon={PlusIcon} />} onClick={() => zoomBy(1.6)} />
+          <IconButton variant="ghost" className="rounded-full" label="Zoom out" tooltip="Zoom out" icon={<Icon icon={MinusIcon} />} onClick={() => zoomBy(1 / 1.6)} />
+          <IconButton variant="ghost" className="rounded-full" label="Show all cities" tooltip="Show all cities" icon={<Icon icon={FitIcon} />} onClick={resetZoom} />
         </ButtonGroup>
       </div>
     </div>
@@ -453,10 +666,10 @@ function CityMarker({x, y, r, city, teamCount, currentCount, isSelected, onSelec
         }
       }}>
       <circle className="city-hit" r={Math.max(14, ringR + 6)} />
-      {isSelected && <circle className="city-pulse" r={ringR} fill="none" stroke="var(--color-accent)" strokeWidth={2} />}
+      {isSelected && <circle className="city-pulse" r={ringR} fill="none" stroke="var(--map-selected)" strokeWidth={2} />}
       <g className="city-core">
         <OutlineRing r={ringR} dashed={defunctOnly} isSelected={isSelected} />
-        {isSelected && <circle r={ringR - 3.2} fill="var(--color-accent)" />}
+        {isSelected && <circle r={ringR - 3.2} fill="var(--map-selected)" />}
         <circle className="city-focus" r={ringR + 4} fill="none" stroke="transparent" />
       </g>
       {label && <MarkerLabel label={label} x={x} y={y} />}
@@ -520,7 +733,7 @@ function OutlineRing({r, dashed, isSelected, faint = false}: {r: number; dashed:
       r={r}
       fill={faint ? 'none' : 'var(--map-halo)'}
       fillOpacity={0.85}
-      stroke={isSelected ? 'var(--color-accent)' : 'var(--color-text-primary)'}
+      stroke={isSelected ? 'var(--map-selected)' : 'var(--color-text-primary)'}
       strokeOpacity={faint ? 0.45 : 1}
       strokeWidth={faint ? 1.25 : 2.25}
       strokeDasharray={dashed ? '3.2 2.6' : undefined}
@@ -632,7 +845,7 @@ function ClusterMarker({
       <g className="city-core">
         <OutlineRing r={ringR + 3} dashed={false} isSelected={isSelected} faint />
         <OutlineRing r={ringR} dashed={false} isSelected={isSelected} />
-        {isSelected && <circle r={ringR - 3.2} fill="var(--color-accent)" />}
+        {isSelected && <circle r={ringR - 3.2} fill="var(--map-selected)" />}
         <circle className="city-focus" r={ringR + 6} fill="none" stroke="transparent" />
       </g>
       {label && <MarkerLabel label={label} x={x} y={y} />}
