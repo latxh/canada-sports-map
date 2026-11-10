@@ -19,7 +19,7 @@ def copy(rel):
     dst = os.path.join(out_dir, rel)
     if rel.endswith('.jpg'):
         # Re-encode photos small: 640px wide is plenty for a 256px-wide card on a 2x screen.
-        subprocess.run(['magick', os.path.join(src, rel), '-strip', '-resize', '640x640>', '-quality', '76', dst], check=True)
+        subprocess.run(['magick', os.path.join(src, rel), '-strip', '-resize', '600x600>', '-quality', '72', dst], check=True)
     else:
         shutil.copyfile(os.path.join(src, rel), dst)
     return rel
@@ -34,7 +34,18 @@ def caption(p):
 def clean_artist(a):
     a = re.sub(r'\s+', ' ', a or '').strip()
     a = re.sub(r'^(Photo by|By)\s+', '', a, flags=re.I)
+    a = re.sub(r'^(.+?)\1+$', r'\1', a)  # Commons sometimes repeats the name
+    a = re.sub(r'^No machine-readable author provided\.\s*(\S+) assumed.*$', r'\1', a)
     return a[:60]
+
+# Photos that came back from the articles but are not of the team, its venue or its moments
+# (a flower, a bird, a car, number graphics, text cards), plus a near-duplicate.
+DROP = {
+    'photos/montreal-roses-fc--2.jpg', 'photos/ottawa-rapid-fc--1.jpg', 'photos/quebec-bulldogs--1.jpg',
+    'photos/venue--quebec-arena.jpg', 'photos/quebec-nordiques--3.jpg', 'photos/toronto-blue-jays--2.jpg',
+    'photos/toronto-blue-jays--3.jpg', 'photos/toronto-blue-jays--4.jpg', 'photos/ottawa-senators--4.jpg',
+    'photos/cf-montreal--4.jpg', 'photos/ottawa-charge--1.jpg', 'photos/montreal-expos--5.jpg',
+}
 
 logos = {}
 for team_id in sorted(set(media['teams']) | set(logos2)):
@@ -52,12 +63,16 @@ photos = {}
 for team_id, rec in sorted(media['teams'].items()):
     items = []
     for p in rec.get('photos', [])[:5]:
+        if p['file'] in DROP:
+            continue
         items.append({'file': copy(p['file']), 'page': p['page'], 'license': p.get('license', ''), 'artist': clean_artist(p.get('artist')), 'caption': caption(p)})
     if items:
         photos[team_id] = items
 
 venues = {}
 for venue_id, p in sorted(media.get('venues', {}).items()):
+    if p['file'] in DROP:
+        continue
     venues[venue_id] = {'file': copy(p['file']), 'page': p['page'], 'license': p.get('license', ''), 'artist': clean_artist(p.get('artist')), 'caption': caption(p)}
 
 def ts(obj):

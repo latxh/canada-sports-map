@@ -292,33 +292,33 @@ function teamPhotos(team: Team): MediaPhoto[] {
 }
 
 /**
- * Official logos through the years where Wikipedia has them (plus today's), otherwise one
- * illustrated badge per identity era.
+ * Logos through the years: official files where Wikipedia or Commons has them, an
+ * illustrated badge for any other era, and today's official logo last.
  */
 function LogoCarousel({team}: {team: Team}) {
-  const files = (HISTORICAL_LOGOS[team.id] ?? []).slice().sort((a, b) => a.from - b.from);
-  const era = latestEra(team);
-  if (files.length > 0) {
-    return (
-      <CardCarousel label="Logos through the years">
-        {files.map((f) => (
-          <CarouselCard key={f.file} caption={yearsLabel(f.from, f.to)}>
-            <LogoImage src={mediaAsset(f.file)} alt={`${team.name} logo, ${yearsLabel(f.from, f.to)}`} size={104} />
-          </CarouselCard>
-        ))}
-        {LOGOS[team.id] && (
-          <CarouselCard caption={yearsLabel(era.from, era.to)}>
-            <TeamLogo team={team} size={104} />
-          </CarouselCard>
-        )}
-      </CardCarousel>
-    );
-  }
+  const files = HISTORICAL_LOGOS[team.id] ?? [];
+  const official = LOGOS[team.id];
+  const officialEra = official ? (official.eraIndex ?? team.identity.length - 1) : -1;
+  const overlaps = (from: number, to: number | undefined, f: {from: number; to?: number}) => from <= (f.to ?? 9999) && (to ?? 9999) >= f.from;
+  const items: {key: string; from: number; caption: string; node: ReactNode}[] = files.map((f) => ({
+    key: f.file,
+    from: f.from,
+    caption: yearsLabel(f.from, f.to),
+    node: <LogoImage src={mediaAsset(f.file)} alt={`${team.name} logo, ${yearsLabel(f.from, f.to)}`} size={104} />,
+  }));
+  team.identity.forEach((e, i) => {
+    if (i === officialEra) {
+      items.push({key: `official-${i}`, from: e.from, caption: yearsLabel(e.from, e.to), node: <TeamLogo team={team} size={104} />});
+    } else if (!files.some((f) => overlaps(e.from, e.to, f))) {
+      items.push({key: `era-${i}`, from: e.from, caption: `${yearsLabel(e.from, e.to)}${e.name ? ` · ${e.name}` : ''}`, node: <EraLogo team={team} index={i} size={104} />});
+    }
+  });
+  items.sort((a, b) => a.from - b.from);
   return (
     <CardCarousel label="Logos through the years">
-      {team.identity.map((e, i) => (
-        <CarouselCard key={i} caption={`${yearsLabel(e.from, e.to)}${e.name ? ` · ${e.name}` : ''}`}>
-          <EraLogo team={team} index={i} size={104} />
+      {items.map((it) => (
+        <CarouselCard key={it.key} caption={it.caption}>
+          {it.node}
         </CarouselCard>
       ))}
     </CardCarousel>

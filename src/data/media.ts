@@ -19,6 +19,1437 @@ export interface MediaPhoto {
   caption: string;
 }
 
-export const HISTORICAL_LOGOS: Record<string, MediaLogo[]> = {};
-export const TEAM_PHOTOS: Record<string, MediaPhoto[]> = {};
-export const VENUE_PHOTOS: Record<string, MediaPhoto> = {};
+export const HISTORICAL_LOGOS: Record<string, MediaLogo[]> = {
+  "montreal-canadiens": [
+    {
+      "file": "logos/montreal-canadiens--1909.png",
+      "from": 1909,
+      "to": 1910,
+      "page": "https://commons.wikimedia.org/wiki/File:Logo_Canadiens_de_Montr%C3%A9al_1909-1910.png",
+      "license": "Public domain"
+    },
+    {
+      "file": "logos/montreal-canadiens--1912.png",
+      "from": 1912,
+      "to": 1913,
+      "page": "https://commons.wikimedia.org/wiki/File:Montreal_Canadiens_1912-1913_logo.svg",
+      "license": "Public domain"
+    }
+  ],
+  "montreal-expos": [
+    {
+      "file": "logos/montreal-expos--1992.png",
+      "from": 1992,
+      "to": 2004,
+      "page": "https://commons.wikimedia.org/wiki/File:Montreal_Expos_Cap_Logo_(1992_to_2004).svg",
+      "license": "Public domain"
+    }
+  ],
+  "ottawa-senators": [
+    {
+      "file": "logos/ottawa-senators--2020.png",
+      "from": 2020,
+      "to": 2021,
+      "page": "https://en.wikipedia.org/wiki/File:Ottawa_Senators_2020-2021_logo.svg",
+      "license": "Fair use"
+    }
+  ],
+  "toronto-maple-leafs": [
+    {
+      "file": "logos/toronto-maple-leafs--1939.png",
+      "from": 1939,
+      "to": 1967,
+      "page": "https://commons.wikimedia.org/wiki/File:Toronto_Maple_Leafs_Logo_1939_-_1967.svg",
+      "license": "Public domain"
+    }
+  ],
+  "vancouver-canucks": [
+    {
+      "file": "logos/vancouver-canucks--1978.png",
+      "from": 1978,
+      "to": 1997,
+      "page": "https://commons.wikimedia.org/wiki/File:21-210794_vancouver-canucks-1978-97-old-canucks-logo.png",
+      "license": "Public domain"
+    }
+  ]
+};
+
+export const TEAM_PHOTOS: Record<string, MediaPhoto[]> = {
+  "afc-toronto": [
+    {
+      "file": "photos/afc-toronto--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:AFC_Toronto_Shield.jpg",
+      "license": "CC BY 4.0",
+      "artist": "Robin Glover",
+      "caption": "AFC Toronto celebration Supporters Shield title"
+    }
+  ],
+  "atletico-ottawa": [
+    {
+      "file": "photos/atletico-ottawa--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Atleticoottawakickoff.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "Earl Andrew",
+      "caption": "Aletico Ottawa FC vs HFX Wanderers, home opener, moments after kick-off"
+    }
+  ],
+  "bc-lions": [
+    {
+      "file": "photos/bc-lions--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:BCPLACESTADIUM.jpg",
+      "license": "Public domain",
+      "artist": "User Gateman1997 on en.wikipedia",
+      "caption": "Taken by en:User:Gateman1997 in 2003. Released for public use."
+    },
+    {
+      "file": "photos/bc-lions--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Lui_Passaglia_and_Damon_Allen_with_Grey_Cup.jpg",
+      "license": "CC BY 2.0",
+      "artist": "Mike from Vancouver, Canada",
+      "caption": "January 2001. Kicker Lui Passaglia & quarterback Damon Allen of the CFL's BC Lions pose with Grey Cup."
+    },
+    {
+      "file": "photos/bc-lions--3.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:BC_Lions_vs._Saskatchewan_Roughriders,_October_1_2005-cropped.jpg",
+      "license": "CC BY-SA 2.0",
+      "artist": "Original photograph by lester. This version cropped by Heqs.",
+      "caption": "A detail of this image, originally uploaded to flickr here and released under the CC-BY-SA-2.0 license."
+    },
+    {
+      "file": "photos/bc-lions--4.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:CFL_2006_West_Division_Final_at_BC_Place.jpg",
+      "license": "CC BY 2.0",
+      "artist": "christy garcia",
+      "caption": "2006 CFL West Division Final (Saskatchewan Roughriders at BC Lions, BC Place Stadium, November 12, 2006)"
+    },
+    {
+      "file": "photos/bc-lions--5.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Lions_Opener.jpg",
+      "license": "CC BY 3.0",
+      "artist": "Cmm3 (talk)",
+      "caption": "The BC Lions 2010 season opener at Empire Field."
+    }
+  ],
+  "calgary-flames": [
+    {
+      "file": "photos/calgary-flames--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Mark_Giordano_140328.png",
+      "license": "CC BY-SA 3.0",
+      "artist": "Resolute",
+      "caption": "Calgary Flames defenceman Mark Giordano prior to a National Hockey League game against the New York Rangers."
+    },
+    {
+      "file": "photos/calgary-flames--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Sean_Monahan_20130914.png",
+      "license": "CC BY-SA 3.0",
+      "artist": "Resolute",
+      "caption": "Calgary Flames forward Sean Monahan prior to a pre-season game against the Edmonton Oilers."
+    },
+    {
+      "file": "photos/calgary-flames--3.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:MatthewTkachuk.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "Tlop2000",
+      "caption": "Matthew Tkachuk with the Calgary Flames in 2021"
+    },
+    {
+      "file": "photos/calgary-flames--4.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Atlantaflamesgoalhug.jpg",
+      "license": "Public domain",
+      "artist": "Rick Dikeman",
+      "caption": "Tom Lysiak (left) celebrates a goal with Atlanta Flames teammates in a game with the Colorado Rockies in 1978."
+    }
+  ],
+  "calgary-roughnecks": [
+    {
+      "file": "photos/calgary-roughnecks--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:CalgaryRoughnecks.jpg",
+      "license": "CC BY-SA 3.0",
+      "artist": "JamesTeterenko",
+      "caption": "Calgary Roughnecks at the Pengrowth Saddledome, April 9, 2005. This is a National Lacrosse League (NLL) match."
+    },
+    {
+      "file": "photos/calgary-roughnecks--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Calgary_2009_NLL_champions.JPG",
+      "license": "CC BY-SA 3.0",
+      "artist": "Resolute",
+      "caption": "The Calgary Roughnecks celebrate winning the 2009 National Lacrosse League championship. Devan Wray is seen hoisting the Champions Cup over "
+    }
+  ],
+  "cavalry-fc": [
+    {
+      "file": "photos/cavalry-fc--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Section_203_ATCO_Field.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "BeesottedBee4",
+      "caption": "View from Section 203 on May 4, 2019. Cavalry FC home opener vs York 9 FC"
+    },
+    {
+      "file": "photos/cavalry-fc--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:HFX_Wanderers_FC_vs._Cavalry_FC_(48174115731).jpg",
+      "license": "CC BY-SA 2.0",
+      "artist": "Coastal Elite from Halifax, Canada",
+      "caption": "Sergio Camargo (#10, Cavalry FC) disputing the ball with Matthew Arnone (#23, HFX Wanderers FC) during a Canadian Premier League at Wanderer"
+    },
+    {
+      "file": "photos/cavalry-fc--3.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Forge_FC_vs_Cavalry_FC.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "Blaixx",
+      "caption": "Forge FC hosts Cavalry FC in a Canadian Premier League regular season game. The match was on August 25, 2019, at Tim Hortons Field in Hamilt"
+    }
+  ],
+  "cf-montreal": [
+    {
+      "file": "photos/cf-montreal--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:2013_Impact_de_Montr%C3%A9al_blanc.jpg",
+      "license": "CC BY 2.0",
+      "artist": "Joe Nuxoll from San Jose, CA, USA",
+      "caption": "Major League Soccer team Montreal Impact visiting the San Jose Earthquakes on 4 May 2013.Front row: Felipe Martins, Collen Warner, Dennis Ia"
+    },
+    {
+      "file": "photos/cf-montreal--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Montreal_Impact_CONCACAF_FINAL.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "Montrealyul",
+      "caption": "Montreal Impact play CONCACAF Champions League final in front of 61,000 fans, largest crowd for a Canadian soccer game."
+    },
+    {
+      "file": "photos/cf-montreal--3.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Ultras_Montreal_10_ans_2012-07-08.jpg",
+      "license": "CC BY-SA 3.0",
+      "artist": "Gates of Ale",
+      "caption": "Banner for Ultras Montreal's 10th anniversary at Saputo Stadium before game between Montreal Impact and Columbus Crew on 8 July 2012."
+    },
+    {
+      "file": "photos/cf-montreal--5.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:2012_Impact_de_Montr%C3%A9al_au_stade_Saputo.jpg",
+      "license": "CC BY-SA 3.0",
+      "artist": "Gates of Ale",
+      "caption": "Celebrations of a Montreal Impact goal against the visiting New York Red Bulls at Saputo Stadium in Montreal, 28 July 2012. Goal scored by M"
+    }
+  ],
+  "edmonton-oilers": [
+    {
+      "file": "photos/edmonton-oilers--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Jari_Kurri_2016.jpg",
+      "license": "CC BY-SA 3.0",
+      "artist": "Connor Mah",
+      "caption": "Jari Kurri in 2016"
+    },
+    {
+      "file": "photos/edmonton-oilers--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Stanley_Cup_-_Basil_Pocklington_x%27es.JPG",
+      "license": "CC BY-SA 3.0",
+      "artist": "Scorpion0422",
+      "caption": "Close-up of Basil Pocklington's crossed off name on the Stanley Cup at the Hockey Hall of Fame"
+    },
+    {
+      "file": "photos/edmonton-oilers--3.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Wayne_Gretzky_statue_6.jpg",
+      "license": "CC BY 3.0",
+      "artist": "117Avenue",
+      "caption": "Statue of Wayne Gretzky in front of Rogers Place, in Edmonton, Canada."
+    },
+    {
+      "file": "photos/edmonton-oilers--4.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Mark_Messier_2016.jpg",
+      "license": "CC BY-SA 3.0",
+      "artist": "Connor Mah",
+      "caption": "Mark Messier in 2016"
+    }
+  ],
+  "edmonton-rush": [
+    {
+      "file": "photos/edmonton-rush--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Edmonton_Rush_versus_Toronto_Rock_February_2010.jpg",
+      "license": "CC BY-SA 2.0",
+      "artist": "Mack Male from Edmonton, AB, Canada",
+      "caption": "Edmonton Rush vs. Toronto Rock"
+    }
+  ],
+  "edmonton-stingers": [
+    {
+      "file": "photos/edmonton-stingers--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Summer_Series_Team_.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "BCBFraser",
+      "caption": "2020 CEBL Champions"
+    },
+    {
+      "file": "photos/edmonton-stingers--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Summer_Series_2020.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "BCBFraser",
+      "caption": "Post Game Celebration"
+    }
+  ],
+  "fc-edmonton": [
+    {
+      "file": "photos/fc-edmonton--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Whitecaps_vs_FC_Edmonton.jpg",
+      "license": "CC BY-SA 2.0",
+      "artist": "Matt Boulton",
+      "caption": "Van vs Edm, 9-May-2012"
+    },
+    {
+      "file": "photos/fc-edmonton--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:FC_Edmonton_Goal_Celebration.jpg",
+      "license": "CC BY-SA 2.0",
+      "artist": "wanderin' wolfgang",
+      "caption": "Players of FC Edmonton celebrate a goal by Julian Ulbricht in the first half of a Canadian Premier League match, lost 1-3 to HFX Wanderers F"
+    },
+    {
+      "file": "photos/fc-edmonton--3.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Clarke_Stadium.jpg",
+      "license": "CC BY 2.0",
+      "artist": "Jason Woodhead",
+      "caption": "Clarke Field, home of FC Edmonton, a soccer team in Edmonton, Alberta, Canada"
+    }
+  ],
+  "forge-fc": [
+    {
+      "file": "photos/forge-fc--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Kwame_Awuah_and_Juan_Diego_Guti%C3%A9rrez_-_HFX_Wanderers_FC_vs._Forge_FC.jpg",
+      "license": "CC BY-SA 2.0",
+      "artist": "Cold, Indrid",
+      "caption": "Juan Diego Gutiérrez of HFX Wanderers FC and Kwame Awuah of Forge FC chase the ball during a Canadian Premier League (CPL) soccer match on S"
+    },
+    {
+      "file": "photos/forge-fc--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Tim_Hortons_Field_Exterior.JPG",
+      "license": "CC BY-SA 4.0",
+      "artist": "Jfvoll",
+      "caption": "Tim Hortons Field Exterior"
+    },
+    {
+      "file": "photos/forge-fc--3.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Forge_FC_vs_Cavalry_FC.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "Blaixx",
+      "caption": "Forge FC hosts Cavalry FC in a Canadian Premier League regular season game. The match was on August 25, 2019, at Tim Hortons Field in Hamilt"
+    }
+  ],
+  "halifax-tides-fc": [
+    {
+      "file": "photos/halifax-tides-fc--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Wanderers_Grounds_-_Halifax_(2018)_(46382497492).jpg",
+      "license": "CC BY-SA 2.0",
+      "artist": "Coastal Elite from Halifax, Canada",
+      "caption": "<a href=\"https://www.flickr.com/photos/fredisonfire/albums/72157668760205208\">Full Album - Wanderers Grounds, Halifax</a> Wanderers Grounds,"
+    }
+  ],
+  "hamilton-tiger-cats": [
+    {
+      "file": "photos/hamilton-tiger-cats--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:The_Tigers_of_Hamilton_football_team.jpg",
+      "license": "Public domain",
+      "artist": "",
+      "caption": "The Tigers of Hamilton football team"
+    },
+    {
+      "file": "photos/hamilton-tiger-cats--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Ottawa_and_Hamilton_Tigers_football_game_5.jpg",
+      "license": "Public domain",
+      "artist": "William James Topley",
+      "caption": "Ottawa and Hamilton Tigers \"rugby football\" (as described on image) game."
+    },
+    {
+      "file": "photos/hamilton-tiger-cats--3.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:IvorWynneStadium_Hamilton.jpg",
+      "license": "CC BY-SA 3.0",
+      "artist": "Mikerussell at English Wikipedia",
+      "caption": "self made"
+    },
+    {
+      "file": "photos/hamilton-tiger-cats--4.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Tiger-Cats_at_Argonauts_20090911.jpg",
+      "license": "CC BY-SA 3.0",
+      "artist": "DoubleBlue",
+      "caption": "w:Hamilton Tiger-Cats (in black and gold) prepare to snap the ball on offence as the w:Toronto Argonauts (in white and blue) defend in a Can"
+    },
+    {
+      "file": "photos/hamilton-tiger-cats--5.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Tim_Hortons_Field_-_Main_Grandstand.JPG",
+      "license": "CC BY-SA 4.0",
+      "artist": "Jfvoll",
+      "caption": "Tim Hortons Field - Main Grandstand"
+    }
+  ],
+  "hfx-wanderers-fc": [
+    {
+      "file": "photos/hfx-wanderers-fc--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:HFX_Wanderers_FC_vs._Cavalry_FC_(48174114546).jpg",
+      "license": "CC BY-SA 2.0",
+      "artist": "Coastal Elite from Halifax, Canada",
+      "caption": "<a href=\"https://www.flickr.com/photos/fredisonfire/albums/72157709369407237\">Full Album: HFX Wanderers FC - Cavalry FC 06/19/2019</a> Canad"
+    }
+  ],
+  "inter-toronto-fc": [
+    {
+      "file": "photos/inter-toronto-fc--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:York_United_goal_celebration_in_Halifax.jpg",
+      "license": "CC BY-SA 2.0",
+      "artist": "Cold, Indrid",
+      "caption": "York United players celebrate a goal by Álvaro Rivero against the HFX Wanderers in a Canadian Premier League (CPL) soccer match on September"
+    },
+    {
+      "file": "photos/inter-toronto-fc--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:York_Lions_Stadium_photo_by_Djuradj_Vujcic.jpg",
+      "license": "CC BY 2.0",
+      "artist": "Djuradj Vujcic",
+      "caption": "York Lions Stadium, home of York United of the Canadian Premier League."
+    }
+  ],
+  "montreal-alouettes": [
+    {
+      "file": "photos/montreal-alouettes--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Touch%C3%A9_-_September_2025.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "The Kip",
+      "caption": "Montreal Alouettes mascot Touché prior to a game against the Hamilton Tiger-Cats on September 6, 2025"
+    }
+  ],
+  "montreal-canadiens": [
+    {
+      "file": "photos/montreal-canadiens--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Fa%C3%A7ade_Centre_Bell_Center_Front.JPG",
+      "license": "CC BY-SA 3.0",
+      "artist": "Fleurdelisé",
+      "caption": "Bell Center front, Fall 2008"
+    },
+    {
+      "file": "photos/montreal-canadiens--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Youppi!_-_02.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "Jeangagnon",
+      "caption": "Youppi! à la place des Festivals, Montréal"
+    },
+    {
+      "file": "photos/montreal-canadiens--3.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Chandails_r%C3%A9tir%C3%A9s_CH,_Plante,_Moore,_Harvey,_M.Richard,_Bouchard,_Lach,_Morenz.jpg",
+      "license": "CC BY-SA 3.0",
+      "artist": "Maniacduhockey",
+      "caption": "Certains chandails retirés des Canadiens de Montréal: Jacques Plante, Dickie Moore, Doug Harvey, Maurice Richard, Émile Bouchard, Elmer Lach"
+    }
+  ],
+  "montreal-concordes": [
+    {
+      "file": "photos/montreal-concordes--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Touch%C3%A9_-_September_2025.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "The Kip",
+      "caption": "Montreal Alouettes mascot Touché prior to a game against the Hamilton Tiger-Cats on September 6, 2025"
+    }
+  ],
+  "montreal-expos": [
+    {
+      "file": "photos/montreal-expos--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Jarry_night.jpg",
+      "license": "Public domain",
+      "artist": "Tony (talk)",
+      "caption": "Jarry Park Stadium during a Montreal Expos game, 1969"
+    },
+    {
+      "file": "photos/montreal-expos--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Montreal_Expos_baseball_cap_1969-1991.jpg",
+      "license": "CC BY 2.0",
+      "artist": "eric molina from New York City, United States",
+      "caption": "Montreal Expos baseball cap used by the Major League Baseball team during 1969 to 1991 seasons."
+    },
+    {
+      "file": "photos/montreal-expos--3.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Andres_galarraga2002.jpg",
+      "license": "Public domain",
+      "artist": "User Dlz28 on en.wikipedia",
+      "caption": "This photo was taken by user dlz28 and is released into the public domain. 17:34, 1 May 2006 . . Dlz28 . . 1028×948 (159 KB)"
+    },
+    {
+      "file": "photos/montreal-expos--4.jpg",
+      "page": "https://en.wikipedia.org/wiki/File:Expos1992.jpg",
+      "license": "CC-BY-3.0",
+      "artist": "Johnmaxmena (talk)",
+      "caption": "Montreal expose in st.louis"
+    }
+  ],
+  "montreal-maroons": [
+    {
+      "file": "photos/montreal-maroons--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Forum_de_Montreal_1945.jpg",
+      "license": "Public domain",
+      "artist": "Archives de la Ville de Montréal",
+      "caption": "Forum de Montréal, rue Sainte-Catherine Ouest / avenue Atwater"
+    },
+    {
+      "file": "photos/montreal-maroons--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Babe_Siebert,_Canadian_ice_hockey_player.jpg",
+      "license": "Public domain",
+      "artist": "Unknown author",
+      "caption": "Babe Siebert, Canadian ice hockey player"
+    }
+  ],
+  "montreal-roses-fc": [
+    {
+      "file": "photos/montreal-roses-fc--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Gare_Dalhousie,_514-522,_rue_Notre-Dame_Est_(Ville-Marie)_(35368258744).jpg",
+      "license": "CC BY 2.0",
+      "artist": "Parcours riverain - Ville de Montréal from Canada",
+      "caption": "Photo : Denis Tremblay"
+    }
+  ],
+  "montreal-wanderers": [
+    {
+      "file": "photos/montreal-wanderers--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:MontrealWanderers1907.jpg",
+      "license": "Public domain",
+      "artist": "Unknown author",
+      "caption": "Montreal Wanderers hockey club in 1907 after they won the Stanley Cup.Top row, left to right: Tom Erskine, Ernie \"Moose\" Johnson, Hod Stuart"
+    }
+  ],
+  "ottawa-rapid-fc": [
+    {
+      "file": "photos/ottawa-rapid-fc--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:TD_Place,_Northside.png",
+      "license": "CC BY-SA 4.0",
+      "artist": "Itooksomepics",
+      "caption": "North stands (Northside) @ TD Place, mid-October 2019"
+    }
+  ],
+  "ottawa-redblacks": [
+    {
+      "file": "photos/ottawa-redblacks--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:TD_Place,_Northside.png",
+      "license": "CC BY-SA 4.0",
+      "artist": "Itooksomepics",
+      "caption": "North stands (Northside) @ TD Place, mid-October 2019"
+    },
+    {
+      "file": "photos/ottawa-redblacks--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Frank_Clair_Stadium_-_Ottawa_Ontario_-_September_27,_2013.jpg",
+      "license": "CC BY-SA 3.0",
+      "artist": "CFLNFL",
+      "caption": "A photograph of the progress of construction at Frank Clair Stadium taken on September 27, 2013."
+    }
+  ],
+  "ottawa-rough-riders": [
+    {
+      "file": "photos/ottawa-rough-riders--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Ottawa_Rough_Riders_1905.jpg",
+      "license": "Public domain",
+      "artist": "Unknown (Photographed for The Standard)",
+      "caption": "Ottawa Rough Riders rugby football club in Montreal in 1905 Roster: Morley Walters, Art Moore, Wilf Poapst, Eddie Phillips, Harvey Pulford, "
+    },
+    {
+      "file": "photos/ottawa-rough-riders--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Argos_v_Rough_Riders_1924.jpg",
+      "license": "Public domain",
+      "artist": "William James",
+      "caption": "Toronto Argonauts (stripes) versus Ottawa Rough Riders (solids) at Varsity Stadium. The ball carrier is Harry Hutchingham for Ottawa. Toront"
+    }
+  ],
+  "ottawa-senators": [
+    {
+      "file": "photos/ottawa-senators--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Senators_civic_centre.jpg",
+      "license": "CC BY-SA 3.0",
+      "artist": "ChakaKong",
+      "caption": "A Senators intra-squad game from the 1994-95 NHL Super Skills competition held at the Ottawa Civic Centre in November 1994. This was Radek B"
+    },
+    {
+      "file": "photos/ottawa-senators--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Zdeno_Chara.jpg",
+      "license": "CC BY-SA 3.0",
+      "artist": "Janothird~commonswiki",
+      "caption": "Zdeno Chara, picture taken by Janothird January 28th, 2006 in Ottawa"
+    },
+    {
+      "file": "photos/ottawa-senators--3.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Daniel_Alfredsson.jpg",
+      "license": "CC BY-SA 2.0",
+      "artist": "Jonathan Milley from Halifax, Canada",
+      "caption": "Daniel Alfredsson"
+    }
+  ],
+  "ottawa-senators-original": [
+    {
+      "file": "photos/ottawa-senators-original--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Ottawa-Hockey-Club-1883-84.jpg",
+      "license": "Public domain",
+      "artist": "Unknown author",
+      "caption": "Studio picture of Ottawa Hockey Club. Back row: Thomas D. Green, Thomas L. Gallagher, Nelson Porter. Middle row: Halder Kirby, Jack Kerr, F."
+    },
+    {
+      "file": "photos/ottawa-senators-original--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Ottawa_Hockey_Club_1885.jpg",
+      "license": "Public domain",
+      "artist": "Unknown author",
+      "caption": "Members of the Ottawa Hockey Club, 1885. Agar S.A.M. Adamson at top right."
+    },
+    {
+      "file": "photos/ottawa-senators-original--3.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:OttawaHockeyClub1891.JPG",
+      "license": "Public domain",
+      "artist": "Unknown author",
+      "caption": "Ottawa Hockey Club, March 1891 Back Row, L to R: H. Kirby, A. Morel, C. Kirby, H.Y. Russell, F.M.S. Jenkins, W.C. Young, ?, ? Front Row, L t"
+    },
+    {
+      "file": "photos/ottawa-senators-original--4.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Ottawa_hockey_club_1895.JPG",
+      "license": "Public domain",
+      "artist": "Unknown author",
+      "caption": "Ottawa Hockey Club 1895. Standing: P. D. Ross, G. P. Murphy, Chauncey Kirby, Don Watters. Seated: Jim Smellie, Alf Smith, Harvey Pulford, We"
+    }
+  ],
+  "pacific-fc": [
+    {
+      "file": "photos/pacific-fc--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Starlight_Stadium_-_July_2022.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "SounderBruce",
+      "caption": "View of Starlight Stadium, the home of Pacific FC and rugby events in Langford, British Columbia (near Victoria), as seen from its outer fen"
+    }
+  ],
+  "quebec-bulldogs": [
+    {
+      "file": "photos/quebec-bulldogs--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Quebec_Hockey_Club_1891-92.jpg",
+      "license": "Public domain",
+      "artist": "J. E. Livernois",
+      "caption": "Quebec Hockey Club of the Amateur Hockey Association of Canada (AHAC) in 1891–92."
+    },
+    {
+      "file": "photos/quebec-bulldogs--3.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Bulldogs.jpg",
+      "license": "Public domain",
+      "artist": "Unknown author",
+      "caption": "Team photo of the 1913 Stanley Cup champions, the Quebec Bulldogs.Top row, left to right: Dave Beland, Billy Creighton, Walter Rooney, Jeff "
+    }
+  ],
+  "quebec-nordiques": [
+    {
+      "file": "photos/quebec-nordiques--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Peterstastny.jpg",
+      "license": "CC BY-SA 3.0",
+      "artist": "Tsunami330",
+      "caption": "Peter Stastny on march 2010 in a game between Quebec Nordiques alumni and Montréal Canadien alumni in Québec City."
+    },
+    {
+      "file": "photos/quebec-nordiques--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Nordiques_r%C3%A9chauffement_1987-1987.jpg",
+      "license": "CC BY-SA 3.0",
+      "artist": "Claude Brochu",
+      "caption": "Période de réchauffement avant un match des Nordiques de Québec au Colisée de Québec, 1986"
+    }
+  ],
+  "saskatchewan-roughriders": [
+    {
+      "file": "photos/saskatchewan-roughriders--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:1910_Regina_Rugby_Club.png",
+      "license": "Public domain",
+      "artist": "Unknown author",
+      "caption": "1910 Regina Rugby Club"
+    },
+    {
+      "file": "photos/saskatchewan-roughriders--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Roughriders_win3.jpg",
+      "license": "CC BY-SA 2.0",
+      "artist": "Lauren Roberts",
+      "caption": "Saskatchewan Roughriders win the 2007 Grey Cup. Toronto, Canada.Roughriders win"
+    }
+  ],
+  "saskatchewan-rush": [
+    {
+      "file": "photos/saskatchewan-rush--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Saskatchewan_Rush_National_Anthem.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "Snakewilson",
+      "caption": "SaskTel Centre prior to a Saskatchewan Rush home game."
+    }
+  ],
+  "saskatoon-mamba": [
+    {
+      "file": "photos/saskatoon-mamba--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:BanditsVsRattlers19Jul2023.png",
+      "license": "CC BY-SA 4.0",
+      "artist": "Other justin",
+      "caption": "The Vancouver Bandits tip-off against the Saskatchewan Rattlers in CEBL play at SaskTel Centre"
+    },
+    {
+      "file": "photos/saskatoon-mamba--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Saskatchewan_Rattlers_headquarters.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "Tanbir M-05",
+      "caption": "Saskatchewan Rattlers"
+    }
+  ],
+  "toronto-argonauts": [
+    {
+      "file": "photos/toronto-argonauts--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:1906_Toronto_Argonauts_team_photo.jpg",
+      "license": "Public domain",
+      "artist": "Courtesy of George McCauley, member of the Argonaut Rowing C",
+      "caption": "1906 Toronto Argonauts team photo"
+    },
+    {
+      "file": "photos/toronto-argonauts--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Argos_v_Rough_Riders_1924.jpg",
+      "license": "Public domain",
+      "artist": "William James",
+      "caption": "Toronto Argonauts (stripes) versus Ottawa Rough Riders (solids) at Varsity Stadium. The ball carrier is Harry Hutchingham for Ottawa. Toront"
+    },
+    {
+      "file": "photos/toronto-argonauts--3.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Grey_Cup_circa_2006.jpg",
+      "license": "CC BY 2.0",
+      "artist": "Roland Tanglao. Cropped and rotated by Heqs on December 23, ",
+      "caption": "The Grey Cup"
+    },
+    {
+      "file": "photos/toronto-argonauts--4.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Toronto_Argonauts_vs_Hamilton_Ti-Cats_kickoff_at_Exhibition_Stadium_Fall_of_1971.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "TorontoGuy79",
+      "caption": "Toronto Argonauts vs Hamilton Ti-Cats kickoff at Exhibition Stadium Fall of 1971"
+    },
+    {
+      "file": "photos/toronto-argonauts--5.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:CNTower-View-04.jpg",
+      "license": "CC BY-SA 3.0",
+      "artist": "Fb78",
+      "caption": "Rogers Centre (formerly Skydome), seen from CN Tower, Toronto, Canada."
+    }
+  ],
+  "toronto-blue-jays": [
+    {
+      "file": "photos/toronto-blue-jays--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Ace_and_Junior_exchange_greetings_before_the_game_(7968713240).jpg",
+      "license": "CC BY 2.0",
+      "artist": "James G",
+      "caption": "Ace and Junior exchange greetings before the game."
+    }
+  ],
+  "toronto-fc": [
+    {
+      "file": "photos/toronto-fc--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:BMO_Field_in_2009.jpg",
+      "license": "CC BY-SA 2.0",
+      "artist": "Neal Jennings from Toronto, ON, Canada",
+      "caption": "BMO Field in 2009"
+    },
+    {
+      "file": "photos/toronto-fc--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Bmo_Field_2016_East_Stand.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "Abazz",
+      "caption": "Bmo Field 2016 West Stand"
+    },
+    {
+      "file": "photos/toronto-fc--3.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Rentschler_Field_2017.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "Billcasey905",
+      "caption": "Rentschler Field"
+    },
+    {
+      "file": "photos/toronto-fc--4.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Orlando_City_Stadium_(04-21-18)_1.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "Porsche997SBS",
+      "caption": "Orlando City Stadium, April 21, 2018. Orlando City SC hosts the San Jose Earthquakes."
+    },
+    {
+      "file": "photos/toronto-fc--5.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:First-goal-at-BMO.jpg",
+      "license": "CC BY-SA 3.0",
+      "artist": "Dkoerber at English Wikipedia",
+      "caption": "A view from the West Stand of BMO Field immediately after Danny Dichio scored the first goal in Toronto FC History"
+    }
+  ],
+  "toronto-maple-leafs": [
+    {
+      "file": "photos/toronto-maple-leafs--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Toronto_Arenas.jpg",
+      "license": "Public domain",
+      "artist": "Unknown author",
+      "caption": "Team photo of the Arena Hockey Club of Toronto, a.k.a Toronto Arenas, O'Brien Cup and Stanley Cup champions for the 1917–18 season.Top row, "
+    },
+    {
+      "file": "photos/toronto-maple-leafs--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Leafs_v_Red_Wings_1942.jpg",
+      "license": "Public domain",
+      "artist": "Conn Smythe Fonds",
+      "caption": "Toronto Maple Leafs player scoring goal against Detroit Red Wings, Stanley Cup Finals, 1942"
+    },
+    {
+      "file": "photos/toronto-maple-leafs--3.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Toronto1947-48-49.png",
+      "license": "Public domain",
+      "artist": "Unknown author",
+      "caption": "Quaker Oats photo of Toronto Maple Leafs after winning the Stanley Cup for the third straight year in 1949"
+    },
+    {
+      "file": "photos/toronto-maple-leafs--4.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:George_Armstrong_action_photo.jpg",
+      "license": "Public domain",
+      "artist": "Toronto Maple Leafs",
+      "caption": "Photo of George Armstrong as a member of the Toronto Maple Leafs."
+    },
+    {
+      "file": "photos/toronto-maple-leafs--5.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Tor_chi_94.jpg",
+      "license": "CC BY-SA 3.0",
+      "artist": "Horge",
+      "caption": "Maple Leafs vs. Blackhawks 1st Playoff Game on April 18, 1994 after Jamie Macoun’s goal."
+    }
+  ],
+  "toronto-raptors": [
+    {
+      "file": "photos/toronto-raptors--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:RogersCentre_Toronto_Sept1-05.jpg",
+      "license": "CC BY-SA 3.0",
+      "artist": "",
+      "caption": "RogersCentre Toronto Sept1-05"
+    },
+    {
+      "file": "photos/toronto-raptors--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Air_Canada_Centre_and_CN_Tower_from_Bay_St.jpg",
+      "license": "Public domain",
+      "artist": "Secondarywaltz",
+      "caption": "View of the Bay Street side of the Air Canada Centre, showing the Art Deco facade of the former postal depot and the CN Tower in the backgro"
+    },
+    {
+      "file": "photos/toronto-raptors--3.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Raptors_Blazers_jump_ball_2004.jpg",
+      "license": "CC BY-SA 2.0",
+      "artist": "Raisin Bun",
+      "caption": "jump ball at a preseason portland trail blazers at toronto raptors game"
+    },
+    {
+      "file": "photos/toronto-raptors--4.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Chris_Bosh.jpg",
+      "license": "CC BY 2.0",
+      "artist": "The original uploader was Quadzilla99 at English Wikipedia.",
+      "caption": "photo taken by flickr user The CJM. source is here: [1]"
+    },
+    {
+      "file": "photos/toronto-raptors--5.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Jos%C3%A9_Manuel_Calder%C3%B3n_in_2006.jpg",
+      "license": "CC BY 2.0",
+      "artist": "John Maynard from Toronto, Canada",
+      "caption": "100_3200"
+    }
+  ],
+  "toronto-rock": [
+    {
+      "file": "photos/toronto-rock--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:RoughnecksRockAction.jpg",
+      "license": "CC BY-SA 3.0",
+      "artist": "JamesTeterenko",
+      "caption": "Calgary Roughnecks and Toronto Rock at the Pengrowth Saddledome, April 17, 2005. This is a National Lacrosse League (NLL) match."
+    },
+    {
+      "file": "photos/toronto-rock--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Buffalo_Bandits_at_Toronto_Rock.jpg",
+      "license": "CC BY-SA 3.0",
+      "artist": "DoubleBlue (talk)",
+      "caption": "en:Buffalo Bandits at en:Toronto Rock"
+    }
+  ],
+  "toronto-sceptres": [
+    {
+      "file": "photos/toronto-sceptres--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:240110_Minnesota_Toronto_JohnMc007_(53469513119).jpg",
+      "license": "CC BY-SA 2.0",
+      "artist": "John Mac",
+      "caption": "Minnesota vs Toronto, on January 10th 2024 at Xcel Arena in St. Paul, Minnesota (photo credit John McClellan)"
+    }
+  ],
+  "toronto-tempo": [
+    {
+      "file": "photos/toronto-tempo--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Toronto_Tempo_player_during_pre-season_game_at_Minnesota_Lynx_(May_1,_2026)_(cropped).jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "John McClellan",
+      "caption": "Toronto Tempo's final pre-season game against the Minnesota Lynx at Target Center on May 1, 2026. Center #14 Temi Fagbenle sets a \"screen\" o"
+    },
+    {
+      "file": "photos/toronto-tempo--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Toronto_Tempo_coaching_staff_at_Minnesota_Lynx_preseason_game_(May_1,_2026).jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "John McClellan",
+      "caption": "Toronto Tempo coaching staff on the sideline during their final pre-season game against the Minnesota Lynx at Target Center on May 1, 2026."
+    }
+  ],
+  "valour-fc": [
+    {
+      "file": "photos/valour-fc--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Investors_Group_CANnwt_vs_USnwt.png",
+      "license": "CC BY-SA 3.0",
+      "artist": "Krazytea",
+      "caption": "An exhibition game of the Canadian national women's team vs the USA national women's team. It was the second largest crowd ever to watch a s"
+    }
+  ],
+  "vancouver-canucks": [
+    {
+      "file": "photos/vancouver-canucks--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:BarryWilkins.png",
+      "license": "Public domain",
+      "artist": "Unknown author",
+      "caption": "1972 photo of Barry Wilkins for Vancouver Canucks"
+    },
+    {
+      "file": "photos/vancouver-canucks--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Stan_Smyl_eagle.jpg",
+      "license": "CC BY 2.0",
+      "artist": "Danno",
+      "caption": "An eagle statue dedicated to former Vancouver Canucks forward Stan Smyl by former Canucks goaltender Richard Brodeur; part of Vancouver's \"E"
+    },
+    {
+      "file": "photos/vancouver-canucks--3.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Roger_Neilson_Statue_2011.jpg",
+      "license": "CC BY-SA 2.0",
+      "artist": "Matthew Grapengieser",
+      "caption": "Statue of Roger Neilson outside of Rogers Arena during the 2011 Stanley Cup Final, June 2011."
+    },
+    {
+      "file": "photos/vancouver-canucks--4.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:GM_Place_1997.jpg",
+      "license": "CC BY 2.0",
+      "artist": "Håkan Dahlström",
+      "caption": "The Vancouver Canucks and the Edmonton Oilers warm up before a match at General Motors Place in Vancouver, October 1997."
+    }
+  ],
+  "vancouver-fc": [
+    {
+      "file": "photos/vancouver-fc--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Willoughby_Stadium.jpg",
+      "license": "CC0",
+      "artist": "Aeacad",
+      "caption": "Vancouver FC vs Cruz Azul - CCC"
+    }
+  ],
+  "vancouver-grizzlies": [
+    {
+      "file": "photos/vancouver-grizzlies--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Houston_Rockets_at_Vancouver_Grizzlies_2001-04-14_(ticket).jpg",
+      "license": "Public domain",
+      "artist": "tomcat92109",
+      "caption": "A ticket for a April 14, 2001 National Basketball Association game featuring the Houston Rockets versus the Memphis Grizzlies at the General"
+    },
+    {
+      "file": "photos/vancouver-grizzlies--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Vancouver-gmplace3.jpg",
+      "license": "Attribution",
+      "artist": "Buchanan-Hermit",
+      "caption": "Exteriors of General Motors Place. Vancouver, BC, Canada."
+    }
+  ],
+  "vancouver-rise-fc": [
+    {
+      "file": "photos/vancouver-rise-fc--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Vancouver_west_end.jpg",
+      "license": "CC BY-SA 3.0",
+      "artist": "Socceronly",
+      "caption": "View of Vancouver West End and the North Shore Mountaints at sunset. Seagull too."
+    },
+    {
+      "file": "photos/vancouver-rise-fc--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Swangard_Stadium_for_Vancouver_Rise_FC_soccer_game.png",
+      "license": "CC BY 4.0",
+      "artist": "John Shorten",
+      "caption": "The crowd for the Vancouver Rise vs Montréal Roses of the Northern Super League"
+    }
+  ],
+  "vancouver-whitecaps-fc": [
+    {
+      "file": "photos/vancouver-whitecaps-fc--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Vancouver_Whitecaps_FC_vs_St._Louis_CITY_-_August_23,_2025.jpg",
+      "license": "CC0",
+      "artist": "Aeacad",
+      "caption": "Vancouver Whitecaps FC vs St. Louis CITY - August 23, 2025"
+    },
+    {
+      "file": "photos/vancouver-whitecaps-fc--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Vancouver_Whitecaps_FC_vs_Inter_Miami_CF_-_CCC_-_April_24,_2025.jpg",
+      "license": "CC0",
+      "artist": "Aeacad",
+      "caption": "Vancouver Whitecaps FC vs Inter Miami CF - CCC - April 24, 2025"
+    },
+    {
+      "file": "photos/vancouver-whitecaps-fc--3.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:BC_Place_(Vancouver).jpg",
+      "license": "CC BY 4.0",
+      "artist": "Quintin Soloviev",
+      "caption": "Aerial view of BC Place in Vancouver, British Columbia. Opened in 1983, the 54,500-seat stadium is home to the BC Lions (CFL) and Vancouver "
+    },
+    {
+      "file": "photos/vancouver-whitecaps-fc--4.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:National_Soccer_Development_Center_UBC.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "Jwc30",
+      "caption": "Whitecaps national training center on the grounds of the University of British Columbia"
+    },
+    {
+      "file": "photos/vancouver-whitecaps-fc--5.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Save_The_Caps_march_(2026-04)_(1835).jpg",
+      "license": "CC BY 4.0",
+      "artist": "Northwest",
+      "caption": "Whitecaps supporters marching on Robson Street as they head towards BC Place in Vancouver, British Columbia, Canada. Photo taken in April 20"
+    }
+  ],
+  "winnipeg-blue-bombers": [
+    {
+      "file": "photos/winnipeg-blue-bombers--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:BlueBombersgame.jpg",
+      "license": "CC BY-SA 3.0",
+      "artist": "My picture",
+      "caption": "Blue Bombers Game at Canad Inns Stadium - Winnipeg, MB - Canada"
+    },
+    {
+      "file": "photos/winnipeg-blue-bombers--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:2019_Blue_Bombers_Grey_Cup_Parade_2.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "Krazytea",
+      "caption": "Blue Bombers Players with the Grey Cup during their championship parade in Winnipeg."
+    },
+    {
+      "file": "photos/winnipeg-blue-bombers--3.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Investors_Group_Field.png",
+      "license": "CC BY-SA 3.0",
+      "artist": "Hanktank83",
+      "caption": "Investors Group Field Winnipeg Manitoba"
+    }
+  ],
+  "winnipeg-jets": [
+    {
+      "file": "photos/winnipeg-jets--1.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Thrashers_offensive_zone.jpg",
+      "license": "Public domain",
+      "artist": "CillanXC",
+      "caption": "Thrashers on the offense against the St. Louis Blues"
+    },
+    {
+      "file": "photos/winnipeg-jets--2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Winnipeg_Jets_first_home_victory_celebration.jpg",
+      "license": "CC BY-SA 3.0",
+      "artist": "Words in the Wind",
+      "caption": "This picture was taken as the Winnipeg Jets of the National Hockey League celebrate their first regulation win as re-born team at the MTS Ce"
+    },
+    {
+      "file": "photos/winnipeg-jets--3.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Dustin_Byfuglien_(26076903930).jpg",
+      "license": "CC BY-SA 2.0",
+      "artist": "mark6mauno",
+      "caption": "Dustin Byfuglien with the Winnipeg Jets in April 2016"
+    },
+    {
+      "file": "photos/winnipeg-jets--4.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Blake_Wheeler_-_Winnipeg_Jets.jpg",
+      "license": "CC BY-SA 2.0",
+      "artist": "Lisa Gansky",
+      "caption": "Blake Wheeler during warmups in 2013."
+    }
+  ]
+};
+
+export const VENUE_PHOTOS: Record<string, MediaPhoto> = {
+  "atco-field": {
+    "file": "photos/venue--atco-field.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Section_203_ATCO_Field.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "BeesottedBee4",
+    "caption": "View from Section 203 on May 4, 2019. Cavalry FC home opener vs York 9 FC"
+  },
+  "bc-place": {
+    "file": "photos/venue--bc-place.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:BC_Place_-_Canada_vs_Qatar.jpg",
+    "license": "CC0",
+    "artist": "Aeacad",
+    "caption": "BC Place - Canada vs Qatar - June 18 2026"
+  },
+  "bell-centre": {
+    "file": "photos/venue--bell-centre.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:CentreBell.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "Alexcaban",
+    "caption": "Centre Bell in Montréal"
+  },
+  "bmo-field": {
+    "file": "photos/venue--bmo-field.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:BMO_Field_in_FIFA_World_Cup_Livery,_Toronto,_Ontario,_2026-06-27.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Chris Woodrich",
+    "caption": "BMO Field in FIFA World Cup Livery, Toronto, Ontario, 2026-06-27; viewed from the Gardiner Expressway"
+  },
+  "caa-centre": {
+    "file": "photos/venue--caa-centre.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:CAA_Centre_Interior_(SW)_-_Brampton,_ON.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "JFVoll",
+    "caption": "CAA Centre (arena in Brampton, Ontario, Canada)"
+  },
+  "canada-life-centre": {
+    "file": "photos/venue--canada-life-centre.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:MTS_CENTRE_b.jpg",
+    "license": "CC0",
+    "artist": "Wpg guy",
+    "caption": "MTS Centre"
+  },
+  "canadian-tire-centre": {
+    "file": "photos/venue--canadian-tire-centre.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Canadian_Tire_Centre_exterior_before_a_match_in_2022.jpg",
+    "license": "CC BY 4.0",
+    "artist": "Quintin Soloviev",
+    "caption": "Canadian Tire Centre exterior before a match in 2022"
+  },
+  "clarke-stadium": {
+    "file": "photos/venue--clarke-stadium.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Clarke_Stadium.jpg",
+    "license": "CC BY 2.0",
+    "artist": "Jason Woodhead",
+    "caption": "Clarke Field, home of FC Edmonton, a soccer team in Edmonton, Alberta, Canada"
+  },
+  "coca-cola-coliseum": {
+    "file": "photos/venue--coca-cola-coliseum.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Ricohcoliseum.jpg",
+    "license": "CC BY 2.0",
+    "artist": "Diego Torres Silvestre",
+    "caption": "The exterior of the Ricoh Coliseum in Toronto, Ontario, Canada."
+  },
+  "commonwealth-stadium": {
+    "file": "photos/venue--commonwealth-stadium.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Commonwealth_Stadium,_Edmonton,_AB.jpg",
+    "license": "CC BY 4.0",
+    "artist": "Quintin Soloviev",
+    "caption": "Commonwealth Stadium in 2024"
+  },
+  "edmonton-expo-centre": {
+    "file": "photos/venue--edmonton-expo-centre.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Edmonton_Expo_Center.jpg",
+    "license": "CC BY 2.0",
+    "artist": "Taylor and Kevin",
+    "caption": "Edmonton Expo Center in May 2013"
+  },
+  "empire-stadium": {
+    "file": "photos/venue--empire-stadium.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Empire_Stadium_Vancouver_Hastings_Park_July_1954.png",
+    "license": "CC BY 4.0",
+    "artist": "Province Newspaper Jones, Charles S.",
+    "caption": "Empire Stadium Vancouver Hastings Park July 1954"
+  },
+  "exhibition-stadium": {
+    "file": "photos/venue--exhibition-stadium.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Exhibition_Stadium_before_the_Toronto_Blue_Jays_faced_the_Chicago_White_Sox_on_May_27,_1988_1.jpg",
+    "license": "CC BY-SA 2.0",
+    "artist": "Jerry Reuss",
+    "caption": "Taken before the Chicago White Sox faced the Toronto Blue Jays @ Exhibition Stadium in Toronto on May 27, 1988."
+  },
+  "hamilton-stadium": {
+    "file": "photos/venue--hamilton-stadium.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Tim_Hortons_Field_in_Hamilton,_Ontario_2023_-_Quintin_Soloviev.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Quintinsoloviev",
+    "caption": "Tim Hortons Field in December 2023"
+  },
+  "ivor-wynne-stadium": {
+    "file": "photos/venue--ivor-wynne-stadium.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:IvorWynneStadium_Hamilton.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "Mikerussell at English Wikipedia",
+    "caption": "self made"
+  },
+  "jarry-park": {
+    "file": "photos/venue--jarry-park.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Coupe_Rogers_2015_@_Montr%C3%A9al_!_(19971844064).jpg",
+    "license": "CC BY-SA 2.0",
+    "artist": "Francis Bourgouin from Montréal, Québec, Canada",
+    "caption": "Surprenant la petit 40-150 d'Olympus !"
+  },
+  "langley-events-centre": {
+    "file": "photos/venue--langley-events-centre.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:LangleyEventsCentreExterior.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Garrett James",
+    "caption": "The Langley Events Centre"
+  },
+  "le-colisee": {
+    "file": "photos/venue--le-colisee.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Colis%C3%A9e_Pepsi_de_Qu%C3%A9bec.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "Eric Fortin",
+    "caption": "Situé sur le terrain d'Expo-Cité dans le quartier Limoilou, le Colisée Pepsi est le haut lieu du hockey dans la Capitale Québécoise. Inaugur"
+  },
+  "maple-leaf-gardens": {
+    "file": "photos/venue--maple-leaf-gardens.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Maple_Leaf_Gardens,_February_13_2026.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Dillan Payne",
+    "caption": "Maple Leaf Gardens building, located at the north-west corner of Carlton Street and Church Street in Toronto, ON"
+  },
+  "mcmahon-stadium": {
+    "file": "photos/venue--mcmahon-stadium.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:McMahon_Stadium.jpg",
+    "license": "CC BY 4.0",
+    "artist": "Quintin Soloviev",
+    "caption": "Aerial view of McMahon Stadium in Calgary, opened in 1960 and home of the Calgary Stampeders."
+  },
+  "meridian-centre": {
+    "file": "photos/venue--meridian-centre.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Meridian_Centre_-_Interior_2016.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Jfvoll",
+    "caption": "Interior of the Meridian Centre. Taken October 1, 2016. Hamilton Bulldogs against the Niagara IceDogs."
+  },
+  "molson-stadium": {
+    "file": "photos/venue--molson-stadium.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Percival_Molson_Memorial_Stadium,_Montreal,_Quebec.jpg",
+    "license": "CC BY 4.0",
+    "artist": "Quintin Soloviev",
+    "caption": "Percival Molson Memorial Stadium in Montreal, Quebec, Canada"
+  },
+  "montreal-forum": {
+    "file": "photos/venue--montreal-forum.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:FrontCommun1972_ForumMontreal_19720307_09.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Michel Giroux",
+    "caption": "Rassemblement du Front Commun du secteur public au Forum de Montréal le 7 mars 1972"
+  },
+  "mosaic-stadium": {
+    "file": "photos/venue--mosaic-stadium.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Mosaic_Stadium_-_Regina,_Saskatchewan.jpg",
+    "license": "CC BY 4.0",
+    "artist": "Quintin Soloviev",
+    "caption": "Mosaic Stadium in Regina, home to the Saskatchewan Roughriders football team in the Canadian Football League (CFL)"
+  },
+  "mutual-street-arena": {
+    "file": "photos/venue--mutual-street-arena.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Mutual_Street_Arena_interior.jpg",
+    "license": "Public domain",
+    "artist": "Alexandra Studios",
+    "caption": "The interior of the Mutual Street Arena, Toronto, Canada."
+  },
+  "northlands-coliseum": {
+    "file": "photos/venue--northlands-coliseum.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Rexall_Place_Edmonton_Alberta_Canada_07A.jpg",
+    "license": "CC0",
+    "artist": "WinterE229 WinterforceMedia",
+    "caption": "The Rexall Place arena in Edmonton, Alberta, Canada."
+  },
+  "olympic-stadium": {
+    "file": "photos/venue--olympic-stadium.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Stade_olympique_Montr%C3%A9al_2026.jpg",
+    "license": "CC0",
+    "artist": "Castor766",
+    "caption": "Aerial view, Montreal Olympic Stadium"
+  },
+  "ottawa-auditorium": {
+    "file": "photos/venue--ottawa-auditorium.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Ottawa_Auditorium.jpg",
+    "license": "Public domain",
+    "artist": "",
+    "caption": "A July 1927 ceremony inside the Auditorium, on the 100th anniversary of the founding of Ottawa"
+  },
+  "pacific-coliseum": {
+    "file": "photos/venue--pacific-coliseum.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Pacific_Coliseum_aerial_view_2026.jpg",
+    "license": "CC BY 4.0",
+    "artist": "Canmenwalker",
+    "caption": "Pacific Coliseum"
+  },
+  "place-bell": {
+    "file": "photos/venue--place-bell.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Place_Bell_-_Fall_2019.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Bryantriplex",
+    "caption": "Place Bell in Laval, as photographed in November of 2019."
+  },
+  "princess-auto-stadium": {
+    "file": "photos/venue--princess-auto-stadium.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Winnipeg_CFL_football_stadium.jpg",
+    "license": "CC BY 4.0",
+    "artist": "Quintin Soloviev",
+    "caption": "Princess Auto Stadium (formerly IG Field), home of the Winnipeg Blue Bombers football team in the CFL"
+  },
+  "rogers-arena": {
+    "file": "photos/venue--rogers-arena.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Rogers_Arena_(Vancouver).jpg",
+    "license": "CC BY 4.0",
+    "artist": "Quintin Soloviev",
+    "caption": "Exterior of Rogers Arena, located at 800 Griffiths Way in Vancouver, British Columbia. Built in 1995, it's home to the Vancouver Canucks (NH"
+  },
+  "rogers-centre": {
+    "file": "photos/venue--rogers-centre.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Rogers_Centre_(500_Level)_-_Toronto,_ON.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "JFVoll",
+    "caption": "New York Mets at Toronto Blue Jays (11 September 2024)"
+  },
+  "rogers-place": {
+    "file": "photos/venue--rogers-place.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Rogers_Place,_Edmonton,_Alberta,_2026-09-27_01.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Chris Woodrich",
+    "caption": "Rogers Place, Edmonton, Alberta, 2026-09-27"
+  },
+  "saddledome": {
+    "file": "photos/venue--saddledome.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:2020_Calgary_Saddledome.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "AceYYC",
+    "caption": "Scotiabank Saddledome in downtown Calgary."
+  },
+  "sasktel-centre": {
+    "file": "photos/venue--sasktel-centre.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:SaskTel_Centre_in_2025.jpg",
+    "license": "CC BY 4.0",
+    "artist": "SpiritedMichelle",
+    "caption": "SaskTel Centre in Saskatoon, Saskatchewan, Canada"
+  },
+  "scotiabank-arena": {
+    "file": "photos/venue--scotiabank-arena.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Scotiabank_Arena_summer_2022.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Adam Bishop",
+    "caption": "Scotiabank Arena in August 2022"
+  },
+  "scotiabank-centre": {
+    "file": "photos/venue--scotiabank-centre.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Scotiabank_Centre_Halifax.jpg",
+    "license": "CC BY 4.0",
+    "artist": "Hayden Soloviev",
+    "caption": "Scotiabank Centre Halifax"
+  },
+  "sleeman-centre": {
+    "file": "photos/venue--sleeman-centre.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Sleeman_Centre_-_Interior_2015.JPG",
+    "license": "CC BY-SA 4.0",
+    "artist": "Jfvoll",
+    "caption": "Sleeman Centre - Interior 2015 Guelph Storm Vs Saginaw Spirit"
+  },
+  "stade-boreale": {
+    "file": "photos/venue--stade-boreale.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Centre_sportif_Bois-de-Boulogne.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "Charlesquebec",
+    "caption": "Aerial photo of Centre sportif Bois-de-Boulogne at Laval (Québec, Canada) Photo aérienne du Centre sportif Bois-de-Boulogne à Laval au Québe"
+  },
+  "stade-saputo": {
+    "file": "photos/venue--stade-saputo.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Saputo_Stadium_Interior.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "refmichel",
+    "caption": "Saputo Stadium Interior"
+  },
+  "stampede-corral": {
+    "file": "photos/venue--stampede-corral.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Stampede-Corral-Szmurlo.jpg",
+    "license": "CC BY 2.5",
+    "artist": "Cszmurlo",
+    "caption": "The Stampede Corral in Calgary, Alberta. Photo by Chuck Szmurlo taken March 17, 2007 with a Nikon D200 and a Nikon 12-24 f4 lens."
+  },
+  "starlight-stadium": {
+    "file": "photos/venue--starlight-stadium.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Starlight_Stadium_-_July_2022.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "SounderBruce",
+    "caption": "View of Starlight Stadium, the home of Pacific FC and rugby events in Langford, British Columbia (near Victoria), as seen from its outer fen"
+  },
+  "swangard-stadium": {
+    "file": "photos/venue--swangard-stadium.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Swangard_Stadium_for_Vancouver_Rise_FC_soccer_game.png",
+    "license": "CC BY 4.0",
+    "artist": "John Shorten",
+    "caption": "The crowd for the Vancouver Rise vs Montréal Roses of the Northern Super League"
+  },
+  "taylor-field": {
+    "file": "photos/venue--taylor-field.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Mosaic_Stadium_at_Taylor_Field.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "SJS12",
+    "caption": "Mosaic Stadium at Taylor Field in its final configuration before its October 2017 demolition"
+  },
+  "td-coliseum": {
+    "file": "photos/venue--td-coliseum.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:TD_Coliseum_Exterior_2.jpg",
+    "license": "CC0",
+    "artist": "Kyy0602",
+    "caption": "The newly renovated TD Coliseum is seen here at the corner of Bay St N and York Blvd."
+  },
+  "td-place-arena": {
+    "file": "photos/venue--td-place-arena.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:TD_Place_Arena_-_Interior.JPG",
+    "license": "CC BY-SA 4.0",
+    "artist": "Jfvoll",
+    "caption": "TD Place Arena - Interior"
+  },
+  "td-place-stadium": {
+    "file": "photos/venue--td-place-stadium.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:TD_Place_2022.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Harleyd613",
+    "caption": "TD Place in Ottawa in 2022"
+  },
+  "toronto-pan-am-sports-centre": {
+    "file": "photos/venue--toronto-pan-am-sports-centre.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Pan_American_Games_(2015)_venue_-_Scarborough,_Ontario,_Canada.jpg",
+    "license": "CC BY-SA 3.0",
+    "artist": "Magnolia677",
+    "caption": "Pan American Games (2015) venue on Morningside Avenue, Scarborough, Ontario, Canada."
+  },
+  "tribute-communities-centre": {
+    "file": "photos/venue--tribute-communities-centre.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Tribute_Communities_Centre_-_Interior_2017.jpg",
+    "license": "CC BY-SA 4.0",
+    "artist": "Jfvoll",
+    "caption": "Interior of the Tribute Communities Centre, 2017. Taken March 24, 2017. Oshawa Generals vs Sudbury Wolves"
+  },
+  "verdun-auditorium": {
+    "file": "photos/venue--verdun-auditorium.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:The_Verdun_Auditorium.jpg",
+    "license": "CC BY-SA 2.0",
+    "artist": "RicLaf",
+    "caption": "This is a view of the exterior of the Verdun Audiorium."
+  },
+  "wanderers-grounds": {
+    "file": "photos/venue--wanderers-grounds.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Wanderers_Grounds,_home_to_the_HFX_Wanderers_FC_in_2024.jpg",
+    "license": "CC BY 4.0",
+    "artist": "Quintin Soloviev",
+    "caption": "Wanderers Grounds in 2024"
+  },
+  "westmount-arena": {
+    "file": "photos/venue--westmount-arena.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Westmount_Arena.jpg",
+    "license": "Public domain",
+    "artist": "Unknown author",
+    "caption": "Old Westmount Arena"
+  },
+  "winnipeg-arena": {
+    "file": "photos/venue--winnipeg-arena.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:WinnipegArena.jpg",
+    "license": "Public domain",
+    "artist": "Unknown photographer, Winnipeg Tribune, 18 October 1954, pag",
+    "caption": "Winnipeg Arena in 1954"
+  },
+  "winnipeg-stadium": {
+    "file": "photos/venue--winnipeg-stadium.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Bomber_Stadium.JPG",
+    "license": "CC BY-SA 3.0",
+    "artist": "",
+    "caption": "Bomber Stadium"
+  },
+  "winsport-event-centre": {
+    "file": "photos/venue--winsport-event-centre.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Canada_olympic_park_summer_2005.jpeg",
+    "license": "CC BY-SA 3.0",
+    "artist": "",
+    "caption": "Canada olympic park summer 2005"
+  },
+  "york-lions-stadium": {
+    "file": "photos/venue--york-lions-stadium.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:York_Lions_Stadium_prior_to_a_Toronto_Arrows_match_(photo_by_Djuradj_Vujcic).jpg",
+    "license": "CC BY 2.0",
+    "artist": "Djuradj Vujcic",
+    "caption": "York Lions Stadium prior to a Major League Rugby match between the Toronto Arrows and Rugby ATL."
+  }
+};
