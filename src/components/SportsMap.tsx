@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type CSSProperties} from 'react';
+import {useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState} from 'react';
 import {geoConicConformal, geoPath} from 'd3-geo';
 import {select} from 'd3-selection';
 import 'd3-transition';
@@ -11,10 +11,10 @@ import {ButtonGroup} from '@astryxdesign/core/ButtonGroup';
 import {Icon} from '@astryxdesign/core/Icon';
 import {CITIES, CITY_BY_ID, LEAGUE_ORDER, compareTeams, type City, type LeagueId, type Team} from '../data';
 import {latestEra} from '../lib/venues';
-import {ClosestLayer, siteColor, type Site} from './ClosestLayer';
+import {DitherLayer, siteColor, type DitherMode, type Site} from './DitherLayer';
 import {distanceKm, formatKm, type LatLon, type PinDistance} from './MapTools';
 import {FitIcon, MinusIcon, PlusIcon} from './icons';
-import {POPULATION, POPULATION_SOURCE} from '../data/population';
+import {POPULATION} from '../data/population';
 import type {MapView} from './HeaderControls';
 
 type GeoProps = {name: string; code?: string};
@@ -118,7 +118,7 @@ interface Props {
   topInset?: number;
   /** Fill Canada with a team's logo (the only Canadian team in its league). */
   takeover?: MapTakeover | null;
-  /** Visualisation on top of the sports cities. In 'timeline', every team passed in counts as active. */
+  /** Data layer on top of the sports cities ('teams' = none). */
   view?: MapView;
   /** Pin tool: while on, a click on the map drops (or moves) the pin. */
   isPinMode?: boolean;
@@ -164,7 +164,6 @@ export function SportsMap({
   onDropPin,
   showClosest = false,
 }: Props) {
-  const allActive = view === 'timeline';
   const clipId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -410,25 +409,25 @@ export function SportsMap({
         const p = projection([city.lon, city.lat]);
         if (!p) return null;
         const leagues = LEAGUE_ORDER.filter((l) => teams.some((t) => t.league === l));
-        const currentCount = allActive ? teams.length : teams.filter((t) => t.status === 'current').length;
+        const currentCount = teams.filter((t) => t.status === 'current').length;
         return {city, teams, leagues, currentCount, px: p[0], py: p[1]};
       })
       .filter((m): m is NonNullable<typeof m> => m !== null);
-  }, [cities, projection, allActive]);
+  }, [cities, projection]);
 
   /** The team each city 'owns' in the closest-team view: its top active team (league order). */
   const closestSites = useMemo(() => {
     if (!projection || !showClosest) return [];
     return cities
       .map(({city, teams}) => {
-        const active = teams.filter((t) => allActive || t.status === 'current').sort(compareTeams);
+        const active = teams.filter((t) => t.status === 'current').sort(compareTeams);
         const p = projection([city.lon, city.lat]);
         if (!active.length || !p) return null;
         const era = latestEra(active[0]);
         return {x: p[0], y: p[1], rgb: siteColor(era.colors), city, team: active[0], count: active.length};
       })
       .filter((s): s is NonNullable<typeof s> => s !== null);
-  }, [projection, cities, showClosest, allActive]);
+  }, [projection, cities, showClosest]);
   const closestFieldSites = useMemo<Site[]>(() => closestSites.map(({x, y, rgb}) => ({x, y, rgb})), [closestSites]);
 
   /** Hover (or tap) readout for the closest-team view. */
@@ -490,7 +489,7 @@ export function SportsMap({
       const r = markerRadius(m.teams.length);
       return {...m, x, y, r};
     });
-    const clusters = clusterMarkers(items, selectedCityId, allActive);
+    const clusters = clusterMarkers(items, selectedCityId);
     const visibleClusters = takeover && selectedCityId ? clusters.filter((c) => c.containsSelected) : clusters;
     const {labels, boxes} = placeLabels(visibleClusters, selectedCityId, size);
     const provinceLabels = (takeover ? [] : (paths?.provinces ?? []))
@@ -542,7 +541,6 @@ export function SportsMap({
       }
     }
     // Population: one circle per metro area, its area proportional to the people living there.
-    const popScale = popRadius(1, transform.k);
     // A value label shows only where it does not cover a city name or another value.
     const fitsValue = (x: number, y: number, text: string, fontSize: number) => {
       const w = text.length * fontSize * 0.62;
@@ -569,10 +567,25 @@ export function SportsMap({
             .sort((a, b) => b.r - a.r)
             .map((b) => ({...b, showValue: b.r >= 13 && fitsValue(b.x, b.y + b.r * 0.5, String(b.titles), valueFont(b.r))}))
         : [];
-    return {clusters: visibleClusters, labels, provinceLabels, geoLabels, towns, popBubbles, popScale, titleBubbles};
+    return {clusters: visibleClusters, labels, provinceLabels, geoLabels, towns, popBubbles, titleBubbles};
   }, [markers, transform, selectedCityId, size, paths, detailPaths, takeover, showDetail, view, popPoints]);
 
   const labelById = useMemo(() => new Map(placed.labels.map((l) => [l.id, l])), [placed.labels]);
+
+  // What the dither layer shows: territories, people, or titles (one at a time).
+  const ditherMode = useMemo<DitherMode | null>(() => {
+    if (takeover) return null;
+    if (showClosest) return closestFieldSites.length ? {kind: 'closest', sites: closestFieldSites} : null;
+    if (view === 'population') return {kind: 'blobs', rgb: [238, 108, 52], blobs: popPoints.map((a) => ({x: a.px, y: a.py, r: popRadius(a.pop, transform.k)}))};
+    if (view === 'titles') {
+      const blobs = markers
+        .map((m) => ({x: m.px, y: m.py, titles: m.teams.reduce((n, t) => n + t.championships.length, 0)}))
+        .filter((b) => b.titles > 0)
+        .map((b) => ({x: b.x, y: b.y, r: titleRadius(b.titles, transform.k)}));
+      return {kind: 'blobs', rgb: [222, 166, 34], sparkle: true, blobs};
+    }
+    return null;
+  }, [takeover, showClosest, closestFieldSites, view, popPoints, markers, transform.k]);
 
   const zoomToCluster = useCallback(
     (members: {px: number; py: number}[]) => {
@@ -685,12 +698,12 @@ export function SportsMap({
                 ))}
           </g>
 
-          {showClosest && !takeover && closestFieldSites.length > 0 && (
-            <ClosestLayer
+          {ditherMode && (
+            <DitherLayer
               width={size.w}
               height={size.h}
               transform={transform}
-              sites={closestFieldSites}
+              mode={ditherMode}
               provinces={(showDetail && detailPaths ? detailPaths.provinces : paths.provinces).map((p) => p.d)}
               lakes={showDetail && detailPaths ? detailPaths.lakes : paths.lakes}
             />
@@ -717,9 +730,6 @@ export function SportsMap({
           {/* Data views: drawn under the city markers so the dots stay clickable. */}
           {placed.popBubbles.length > 0 && (
             <g aria-hidden="true" pointerEvents="none" className="data-layer">
-              {placed.popBubbles.map((b) => (
-                <circle key={b.key} cx={b.x} cy={b.y} r={b.r} className="pop-bubble" />
-              ))}
               {placed.popBubbles
                 .filter((b) => b.showValue)
                 .map((b) => (
@@ -731,9 +741,6 @@ export function SportsMap({
           )}
           {placed.titleBubbles.length > 0 && (
             <g aria-hidden="true" pointerEvents="none" className="data-layer">
-              {placed.titleBubbles.map((b) => (
-                <circle key={b.key} cx={b.x} cy={b.y} r={b.r} className="title-bubble" />
-              ))}
               {placed.titleBubbles
                 .filter((b) => b.showValue)
                 .map((b) => (
@@ -752,15 +759,15 @@ export function SportsMap({
                 if (!m) return null;
                 const cx = transform.applyX(m.px);
                 const cy = transform.applyY(m.py);
+                const d = arcPath(pinScreen[0], pinScreen[1], cx, cy);
+                // A glint runs along each arc from the pin to the city, staggered so they ripple out.
+                const glint = {animationDelay: `${700 + ((i * 230) % 1900)}ms`};
                 return (
-                  <path
-                    key={target.id}
-                    d={arcPath(pinScreen[0], pinScreen[1], cx, cy)}
-                    pathLength={1}
-                    className="pin-arc"
-                    stroke={target.color}
-                    style={{animationDelay: `${Math.min(900, i * 35)}ms`}}
-                  />
+                  <g key={target.id}>
+                    <path d={d} pathLength={1} className="pin-arc" stroke={target.color} style={{animationDelay: `${Math.min(900, i * 35)}ms`}} />
+                    <path d={d} pathLength={1} className="pin-glint" stroke={target.color} style={glint} />
+                    <path d={d} pathLength={1} className="pin-glint-core" style={glint} />
+                  </g>
                 );
               })}
             </g>
@@ -846,9 +853,7 @@ export function SportsMap({
         </ButtonGroup>
       </div>
 
-      {(view === 'population' || view === 'titles') && (
-        <MapLegend view={view} k={transform.k} total={view === 'titles' ? placed.titleBubbles.reduce((n, b) => n + b.titles, 0) : undefined} style={{right: rightInset + 12, bottom: bottomInset + 12}} />
-      )}
+
     </div>
   );
 }
@@ -884,28 +889,6 @@ function valueFont(r: number) {
 function formatPop(n: number) {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
   return `${Math.round(n / 1000)}K`;
-}
-
-/** Key for the data views: reference circles at today's zoom, and the source. */
-function MapLegend({view, k, total, style}: {view: 'population' | 'titles'; k: number; total?: number; style: CSSProperties}) {
-  const refs = view === 'population' ? [5_000_000, 1_000_000, 100_000].map((v) => ({v, r: popRadius(v, k), label: formatPop(v)})) : [25, 5, 1].map((v) => ({v, r: titleRadius(v, k), label: String(v)}));
-  const maxR = Math.min(46, refs[0].r);
-  const scale = maxR / refs[0].r;
-  const size = maxR * 2 + 4;
-  return (
-    <div className="glass glass-strong card-radius pointer-events-none absolute flex items-end gap-3 px-3 py-2" style={{...style, transition: 'bottom 200ms ease, right 200ms ease'}}>
-      <svg width={size} height={size} aria-hidden="true">
-        {refs.map((ref) => (
-          <circle key={ref.v} cx={size / 2} cy={size - 2 - ref.r * scale} r={ref.r * scale} className={view === 'population' ? 'pop-bubble' : 'title-bubble'} />
-        ))}
-      </svg>
-      <div className="flex flex-col gap-0.5 pb-0.5">
-        <span className="text-xs font-semibold text-primary">{view === 'population' ? 'People per metro area' : `Championships${total ? ` · ${total}` : ''}`}</span>
-        <span className="text-xs tabular-nums text-secondary">{refs.map((ref) => ref.label).join(' · ')}</span>
-        <span className="text-[10px] text-secondary">{view === 'population' ? POPULATION_SOURCE : 'All-time titles of the teams shown'}</span>
-      </div>
-    </div>
-  );
 }
 
 function markerRadius(teamCount: number) {
@@ -949,9 +932,9 @@ function CityMarker({x, y, r, city, teamCount, currentCount, isSelected, onSelec
         }
       }}>
       <circle className="city-hit" r={Math.max(14, ringR + 6)} />
-      {isSelected && <circle className="city-pulse" r={ringR} fill="none" stroke="var(--map-selected)" strokeWidth={2} />}
+      {isSelected && <circle className="city-pulse" r={r + 1.5} fill="none" stroke="var(--map-selected)" strokeWidth={2} />}
       <g className="city-core">
-        <CityDot r={ringR - 1} isFormer={defunctOnly} isSelected={isSelected} />
+        <CityDot r={r + 0.4} isFormer={defunctOnly} isSelected={isSelected} />
         <circle className="city-focus" r={ringR + 4} fill="none" stroke="transparent" />
       </g>
       {label && <MarkerLabel label={label} x={x} y={y} isFormer={defunctOnly} />}
@@ -1060,7 +1043,7 @@ function importance(a: PlacedMarker, b: PlacedMarker, selectedId: string | null)
 }
 
 /** Merge markers that would overlap on screen into a single cluster headed by the most important city. */
-function clusterMarkers(items: PlacedMarker[], selectedId: string | null, allActive = false): Cluster[] {
+function clusterMarkers(items: PlacedMarker[], selectedId: string | null): Cluster[] {
   const ordered = items.slice().sort((a, b) => importance(a, b, selectedId));
   const clusters: Cluster[] = [];
   for (const m of ordered) {
@@ -1074,7 +1057,7 @@ function clusterMarkers(items: PlacedMarker[], selectedId: string | null, allAct
   for (const c of clusters) {
     const teams = c.members.flatMap((m) => m.teams);
     c.teamCount = teams.length;
-    c.currentCount = allActive ? teams.length : teams.filter((t) => t.status === 'current').length;
+    c.currentCount = teams.filter((t) => t.status === 'current').length;
     c.leagues = LEAGUE_ORDER.filter((l) => teams.some((t) => t.league === l));
     c.r = markerRadius(teams.length);
     c.containsSelected = c.members.some((m) => m.city.id === selectedId);
@@ -1124,7 +1107,7 @@ function ClusterMarker({
       }}>
       <circle className="city-hit" r={Math.max(14, ringR + 8)} />
       <g className="city-core">
-        <CityDot r={ringR + 0.5} isFormer={isFormer} isSelected={isSelected} />
+        <CityDot r={r + 1.6} isFormer={isFormer} isSelected={isSelected} />
         <circle className="city-focus" r={ringR + 6} fill="none" stroke="transparent" />
       </g>
       {label && <MarkerLabel label={label} x={x} y={y} isFormer={isFormer} />}

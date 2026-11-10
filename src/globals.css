@@ -79,16 +79,6 @@
     fill: var(--map-selected);
   }
   /* Data views. */
-  .pop-bubble {
-    fill: color-mix(in srgb, #f0703a 34%, transparent);
-    stroke: color-mix(in srgb, #e05a22 85%, transparent);
-    stroke-width: 1;
-  }
-  .title-bubble {
-    fill: color-mix(in srgb, #e6b230 42%, transparent);
-    stroke: color-mix(in srgb, #b8860b 90%, transparent);
-    stroke-width: 1.2;
-  }
   .bubble-value {
     font-family: var(--font-family-body, system-ui);
     font-weight: 700;
@@ -106,7 +96,7 @@
   }
 
   /* Closest-team dither: crisp square dots, fading in. */
-  .closest-layer {
+  .dither-layer {
     display: block;
     image-rendering: pixelated;
     animation: takeover-in 500ms ease-out;
@@ -115,9 +105,9 @@
   /* Pin tool. */
   .pin-arc {
     fill: none;
-    stroke-width: 1.8;
+    stroke-width: 1.6;
     stroke-linecap: round;
-    opacity: 0.9;
+    opacity: 0.55;
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
     animation: pin-arc-draw 700ms ease-out forwards;
@@ -125,6 +115,39 @@
   @keyframes pin-arc-draw {
     to {
       stroke-dashoffset: 0;
+    }
+  }
+  /* A short bright dash that travels along each arc, pin to city, over and over. */
+  .pin-glint,
+  .pin-glint-core {
+    fill: none;
+    stroke-linecap: round;
+    stroke-dasharray: 0.08 1.1;
+    stroke-dashoffset: 0.08;
+    opacity: 0;
+    animation: pin-glint 2.2s cubic-bezier(0.45, 0, 0.35, 1) infinite;
+  }
+  .pin-glint {
+    stroke-width: 4.5;
+  }
+  .pin-glint-core {
+    stroke: #ffffff;
+    stroke-width: 1.6;
+  }
+  @keyframes pin-glint {
+    0% {
+      stroke-dashoffset: 0.08;
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    85% {
+      opacity: 1;
+    }
+    100% {
+      stroke-dashoffset: -1;
+      opacity: 0;
     }
   }
   .map-pin-body {
@@ -145,8 +168,12 @@
       animation: none;
       stroke-dashoffset: 0;
     }
+    .pin-glint,
+    .pin-glint-core {
+      display: none;
+    }
     .map-pin-pulse,
-    .closest-layer {
+    .dither-layer {
       animation: none;
     }
   }
@@ -253,6 +280,14 @@
   }
   .logo-chip > img {
     filter: drop-shadow(0 0 0.6px var(--logo-outline)) drop-shadow(0 0 0.6px var(--logo-outline));
+  }
+  .flag-emoji {
+    line-height: 1;
+    font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+  }
+  /* League logos stay flat: no outline or shadow. */
+  .logo-chip[data-kind='league'] > img {
+    filter: none;
   }
   .logo-chip[data-plate='subtle'] {
     background: light-dark(rgb(0 0 0 / 0.04), rgb(255 255 255 / 0.1));

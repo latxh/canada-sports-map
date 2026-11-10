@@ -5,7 +5,8 @@ import {Text} from '@astryxdesign/core/Text';
 import {ToggleButton} from '@astryxdesign/core/ToggleButton';
 import {VStack} from '@astryxdesign/core/VStack';
 import {HStack} from '@astryxdesign/core/HStack';
-import {LocateIcon, PinIcon, TerritoryIcon} from './icons';
+import {LocateIcon, PeopleIcon, PinIcon, TerritoryIcon, TrophyIcon} from './icons';
+import type {MapView} from './HeaderControls';
 
 export interface LatLon {
   lat: number;
@@ -32,13 +33,20 @@ export function formatKm(km: number) {
   return `${Math.round(km).toLocaleString('en-CA')} km`;
 }
 
-/** The two map tools in the top pill: drop a pin, and colour the map by its closest team. */
+/**
+ * Map toggles in the top pill. Population, Championships and Closest team are layers (one
+ * at a time); the pin works with any of them.
+ */
 export function MapToolToggles({
+  view,
+  onViewChange,
   isPinMode,
   onPinModeChange,
   showClosest,
   onShowClosestChange,
 }: {
+  view: MapView;
+  onViewChange: (v: MapView) => void;
   isPinMode: boolean;
   onPinModeChange: (on: boolean) => void;
   showClosest: boolean;
@@ -48,12 +56,21 @@ export function MapToolToggles({
     <>
       <ToggleButton
         className="rounded-full"
-        label="Drop a pin"
+        label="Population"
         isIconOnly
-        tooltip="Drop a pin: distances to every city"
-        icon={<Icon icon={PinIcon} />}
-        isPressed={isPinMode}
-        onPressedChange={onPinModeChange}
+        tooltip="Population"
+        icon={<Icon icon={PeopleIcon} />}
+        isPressed={view === 'population'}
+        onPressedChange={(on) => onViewChange(on ? 'population' : 'teams')}
+      />
+      <ToggleButton
+        className="rounded-full"
+        label="Championships"
+        isIconOnly
+        tooltip="Championships"
+        icon={<Icon icon={TrophyIcon} />}
+        isPressed={view === 'titles'}
+        onPressedChange={(on) => onViewChange(on ? 'titles' : 'teams')}
       />
       <ToggleButton
         className="rounded-full"
@@ -63,6 +80,15 @@ export function MapToolToggles({
         icon={<Icon icon={TerritoryIcon} />}
         isPressed={showClosest}
         onPressedChange={onShowClosestChange}
+      />
+      <ToggleButton
+        className="rounded-full"
+        label="Drop a pin"
+        isIconOnly
+        tooltip="Drop a pin: distances to every city"
+        icon={<Icon icon={PinIcon} />}
+        isPressed={isPinMode}
+        onPressedChange={onPinModeChange}
       />
     </>
   );
@@ -152,22 +178,5 @@ function DistanceRow({d, onOpenCity}: {d: PinDistance; onOpenCity: (id: string) 
         </Text>
       </button>
     </li>
-  );
-}
-
-/** Explains the closest-team colouring. */
-export function ClosestCard({league}: {league: string}) {
-  return (
-    <div className="glass glass-strong card-radius pointer-events-auto w-64 p-3">
-      <VStack gap={1}>
-        <Text weight="semibold">Closest team</Text>
-        <Text type="supporting" size="sm">
-          {league === 'all'
-            ? 'Every spot in Canada, coloured by its nearest sports city’s top team.'
-            : `Every spot in Canada, coloured by its nearest ${league} team.`}{' '}
-          Hover or tap the map to check one.
-        </Text>
-      </VStack>
-    </div>
   );
 }

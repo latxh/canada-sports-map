@@ -1,6 +1,6 @@
 import type {ReactNode} from 'react';
 import {Selector} from '@astryxdesign/core/Selector';
-import {DropdownMenu, DropdownMenuRadioGroup, DropdownMenuRadioItem} from '@astryxdesign/core/DropdownMenu';
+import {DropdownMenu} from '@astryxdesign/core/DropdownMenu';
 import {IconButton} from '@astryxdesign/core/IconButton';
 import {Icon} from '@astryxdesign/core/Icon';
 import {HStack} from '@astryxdesign/core/HStack';
@@ -8,48 +8,15 @@ import {Text} from '@astryxdesign/core/Text';
 import {SegmentedControl, SegmentedControlItem} from '@astryxdesign/core/SegmentedControl';
 import {useToast} from '@astryxdesign/core/Toast';
 import {LEAGUES, LEAGUE_ORDER, type LeagueFilter, type LeagueId} from '../data';
-import {CanadaFlag, ClockIcon, InfoIcon, LayersIcon, MonitorIcon, MoonIcon, PeopleIcon, PinIcon, ShareIcon, SunIcon, TrophyIcon, UserIcon} from './icons';
+import {InfoIcon, MonitorIcon, MoonIcon, ShareIcon, SunIcon, UserIcon} from './icons';
 import {LeagueLogo} from '../visuals/Logos';
 
 export type Appearance = 'light' | 'dark' | 'system';
 
 /** What the map shows on top of the sports cities. */
-export type MapView = 'teams' | 'population' | 'titles' | 'timeline';
-export const MAP_VIEWS: MapView[] = ['teams', 'population', 'titles', 'timeline'];
+export type MapView = 'teams' | 'population' | 'titles';
+export const MAP_VIEWS: MapView[] = ['teams', 'population', 'titles'];
 
-const VIEW_INFO: Record<MapView, {label: string; description: string; icon: typeof PinIcon}> = {
-  teams: {label: 'Teams', description: 'Sports cities only', icon: PinIcon},
-  population: {label: 'Population', description: 'People in every metro area', icon: PeopleIcon},
-  titles: {label: 'Championships', description: 'Titles won, by city', icon: TrophyIcon},
-  timeline: {label: 'Timeline', description: 'Play the map through history', icon: ClockIcon},
-};
-
-/** Map visualisations: one at a time, picked from a menu between the league picker and the overflow menu. */
-export function MapViewMenu({value, onChange}: {value: MapView; onChange: (v: MapView) => void}) {
-  const isActive = value !== 'teams';
-  return (
-    <DropdownMenu
-      hasChevron={false}
-      alignment="center"
-      menuWidth={248}
-      renderTrigger={(props) => (
-        <IconButton
-          {...props}
-          variant={isActive ? 'secondary' : 'ghost'}
-          className="rounded-full"
-          label={isActive ? `Map view: ${VIEW_INFO[value].label}` : 'Map view'}
-          tooltip={isActive ? VIEW_INFO[value].label : 'Map view'}
-          icon={<Icon icon={isActive ? VIEW_INFO[value].icon : LayersIcon} />}
-        />
-      )}>
-      <DropdownMenuRadioGroup label="Map view" value={value} onChange={(v) => onChange(v as MapView)}>
-        {MAP_VIEWS.map((v) => (
-          <DropdownMenuRadioItem key={v} value={v} label={VIEW_INFO[v].label} description={VIEW_INFO[v].description} icon={VIEW_INFO[v].icon} />
-        ))}
-      </DropdownMenuRadioGroup>
-    </DropdownMenu>
-  );
-}
 
 
 export function LeagueSelect({value, onChange, isCompact}: {value: LeagueFilter; onChange: (v: LeagueFilter) => void; isCompact: boolean}) {
@@ -83,7 +50,9 @@ function LeagueOptionRow({value, label, isCompact}: {value?: string; label: Reac
       {isLeague ? (
         <LeagueLogo league={value as LeagueId} size={isCompact ? 20 : 26} isDecorative />
       ) : (
-        <CanadaFlag width={isCompact ? 22 : 28} />
+        <span role="img" aria-label="Canada" className="flag-emoji" style={{fontSize: isCompact ? 18 : 22}}>
+          🇨🇦
+        </span>
       )}
       <Text weight={isCompact ? 'medium' : 'normal'}>{label}</Text>
     </HStack>

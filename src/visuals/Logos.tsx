@@ -9,11 +9,12 @@ const asset = logoAsset;
 export type LogoPlate = 'auto' | 'subtle' | 'none';
 
 /** A logo image by file name in public/logos, or by full `src` (e.g. a historical logo in public/media). */
-export function LogoImage({file, src, alt, size, plate = 'auto'}: {file?: string; src?: string; alt: string; size: number; plate?: LogoPlate}) {
+export function LogoImage({file, src, alt, size, plate = 'auto', kind}: {file?: string; src?: string; alt: string; size: number; plate?: LogoPlate; kind?: 'league'}) {
   // alt='' marks a decorative logo next to visible text.
   return (
     <span
       data-plate={plate}
+      data-kind={kind}
       className={`logo-chip inline-flex shrink-0 items-center justify-center ${size >= 64 ? 'rounded-2xl' : 'rounded-lg'}`}
       style={{width: size, height: size}}>
       <img src={src ?? asset(file ?? '')} alt={alt} width={size} height={size} loading="lazy" decoding="async" className="size-full object-contain" />
@@ -25,7 +26,7 @@ export function LogoImage({file, src, alt, size, plate = 'auto'}: {file?: string
 export function TeamLogo({team, size = 40, plate}: {team: Team; size?: number; plate?: LogoPlate}) {
   const logo = LOGOS[team.id];
   if (!logo) return <TeamBadge era={latestEra(team)} size={size} title={`${team.name} badge illustration`} />;
-  return <LogoImage file={logo.file} alt={`${team.name} logo`} size={size} plate={plate} />;
+  return <LogoImage file={logo.file} alt={`${team.name} logo`} size={size} plate={plate} kind="league" />;
 }
 
 /** Logo for one identity era: the official mark for the era it belongs to, an illustration otherwise. */

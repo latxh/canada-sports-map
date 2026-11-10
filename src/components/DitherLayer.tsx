@@ -1,10 +1,11 @@
 import {useEffect, useMemo, useRef} from 'react';
 import type {ZoomTransform} from 'd3-zoom';
 
-/** Screen pixels per dither cell: big enough to read as a pattern, small enough for clean borders. */
-const CELL = 5;
+/** Screen pixels per dither cell: fine enough to read as texture, coarse enough to stay crisp. */
+const CELL = 3;
 /** 4×4 Bayer matrix, as thresholds in (0, 1). */
 const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map((v) => (v + 0.5) / 16);
+const NONE = 65535;
 
 export interface Site {
   /** Position in unzoomed (k = 1) map pixels. */
@@ -13,35 +14,51 @@ export interface Site {
   rgb: [number, number, number];
 }
 
+export interface Blob {
+  /** Centre in unzoomed (k = 1) map pixels. */
+  x: number;
+  y: number;
+  /** Visual radius in screen pixels at the current zoom. */
+  r: number;
+}
+
+export type DitherMode =
+  | {kind: 'closest'; sites: Site[]}
+  | {kind: 'blobs'; blobs: Blob[]; rgb: [number, number, number]; sparkle?: boolean};
+
 interface Field {
   gw: number;
   gh: number;
-  /** Nearest site per cell, or 65535 outside Canada. */
-  nearest: Uint16Array;
-  /** Distance to the nearest site, in screen pixels. */
-  d1: Float32Array;
-  /** Gap to the second-nearest site, in screen pixels (small near a border). */
-  edge: Float32Array;
-  k: number;
+  /** Palette index per cell, or NONE where nothing is drawn. */
+  color: Uint16Array;
+  /** Resting density per cell, 0–1. */
+  base: Float32Array;
+  /** Distance (screen px) to the cell's source, for the outward ripples. */
+  phase: Float32Array;
+  palette: [number, number, number][];
+  sparkle: boolean;
 }
 
 /**
- * Canada coloured by its closest team: a nearest-site field (Voronoi in map space) drawn as
- * an ordered-dither pattern. Ripples travel outward from every team's city and the dots
- * twinkle, so the map breathes; with reduced motion it is drawn once, still.
+ * An animated ordered-dither layer clipped to Canada's land. Two modes:
+ * - closest: each cell takes the colour of its nearest site (a Voronoi map), dense near
+ *   the city and falling off quickly with distance;
+ * - blobs: soft discs of one colour (population, championships) whose cores are solid.
+ * Ripples travel outward from every source and the dots twinkle; with reduced motion the
+ * layer is drawn once, still.
  */
-export function ClosestLayer({
+export function DitherLayer({
   width,
   height,
   transform,
-  sites,
+  mode,
   provinces,
   lakes,
 }: {
   width: number;
   height: number;
   transform: ZoomTransform;
-  sites: Site[];
+  mode: DitherMode;
   /** SVG path data, in k = 1 map pixels. */
   provinces: string[];
   lakes: string[];
@@ -55,7 +72,7 @@ export function ClosestLayer({
   const gw = Math.ceil(width / CELL);
   const gh = Math.ceil(height / CELL);
 
-  // Rebuild the field when the view or the teams change.
+  // Rebuild the field when the view or the data change.
   useEffect(() => {
     if (gw <= 0 || gh <= 0) return;
     const mask = document.createElement('canvas');
@@ -69,42 +86,84 @@ export function ClosestLayer({
     mctx.globalCompositeOperation = 'destination-out';
     for (const p of lakePaths) mctx.fill(p);
     const alpha = mctx.getImageData(0, 0, gw, gh).data;
-
-    const sx = sites.map((s) => transform.applyX(s.x));
-    const sy = sites.map((s) => transform.applyY(s.y));
     const n = gw * gh;
-    const nearest = new Uint16Array(n).fill(65535);
-    const d1 = new Float32Array(n);
-    const edge = new Float32Array(n);
-    for (let j = 0; j < gh; j++) {
-      const cy = (j + 0.5) * CELL;
-      for (let i = 0; i < gw; i++) {
-        const c = j * gw + i;
-        if (alpha[c * 4 + 3] < 128 || sites.length === 0) continue;
-        const cx = (i + 0.5) * CELL;
-        let best = Infinity;
-        let second = Infinity;
-        let bi = 0;
-        for (let s = 0; s < sites.length; s++) {
-          const dx = sx[s] - cx;
-          const dy = sy[s] - cy;
-          const d = dx * dx + dy * dy;
-          if (d < best) {
-            second = best;
-            best = d;
-            bi = s;
-          } else if (d < second) second = d;
-        }
-        nearest[c] = bi;
-        d1[c] = Math.sqrt(best);
-        edge[c] = sites.length > 1 ? Math.sqrt(second) - d1[c] : 1e6;
-      }
-    }
-    fieldRef.current = {gw, gh, nearest, d1, edge, k: transform.k};
-    if (reducedMotion) drawRef.current(0);
-  }, [transform, sites, provincePaths, lakePaths, gw, gh, reducedMotion]);
+    const color = new Uint16Array(n).fill(NONE);
+    const base = new Float32Array(n);
+    const phase = new Float32Array(n);
 
-  // Draw one frame of the dither at time t (seconds).
+    if (mode.kind === 'closest') {
+      const {sites} = mode;
+      const sx = sites.map((s) => transform.applyX(s.x));
+      const sy = sites.map((s) => transform.applyY(s.y));
+      // Falloff in unzoomed pixels, so the look holds as you zoom.
+      const reach = 34 * transform.k;
+      for (let j = 0; j < gh; j++) {
+        const cy = (j + 0.5) * CELL;
+        for (let i = 0; i < gw; i++) {
+          const c = j * gw + i;
+          if (alpha[c * 4 + 3] < 128 || sites.length === 0) continue;
+          const cx = (i + 0.5) * CELL;
+          let best = Infinity;
+          let second = Infinity;
+          let bi = 0;
+          for (let s = 0; s < sites.length; s++) {
+            const dx = sx[s] - cx;
+            const dy = sy[s] - cy;
+            const d = dx * dx + dy * dy;
+            if (d < best) {
+              second = best;
+              best = d;
+              bi = s;
+            } else if (d < second) second = d;
+          }
+          const d1 = Math.sqrt(best);
+          const edge = sites.length > 1 ? Math.sqrt(second) - d1 : 1e6;
+          color[c] = bi;
+          base[c] = (0.025 + 0.9 * Math.exp(-d1 / reach)) * Math.min(1, edge / 7);
+          phase[c] = d1;
+        }
+      }
+      fieldRef.current = {gw, gh, color, base, phase, palette: sites.map((s) => s.rgb), sparkle: false};
+    } else {
+      const strength = new Float32Array(n);
+      for (const b of mode.blobs) {
+        const bx = transform.applyX(b.x);
+        const by = transform.applyY(b.y);
+        const sigma = Math.max(2.2, b.r * 0.55);
+        const reach = sigma * 3;
+        const i0 = Math.max(0, Math.floor((bx - reach) / CELL));
+        const i1 = Math.min(gw - 1, Math.ceil((bx + reach) / CELL));
+        const j0 = Math.max(0, Math.floor((by - reach) / CELL));
+        const j1 = Math.min(gh - 1, Math.ceil((by + reach) / CELL));
+        const inv = 1 / (2 * sigma * sigma);
+        for (let j = j0; j <= j1; j++) {
+          const dy = (j + 0.5) * CELL - by;
+          for (let i = i0; i <= i1; i++) {
+            const c = j * gw + i;
+            if (alpha[c * 4 + 3] < 128) continue;
+            const dx = (i + 0.5) * CELL - bx;
+            const d2 = dx * dx + dy * dy;
+            const v = Math.exp(-d2 * inv) * 1.15;
+            base[c] += v;
+            if (v > strength[c]) {
+              strength[c] = v;
+              phase[c] = Math.sqrt(d2);
+            }
+          }
+        }
+      }
+      for (let c = 0; c < n; c++) {
+        if (base[c] > 0.035) {
+          base[c] = Math.min(1, base[c]);
+          color[c] = 0;
+        }
+      }
+      fieldRef.current = {gw, gh, color, base, phase, palette: [mode.rgb], sparkle: !!mode.sparkle};
+    }
+    if (reducedMotion) drawRef.current(0);
+  }, [transform, mode, provincePaths, lakePaths, gw, gh, reducedMotion]);
+
+  // Draw one frame at time t (seconds).
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
@@ -120,33 +179,33 @@ export function ClosestLayer({
       }
       image ??= ctx.createImageData(f.gw, f.gh);
       const px = image.data;
-      const tick = Math.floor(t * 5);
+      const tick = Math.floor(t * 6);
       for (let j = 0; j < f.gh; j++) {
         for (let i = 0; i < f.gw; i++) {
           const c = j * f.gw + i;
           const o = c * 4;
-          const s = f.nearest[c];
-          if (s === 65535) {
+          const k = f.color[c];
+          if (k === NONE) {
             px[o + 3] = 0;
             continue;
           }
-          const d = f.d1[c];
-          // Denser near the city, fading with distance (in unzoomed pixels so zoom keeps the look).
-          const near = Math.exp(-d / f.k / 110);
-          // Ripples moving outward from each city.
-          const wave = 0.5 + 0.5 * Math.sin(d * 0.075 - t * 2.4);
-          // A soft gap along each border.
-          const border = Math.min(1, f.edge[c] / 9);
-          // A little twinkle, re-rolled a few times a second.
+          const b = f.base[c];
+          const wave = 0.5 + 0.5 * Math.sin(f.phase[c] * 0.11 - t * 2.6);
           const h = ((i * 73856093) ^ (j * 19349663) ^ (tick * 83492791)) >>> 0;
-          const twinkle = ((h % 1000) / 1000 - 0.5) * 0.12;
-          const intensity = (0.16 + 0.5 * near + 0.24 * wave + twinkle) * border;
-          if (intensity > BAYER[(j & 3) * 4 + (i & 3)]) {
-            const rgb = sites[s].rgb;
+          const twinkle = ((h % 1000) / 1000 - 0.5) * 0.1;
+          const intensity = b * (0.7 + 0.3 * wave) + twinkle * Math.min(1, b * 3);
+          if (f.sparkle && b > 0.2 && h % 1000 < 7) {
+            // A glint: a bright dot that lives for one tick.
+            px[o] = 255;
+            px[o + 1] = 246;
+            px[o + 2] = 210;
+            px[o + 3] = 255;
+          } else if (intensity > BAYER[(j & 3) * 4 + (i & 3)]) {
+            const rgb = f.palette[k];
             px[o] = rgb[0];
             px[o + 1] = rgb[1];
             px[o + 2] = rgb[2];
-            px[o + 3] = 215;
+            px[o + 3] = 225;
           } else {
             px[o + 3] = 0;
           }
@@ -167,11 +226,11 @@ export function ClosestLayer({
     };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, [sites, reducedMotion]);
+  }, [reducedMotion]);
 
   return (
     <foreignObject x={0} y={0} width={width} height={height} aria-hidden="true" pointerEvents="none">
-      <canvas ref={canvasRef} className="closest-layer" style={{width: gw * CELL, height: gh * CELL}} />
+      <canvas ref={canvasRef} className="dither-layer" style={{width: gw * CELL, height: gh * CELL}} />
     </foreignObject>
   );
 }
