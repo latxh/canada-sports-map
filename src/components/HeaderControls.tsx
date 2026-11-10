@@ -8,7 +8,7 @@ import {Text} from '@astryxdesign/core/Text';
 import {SegmentedControl, SegmentedControlItem} from '@astryxdesign/core/SegmentedControl';
 import {useToast} from '@astryxdesign/core/Toast';
 import {LEAGUES, LEAGUE_ORDER, type LeagueFilter, type LeagueId} from '../data';
-import {InfoIcon, MonitorIcon, MoonIcon, ShareIcon, SunIcon, UserIcon} from './icons';
+import {InfoIcon, MonitorIcon, MoonIcon, ShareIcon, SunIcon} from './icons';
 import {LeagueLogo} from '../visuals/Logos';
 
 export type Appearance = 'light' | 'dark' | 'system';
@@ -111,8 +111,6 @@ export function SiteMenu({appearance, onAppearanceChange, onOpenCredits}: SiteMe
       items={[
         {id: 'share', label: 'Share', icon: ShareIcon, onClick: () => void share()},
         {id: 'credits', label: 'Credits', icon: InfoIcon, onClick: onOpenCredits},
-        {type: 'divider'},
-        {id: 'author', label: 'Made by Brian Latchman', icon: UserIcon, href: 'https://latchman.ca', target: '_blank'},
       ]}
     />
   );

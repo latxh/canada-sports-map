@@ -1,4 +1,8 @@
 import {Dialog, DialogHeader} from '@astryxdesign/core/Dialog';
+import {Layout, LayoutContent, LayoutFooter, HStack} from '@astryxdesign/core/Layout';
+import {Button} from '@astryxdesign/core/Button';
+import {Icon} from '@astryxdesign/core/Icon';
+import {ExternalIcon} from './icons';
 import {VStack} from '@astryxdesign/core/VStack';
 import {Text} from '@astryxdesign/core/Text';
 import {Link} from '@astryxdesign/core/Link';
@@ -94,8 +98,12 @@ function CreditList({title, items}: {title: string; items: {key: string; label: 
 export function CreditsDialog({isOpen, onOpenChange}: {isOpen: boolean; onOpenChange: (open: boolean) => void}) {
   return (
     <Dialog isOpen={isOpen} onOpenChange={onOpenChange} width={560} maxHeight="85dvh">
-      <DialogHeader title="Credits & sources" subtitle={`Data reviewed ${DATA_AS_OF}`} onOpenChange={onOpenChange} />
-      <VStack gap={4} paddingBlockStart={3}>
+      {/* Header and footer stay put; only the content between them scrolls. */}
+      <Layout
+        header={<DialogHeader title="Credits & sources" subtitle={`Data reviewed ${DATA_AS_OF}`} onOpenChange={onOpenChange} />}
+        content={
+          <LayoutContent>
+      <VStack gap={4}>
         <Text>
           Canada Sports Atlas is an unofficial fan project. It is not affiliated with or endorsed by any league or team shown.
         </Text>
@@ -111,7 +119,7 @@ export function CreditsDialog({isOpen, onOpenChange}: {isOpen: boolean; onOpenCh
                     {s.name}
                   </Link>
                 }
-                description={s.note}
+                description={<Text type="supporting">{s.note}</Text>}
               />
             ))}
           </List>
@@ -150,6 +158,17 @@ export function CreditsDialog({isOpen, onOpenChange}: {isOpen: boolean; onOpenCh
           </Text>
         </VStack>
       </VStack>
+          </LayoutContent>
+        }
+        footer={
+          <LayoutFooter>
+            <HStack gap={2} hAlign="between" vAlign="center">
+              <Text type="supporting">Made by Brian Latchman</Text>
+              <Button href="https://latchman.ca" target="_blank" variant="secondary" size="sm" label="latchman.ca" icon={<Icon icon={ExternalIcon} />} />
+            </HStack>
+          </LayoutFooter>
+        }
+      />
     </Dialog>
   );
 }
