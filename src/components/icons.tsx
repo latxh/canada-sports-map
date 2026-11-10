@@ -155,3 +155,39 @@ export function CanadaFlag({width = 26, title}: {width?: number; title?: string}
     </svg>
   );
 }
+
+export const LayersIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M12 3 2.5 8 12 13l9.5-5z" />
+    <path d="m2.5 12.5 9.5 5 9.5-5" />
+    <path d="m2.5 16.5 9.5 5 9.5-5" opacity="0.55" />
+  </svg>
+);
+
+export const PeopleIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <circle cx="9" cy="8" r="3.2" />
+    <path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" />
+    <circle cx="17" cy="9" r="2.4" />
+    <path d="M16.5 14.1c2.6.3 4.5 2.6 4.5 5.4" />
+  </svg>
+);
+
+export const ClockIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 7v5l3.5 2" />
+  </svg>
+);
+
+export const PlayIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M7 4.5v15l12-7.5z" fill="currentColor" />
+  </svg>
+);
+
+export const PauseIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M8 4.5v15M16 4.5v15" strokeWidth="3" />
+  </svg>
+);

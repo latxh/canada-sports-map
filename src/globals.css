@@ -78,6 +78,33 @@
   .city-dot-selected {
     fill: var(--map-selected);
   }
+  /* Data views. */
+  .pop-bubble {
+    fill: color-mix(in srgb, #f0703a 34%, transparent);
+    stroke: color-mix(in srgb, #e05a22 85%, transparent);
+    stroke-width: 1;
+  }
+  .title-bubble {
+    fill: color-mix(in srgb, #e6b230 42%, transparent);
+    stroke: color-mix(in srgb, #b8860b 90%, transparent);
+    stroke-width: 1.2;
+  }
+  .bubble-value {
+    font-family: var(--font-family-body, system-ui);
+    font-weight: 700;
+    paint-order: stroke;
+    stroke: var(--map-halo);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+    font-variant-numeric: tabular-nums;
+  }
+  .pop-value {
+    fill: light-dark(#a8400f, #ffb08a);
+  }
+  .title-value {
+    fill: light-dark(#7a5600, #ffd76a);
+  }
+
   /* Former teams: a lighter, grey logo. */
   .team-former {
     filter: grayscale(1);

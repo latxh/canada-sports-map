@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState} from 'react';
+import {useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type CSSProperties} from 'react';
 import {geoConicConformal, geoPath} from 'd3-geo';
 import {select} from 'd3-selection';
 import 'd3-transition';
@@ -11,6 +11,8 @@ import {ButtonGroup} from '@astryxdesign/core/ButtonGroup';
 import {Icon} from '@astryxdesign/core/Icon';
 import {CITIES, CITY_BY_ID, LEAGUE_ORDER, type City, type LeagueId, type Team} from '../data';
 import {FitIcon, MinusIcon, PlusIcon} from './icons';
+import {POPULATION, POPULATION_SOURCE} from '../data/population';
+import type {MapView} from './HeaderControls';
 
 type GeoProps = {name: string; code?: string};
 interface Geo {
@@ -113,6 +115,8 @@ interface Props {
   topInset?: number;
   /** Fill Canada with a team's logo (the only Canadian team in its league). */
   takeover?: MapTakeover | null;
+  /** Visualisation on top of the sports cities. In 'timeline', every team passed in counts as active. */
+  view?: MapView;
 }
 
 export interface MapTakeover {
@@ -134,7 +138,8 @@ const DETAIL_K = 1.9;
 /** The most a "show all cities" view zooms in, so the country never feels cropped. */
 const HOME_MAX_K = 1.3;
 
-export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0, rightInset = 0, topInset = 0, takeover = null}: Props) {
+export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0, rightInset = 0, topInset = 0, takeover = null, view = 'teams'}: Props) {
+  const allActive = view === 'timeline';
   const clipId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -380,11 +385,20 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
         const p = projection([city.lon, city.lat]);
         if (!p) return null;
         const leagues = LEAGUE_ORDER.filter((l) => teams.some((t) => t.league === l));
-        const currentCount = teams.filter((t) => t.status === 'current').length;
+        const currentCount = allActive ? teams.length : teams.filter((t) => t.status === 'current').length;
         return {city, teams, leagues, currentCount, px: p[0], py: p[1]};
       })
       .filter((m): m is NonNullable<typeof m> => m !== null);
-  }, [cities, projection]);
+  }, [cities, projection, allActive]);
+
+  /** Every metro area in k=1 map pixels, for the population view. */
+  const popPoints = useMemo(() => {
+    if (!projection) return [];
+    return POPULATION.map((a) => {
+      const p = projection([a.lon, a.lat]);
+      return p ? {...a, px: p[0], py: p[1]} : null;
+    }).filter((a): a is NonNullable<typeof a> => a !== null);
+  }, [projection]);
 
   const showDetail = !!detailPaths && !takeover && transform.k >= DETAIL_K;
 
@@ -395,7 +409,7 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
       const r = markerRadius(m.teams.length);
       return {...m, x, y, r};
     });
-    const clusters = clusterMarkers(items, selectedCityId);
+    const clusters = clusterMarkers(items, selectedCityId, allActive);
     const visibleClusters = takeover && selectedCityId ? clusters.filter((c) => c.containsSelected) : clusters;
     const {labels, boxes} = placeLabels(visibleClusters, selectedCityId, size);
     const provinceLabels = (takeover ? [] : (paths?.provinces ?? []))
@@ -414,7 +428,8 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
 
     // Seas, lakes, mountain ranges and islands, most important first.
     const geoLabels: PlacedGeoLabel[] = [];
-    if (detailPaths && !takeover) {
+    const isDataView = view === 'population' || view === 'titles';
+    if (detailPaths && !takeover && !isDataView) {
       for (const l of detailPaths.labels) {
         const minK = l.kind === 'ocean' || l.kind === 'water' ? l.z : Math.max(l.z, DETAIL_K);
         if (transform.k < minK) continue;
@@ -432,7 +447,7 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
 
     // Towns: Natural Earth's web-map zoom for each place, mapped onto this map's zoom.
     const towns: PlacedTown[] = [];
-    if (detailPaths && showDetail) {
+    if (detailPaths && showDetail && !isDataView) {
       const townZoom = 3.6 + 1.3 * Math.log2(transform.k);
       for (const t of detailPaths.towns) {
         if (t.z > townZoom) continue;
@@ -445,8 +460,36 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
         towns.push({key: `${t.name}-${t.lon}`, name: t.name, x, y});
       }
     }
-    return {clusters: visibleClusters, labels, provinceLabels, geoLabels, towns};
-  }, [markers, transform, selectedCityId, size, paths, detailPaths, takeover, showDetail]);
+    // Population: one circle per metro area, its area proportional to the people living there.
+    const popScale = popRadius(1, transform.k);
+    // A value label shows only where it does not cover a city name or another value.
+    const fitsValue = (x: number, y: number, text: string, fontSize: number) => {
+      const w = text.length * fontSize * 0.62;
+      const box = {x0: x - w / 2, y0: y - fontSize * 0.6, x1: x + w / 2, y1: y + fontSize * 0.6};
+      if (!onScreen(box) || taken.some((b) => overlaps(b, box))) return false;
+      taken.push(box);
+      return true;
+    };
+    const popBubbles =
+      view === 'population'
+        ? popPoints
+            .map((a) => ({key: a.name, name: a.name, pop: a.pop, x: transform.applyX(a.px), y: transform.applyY(a.py), r: popRadius(a.pop, transform.k), showValue: false}))
+            .filter((b) => !size || (b.x > -b.r && b.y > -b.r && b.x < size.w + b.r && b.y < size.h + b.r))
+            .map((b) => ({...b, showValue: b.r >= 15 && fitsValue(b.x, b.y + b.r * 0.45, formatPop(b.pop), valueFont(b.r))}))
+        : [];
+
+    // Championships: one circle per city (or merged cluster), its area proportional to the titles won there.
+    const titleBubbles =
+      view === 'titles'
+        ? visibleClusters
+            .map((c) => ({key: c.head.city.id, titles: c.members.reduce((n, m) => n + m.teams.reduce((k, t) => k + t.championships.length, 0), 0), x: c.x, y: c.y}))
+            .filter((b) => b.titles > 0)
+            .map((b) => ({...b, r: titleRadius(b.titles, transform.k)}))
+            .sort((a, b) => b.r - a.r)
+            .map((b) => ({...b, showValue: b.r >= 13 && fitsValue(b.x, b.y + b.r * 0.5, String(b.titles), valueFont(b.r))}))
+        : [];
+    return {clusters: visibleClusters, labels, provinceLabels, geoLabels, towns, popBubbles, popScale, titleBubbles};
+  }, [markers, transform, selectedCityId, size, paths, detailPaths, takeover, showDetail, view, popPoints]);
 
   const labelById = useMemo(() => new Map(placed.labels.map((l) => [l.id, l])), [placed.labels]);
 
@@ -557,6 +600,36 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
             ))}
           </g>
 
+          {/* Data views: drawn under the city markers so the dots stay clickable. */}
+          {placed.popBubbles.length > 0 && (
+            <g aria-hidden="true" pointerEvents="none" className="data-layer">
+              {placed.popBubbles.map((b) => (
+                <circle key={b.key} cx={b.x} cy={b.y} r={b.r} className="pop-bubble" />
+              ))}
+              {placed.popBubbles
+                .filter((b) => b.showValue)
+                .map((b) => (
+                  <text key={`t-${b.key}`} x={b.x} y={b.y + b.r * 0.45} textAnchor="middle" dominantBaseline="central" className="bubble-value pop-value" fontSize={valueFont(b.r)}>
+                    {formatPop(b.pop)}
+                  </text>
+                ))}
+            </g>
+          )}
+          {placed.titleBubbles.length > 0 && (
+            <g aria-hidden="true" pointerEvents="none" className="data-layer">
+              {placed.titleBubbles.map((b) => (
+                <circle key={b.key} cx={b.x} cy={b.y} r={b.r} className="title-bubble" />
+              ))}
+              {placed.titleBubbles
+                .filter((b) => b.showValue)
+                .map((b) => (
+                  <text key={`t-${b.key}`} x={b.x} y={b.y + b.r * 0.5} textAnchor="middle" dominantBaseline="central" className="bubble-value title-value" fontSize={valueFont(b.r)}>
+                    {b.titles}
+                  </text>
+                ))}
+            </g>
+          )}
+
           {/* Seas, lakes, mountains and towns: context only, so hidden from assistive tech. */}
           <g aria-hidden="true" pointerEvents="none">
             {placed.geoLabels.map((l) => (
@@ -621,6 +694,51 @@ export function SportsMap({cities, selectedCityId, onSelectCity, bottomInset = 0
           <IconButton variant="ghost" className="rounded-full" label="Zoom out" tooltip="Zoom out" icon={<Icon icon={MinusIcon} />} onClick={() => zoomBy(1 / 1.6)} />
           <IconButton variant="ghost" className="rounded-full" label="Show all cities" tooltip="Show all cities" icon={<Icon icon={FitIcon} />} onClick={resetZoom} />
         </ButtonGroup>
+      </div>
+
+      {(view === 'population' || view === 'titles') && (
+        <MapLegend view={view} k={transform.k} total={view === 'titles' ? placed.titleBubbles.reduce((n, b) => n + b.titles, 0) : undefined} style={{right: rightInset + 12, bottom: bottomInset + 12}} />
+      )}
+    </div>
+  );
+}
+
+/** Population circle radius in screen pixels: area ∝ people, growing gently with zoom. */
+function popRadius(pop: number, k: number) {
+  return Math.max(1.6, Math.sqrt(pop / 6_200_000) * 44 * Math.pow(k, 0.55));
+}
+
+/** Championship circle radius in screen pixels: area ∝ titles. */
+function titleRadius(titles: number, k: number) {
+  return Math.sqrt(titles) * 6.5 * Math.pow(k, 0.45) + 3;
+}
+
+function valueFont(r: number) {
+  return Math.min(14, 9 + r / 9);
+}
+
+function formatPop(n: number) {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  return `${Math.round(n / 1000)}K`;
+}
+
+/** Key for the data views: reference circles at today's zoom, and the source. */
+function MapLegend({view, k, total, style}: {view: 'population' | 'titles'; k: number; total?: number; style: CSSProperties}) {
+  const refs = view === 'population' ? [5_000_000, 1_000_000, 100_000].map((v) => ({v, r: popRadius(v, k), label: formatPop(v)})) : [25, 5, 1].map((v) => ({v, r: titleRadius(v, k), label: String(v)}));
+  const maxR = Math.min(46, refs[0].r);
+  const scale = maxR / refs[0].r;
+  const size = maxR * 2 + 4;
+  return (
+    <div className="glass card-radius pointer-events-none absolute flex items-end gap-3 px-3 py-2" style={{...style, transition: 'bottom 200ms ease, right 200ms ease'}}>
+      <svg width={size} height={size} aria-hidden="true">
+        {refs.map((ref) => (
+          <circle key={ref.v} cx={size / 2} cy={size - 2 - ref.r * scale} r={ref.r * scale} className={view === 'population' ? 'pop-bubble' : 'title-bubble'} />
+        ))}
+      </svg>
+      <div className="flex flex-col gap-0.5 pb-0.5">
+        <span className="text-xs font-semibold text-primary">{view === 'population' ? 'People per metro area' : `Championships${total ? ` · ${total}` : ''}`}</span>
+        <span className="text-xs tabular-nums text-secondary">{refs.map((ref) => ref.label).join(' · ')}</span>
+        <span className="text-[10px] text-secondary">{view === 'population' ? POPULATION_SOURCE : 'All-time titles of the teams shown'}</span>
       </div>
     </div>
   );
@@ -778,7 +896,7 @@ function importance(a: PlacedMarker, b: PlacedMarker, selectedId: string | null)
 }
 
 /** Merge markers that would overlap on screen into a single cluster headed by the most important city. */
-function clusterMarkers(items: PlacedMarker[], selectedId: string | null): Cluster[] {
+function clusterMarkers(items: PlacedMarker[], selectedId: string | null, allActive = false): Cluster[] {
   const ordered = items.slice().sort((a, b) => importance(a, b, selectedId));
   const clusters: Cluster[] = [];
   for (const m of ordered) {
@@ -792,7 +910,7 @@ function clusterMarkers(items: PlacedMarker[], selectedId: string | null): Clust
   for (const c of clusters) {
     const teams = c.members.flatMap((m) => m.teams);
     c.teamCount = teams.length;
-    c.currentCount = teams.filter((t) => t.status === 'current').length;
+    c.currentCount = allActive ? teams.length : teams.filter((t) => t.status === 'current').length;
     c.leagues = LEAGUE_ORDER.filter((l) => teams.some((t) => t.league === l));
     c.r = markerRadius(teams.length);
     c.containsSelected = c.members.some((m) => m.city.id === selectedId);

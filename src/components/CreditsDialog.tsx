@@ -31,6 +31,11 @@ const SOURCES = [
     note: 'Team, venue and moment photos are freely licensed files from Wikimedia Commons, each credited under the photo and listed below.',
   },
   {
+    name: 'Statistics Canada',
+    href: 'https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=9810000301',
+    note: 'Population of every census metropolitan area and agglomeration from the 2021 Census, for the Population view (via Wikipedia’s list).',
+  },
+  {
     name: 'Natural Earth',
     href: 'https://www.naturalearthdata.com/',
     note: 'Countries, provinces, coastlines, lakes, rivers, towns and geography names (public domain), simplified for the web.',

@@ -10,7 +10,8 @@ import {latestEra} from './lib/venues';
 import {SportsMap, type MapTakeover} from './components/SportsMap';
 import {CityPanel, TeamPanel} from './components/Panels';
 import {CreditsDialog} from './components/CreditsDialog';
-import {LeagueSelect, SiteMenu, type Appearance} from './components/HeaderControls';
+import {LeagueSelect, MAP_VIEWS, MapViewMenu, SiteMenu, type Appearance, type MapView} from './components/HeaderControls';
+import {TimelineBar, TIMELINE_MAX, TIMELINE_MIN} from './components/TimelineBar';
 import {DESKTOP_QUERY, useMediaQuery} from './hooks/useMediaQuery';
 import {TrophyDefs} from './visuals/Trophies';
 import {useHashRoute} from './hooks/useHashRoute';
@@ -70,9 +71,21 @@ function initialLeague(): LeagueFilter {
   return param && (LEAGUE_ORDER as string[]).includes(param) ? (param as LeagueId) : 'all';
 }
 
+function initialView(): MapView {
+  const param = new URLSearchParams(window.location.search).get('view');
+  return param && (MAP_VIEWS as string[]).includes(param) ? (param as MapView) : 'teams';
+}
+
+function initialYear(): number {
+  const param = Number(new URLSearchParams(window.location.search).get('year'));
+  return Number.isInteger(param) && param >= TIMELINE_MIN && param <= TIMELINE_MAX ? param : TIMELINE_MAX;
+}
+
 export function App() {
   const [appearance, setAppearance] = useState<Appearance>(initialAppearance);
   const [league, setLeague] = useState<LeagueFilter>(initialLeague);
+  const [view, setView] = useState<MapView>(initialView);
+  const [year, setYear] = useState<number>(initialYear);
   const [isCreditsOpen, setIsCreditsOpen] = useState(false);
   const isDesktop = useMediaQuery(DESKTOP_QUERY);
   const [route, navigate] = useHashRoute();
@@ -87,11 +100,23 @@ export function App() {
     const params = new URLSearchParams(window.location.search);
     if (league === 'all') params.delete('league');
     else params.set('league', league);
+    if (view === 'teams') params.delete('view');
+    else params.set('view', view);
+    if (view === 'timeline' && year !== TIMELINE_MAX) params.set('year', String(year));
+    else params.delete('year');
     const qs = params.toString();
     safely(() => history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}${window.location.hash}`), undefined);
-  }, [league]);
+  }, [league, view, year]);
 
-  const mapCities = useMemo(() => citiesWithTeams(league), [league]);
+  // The timeline shows only the teams playing in the chosen year.
+  const mapCities = useMemo(() => {
+    const cities = citiesWithTeams(league);
+    if (view !== 'timeline') return cities;
+    return cities
+      .map((c) => ({...c, teams: c.teams.filter((t) => t.from <= year && (t.to ?? TIMELINE_MAX) >= year)}))
+      .filter((c) => c.teams.length > 0);
+  }, [league, view, year]);
+  const timelineTeams = useMemo(() => mapCities.reduce((n, c) => n + c.teams.length, 0), [mapCities]);
 
   const selectedCityId =
     route.kind === 'city' ? route.id : route.kind === 'team' ? (TEAM_BY_ID[route.id]?.cityId ?? null) : null;
@@ -153,8 +178,15 @@ export function App() {
   const panelTop = viewportW / 2 + PILL_HALF + PANEL_GUTTER < viewportW - PANEL_GUTTER - PANEL_WIDTH ? PANEL_GUTTER : CHROME_H;
   // A team page shows its own takeover; otherwise filtering to a one-team league shows that team's.
   const takeover = useMemo(
-    () => (route.kind === 'team' ? takeoverFor(TEAM_BY_ID[route.id]) : league === 'all' ? null : takeoverFor(soleCurrentTeam(league))),
-    [route, league],
+    () =>
+      view !== 'teams'
+        ? null
+        : route.kind === 'team'
+          ? takeoverFor(TEAM_BY_ID[route.id])
+          : league === 'all'
+            ? null
+            : takeoverFor(soleCurrentTeam(league)),
+    [route, league, view],
   );
 
   return (
@@ -172,12 +204,24 @@ export function App() {
           rightInset={rightInset}
           topInset={CHROME_H - PANEL_GUTTER}
           takeover={takeover}
+          view={view}
         />
+
+        {view === 'timeline' && (
+          <TimelineBar
+            year={year}
+            onYearChange={setYear}
+            teamCount={timelineTeams}
+            isCompact={!isDesktop}
+            style={{left: 64, right: rightInset + 12, bottom: bottomInset + 12}}
+          />
+        )}
 
         {/* Floating controls, centred at the top: league picker and menu. */}
         <nav aria-label="Site" className="pointer-events-none absolute inset-x-0 top-3 flex justify-center px-3">
           <div className="glass pointer-events-auto flex items-center gap-0.5 rounded-full p-1">
             <LeagueSelect value={league} onChange={setLeague} isCompact={!isDesktop} />
+            <MapViewMenu value={view} onChange={setView} />
             <SiteMenu appearance={appearance} onAppearanceChange={setAppearance} onOpenCredits={() => setIsCreditsOpen(true)} />
           </div>
         </nav>
