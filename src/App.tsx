@@ -155,14 +155,13 @@ export function App() {
 
   const mapCities = useMemo(() => citiesWithTeams(league), [league]);
 
-  // Pin tool: every city on the map, nearest first, coloured green (near) to red (far).
+  // Pin tool: every city on the map, nearest first, coloured by how far it is (green near,
+  // red from about 4,500 km), so a pin far from Canada turns every arc orange and red.
   const pinTargets = useMemo<PinDistance[]>(() => {
     if (!pin) return [];
     const list = mapCities.map(({city}) => ({id: city.id, name: city.name, km: distanceKm(pin, city), color: ''}));
     list.sort((a, b) => a.km - b.km);
-    const min = list[0]?.km ?? 0;
-    const max = list[list.length - 1]?.km ?? 1;
-    return list.map((d) => ({...d, color: distanceColor(max > min ? (d.km - min) / (max - min) : 0)}));
+    return list.map((d) => ({...d, color: distanceColor(d.km)}));
   }, [pin, mapCities]);
   const setPinMode = useCallback((on: boolean) => {
     setIsPinMode(on);

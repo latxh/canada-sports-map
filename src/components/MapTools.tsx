@@ -23,9 +23,16 @@ export function distanceKm(a: LatLon, b: LatLon) {
   return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
 }
 
-/** Green (near) → yellow → red (far), for t in [0, 1]. */
-export function distanceColor(t: number) {
-  const hue = 135 * (1 - Math.max(0, Math.min(1, t)));
+/**
+ * Distance at which an arc is fully red. About the width of southern Canada (Victoria to
+ * St. John's is about 5,000 km), so a pin in Canada spans the scale and one far abroad is red.
+ */
+export const RED_AT_KM = 4500;
+
+/** Green (near) → yellow → red (far) by absolute distance, not by rank among the cities. */
+export function distanceColor(km: number) {
+  const t = Math.max(0, Math.min(1, km / RED_AT_KM));
+  const hue = 135 * (1 - t);
   return `hsl(${hue.toFixed(0)} 78% 46%)`;
 }
 

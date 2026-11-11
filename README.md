@@ -27,7 +27,7 @@ Four round toggles sit beside the league filter; one is on at a time. The first 
 - **Population**: every one of Canada's 152 metro areas and agglomerations, sized by its 2021 Census population.
 - **Championships**: gold around each city, sized by the titles its teams have won, with the count.
 - **Closest team**: every spot in Canada coloured by its nearest team. Hover or tap for the team and the distance.
-- **Drop a pin**: tap anywhere (or use your location) and arcs fly to every city on the map, green for the nearest through yellow to red for the farthest, with the nearest cities and the farthest one listed in kilometres.
+- **Drop a pin**: tap anywhere (or use your location) and arcs fly to every city on the map, coloured by distance (green nearby, through yellow, to red from about 4,500 km away, so a pin far from Canada turns them all orange and red), with the nearest cities and the farthest one listed in kilometres.
 
 | Closest team (NHL) | Population |
 | --- | --- |
