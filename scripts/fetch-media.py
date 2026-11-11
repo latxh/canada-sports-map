@@ -1,6 +1,6 @@
 """Resumable, rate-limit-friendly fetch of team photos, venue photos and historical logos."""
 import json, time, urllib.request, urllib.parse, urllib.error, os, re, html, sys
-UA='CanadaSportsMapBuilder/0.1 (personal project; github.com/latxh; latxhman@gmail.com)'
+UA='CanadianSportsAtlas/0.1 (personal project; https://github.com/latxh/canada-sports-map)'
 API_GAP, DL_GAP = 2.5, 1.5
 def get(url, binary=False):
     for a in range(8):

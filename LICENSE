@@ -25,5 +25,7 @@ SOFTWARE.
 The code above is MIT licensed. Team and venue facts are compiled from Wikipedia
 (CC BY-SA 4.0). Map data comes from Natural Earth (public domain). Team names,
 logos and uniforms are trademarks of their owners. The logo files in
-public/logos/ come from Wikipedia/Wikimedia Commons and are NOT covered by the
-MIT licence; see src/data/logos.ts for each file's source and licence.
+public/logos/ and the logos and photos in public/media/ come from
+Wikipedia/Wikimedia Commons and are NOT covered by the MIT licence; see
+src/data/logos.ts and src/data/media.ts for each file's source, author and
+licence.

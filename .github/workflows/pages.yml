@@ -1,8 +1,10 @@
 name: Deploy to GitHub Pages
 
-# Runs on demand. GitHub Pages needs a public repository (or a paid plan for private ones);
-# enable it under Settings → Pages → Source: GitHub Actions, then run this workflow.
+# Publishes the site to https://latxh.github.io/canada-sports-map/ on every push to main
+# (and on demand). Pages is set to Source: GitHub Actions.
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -27,6 +29,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm test
       - run: npm run build
         env:
           BASE_PATH: /${{ github.event.repository.name }}/
