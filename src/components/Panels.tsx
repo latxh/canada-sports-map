@@ -1,4 +1,4 @@
-import {useLayoutEffect, useMemo, useRef, type ReactNode} from 'react';
+import {useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode} from 'react';
 import {Heading} from '@astryxdesign/core/Heading';
 import {Text} from '@astryxdesign/core/Text';
 import {Button} from '@astryxdesign/core/Button';
@@ -15,10 +15,11 @@ import {EraLogo, LeagueLogo, LogoImage, TeamLogo} from '../visuals/Logos';
 import {LOGOS} from '../data/logos';
 import {Jersey} from '../visuals/Jersey';
 import {PlayingSurface} from '../visuals/PlayingSurface';
+import type {SlnImage, SlnTeam} from '../data/sportslogos';
 import {latestEra, venueEntriesForCity, venueEntriesForTeam} from '../lib/venues';
 import {TitleCabinet, TrophyCabinet} from '../visuals/Trophies';
 import {VenueSection} from './VenueSection';
-import {CardCarousel, CarouselCard, PhotoFigure, mediaAsset} from './Media';
+import {CardCarousel, CarouselCard, PhotoFigure, mediaAsset, SportsLogosCredit} from './Media';
 import {SectionTitle, StatusBadge} from './bits';
 import {ExternalIcon, PinIcon} from './icons';
 
@@ -181,11 +182,30 @@ const JERSEYS: Record<Sport, string> = {
   esports: 'Jerseys',
 };
 
+/**
+ * SportsLogos.net images are only needed on team pages, so their list is its own chunk:
+ * prefetched once the map is up (see App) and loaded on demand otherwise.
+ */
+let sportsLogosPromise: Promise<Record<string, SlnTeam>> | null = null;
+export function loadSportsLogos() {
+  sportsLogosPromise ??= import('../data/sportslogos').then((m) => m.SPORTSLOGOS);
+  return sportsLogosPromise;
+}
+
+/** The team's SportsLogos.net images: undefined while loading, null when it has none. */
+function useSportsLogos(teamId: string): SlnTeam | null | undefined {
+  const [all, setAll] = useState<Record<string, SlnTeam> | null>(null);
+  useEffect(() => {
+    void loadSportsLogos().then(setAll);
+  }, []);
+  return all ? (all[teamId] ?? null) : undefined;
+}
+
 /** Links out for each team: its article, the league's logo archive, and court/uniform archives where they exist. */
-function teamLinks(team: Team) {
+function teamLinks(team: Team, sln: SlnTeam | null | undefined) {
   const links = [
     {label: 'Wikipedia', href: team.wikipedia},
-    {label: 'Logo history on SportsLogos.net', href: LEAGUES[team.league].sportsLogos},
+    {label: 'Logo history on SportsLogos.net', href: sln?.page ?? LEAGUES[team.league].sportsLogos},
   ];
   if (team.league === 'NBA') links.push({label: 'Courts on Basketball Jersey Archive', href: 'https://basketballjerseyarchive.com/nba-courts-l758/'});
   return links;
@@ -205,6 +225,9 @@ export function TeamPanel({
 }) {
   const team = TEAMS.find((t) => t.id === teamId);
   const venueEntries = useMemo(() => (team ? venueEntriesForTeam(team) : []), [team]);
+  const sln = useSportsLogos(teamId);
+  // Until the list arrives, hold the history carousels back rather than flash the drawings.
+  const isLoadingHistory = sln === undefined;
   if (!team) return <EmptyState title="Team not found" />;
   const city = CITY_BY_ID[team.cityId];
   const era = latestEra(team);
@@ -248,32 +271,46 @@ export function TeamPanel({
 
       {venueEntries.length > 0 && <VenueSection entries={venueEntries} title="Venues" />}
 
+      {!isLoadingHistory && (
+      <>
       <Section title="Logos">
-        <LogoCarousel team={team} />
+        <LogoCarousel team={team} sln={sln} />
       </Section>
 
       <Section title={JERSEYS[sport]}>
-        <CardCarousel label={`${JERSEYS[sport]} by era`}>
-          {team.identity.map((e, i) => (
-            <CarouselCard key={i} width={200} caption={yearsLabel(e.from, e.to)}>
-              <HStack gap={1} hAlign="center">
-                <Jersey era={e} sport={sport} variant="home" size={80} />
-                <Jersey era={e} sport={sport} variant="away" size={80} />
-              </HStack>
-            </CarouselCard>
-          ))}
-        </CardCarousel>
+        {sln && (sln.home.length > 0 || sln.away.length > 0) ? (
+          <UniformCarousel team={team} sln={sln} label={`${JERSEYS[sport]} by era`} />
+        ) : (
+          <CardCarousel label={`${JERSEYS[sport]} by era`}>
+            {team.identity.map((e, i) => (
+              <CarouselCard key={i} width={200} caption={yearsLabel(e.from, e.to)}>
+                <HStack gap={1} hAlign="center">
+                  <Jersey era={e} sport={sport} variant="home" size={80} />
+                  <Jersey era={e} sport={sport} variant="away" size={80} />
+                </HStack>
+              </CarouselCard>
+            ))}
+          </CardCarousel>
+        )}
       </Section>
 
       <Section title={SURFACES[sport]}>
         <CardCarousel label={`${SURFACES[sport]} by era`}>
-          {team.identity.map((e, i) => (
-            <CarouselCard key={i} width={260} caption={yearsLabel(e.from, e.to)}>
-              <PlayingSurface era={e} sport={sport} width={228} />
-            </CarouselCard>
-          ))}
+          {sln && sln.surfaces.length > 0
+            ? sln.surfaces.map((img) => (
+                <CarouselCard key={img.file} width={260} caption={yearsLabel(img.from, img.to)} credit={<SportsLogosCredit page={img.page} />}>
+                  <SlnPicture img={img} alt={`${team.name} ${SURFACES[sport].toLowerCase().replace(/s$/, '')}, ${yearsLabel(img.from, img.to)}`} height={150} maxWidth={228} />
+                </CarouselCard>
+              ))
+            : team.identity.map((e, i) => (
+                <CarouselCard key={i} width={260} caption={yearsLabel(e.from, e.to)}>
+                  <PlayingSurface era={e} sport={sport} width={228} />
+                </CarouselCard>
+              ))}
         </CardCarousel>
       </Section>
+      </>
+      )}
 
       {photos.length > 0 && (
         <Section title="Photos">
@@ -287,7 +324,7 @@ export function TeamPanel({
         </Section>
       )}
 
-      <LinkButtons links={teamLinks(team)} />
+      <LinkButtons links={teamLinks(team, sln)} />
     </PanelFrame>
   );
 }
@@ -301,11 +338,61 @@ function teamPhotos(team: Team): MediaPhoto[] {
   return photos;
 }
 
+const slnAsset = (file: string) => `${import.meta.env.BASE_URL}sportslogos/${file}`;
+
+/** An image from SportsLogos.net at a set height, its width following its shape. */
+function SlnPicture({img, alt, height, maxWidth}: {img: SlnImage; alt: string; height: number; maxWidth: number}) {
+  const width = Math.min(maxWidth, Math.round((height * img.width) / img.height));
+  const h = Math.round((width * img.height) / img.width);
+  return <img src={slnAsset(img.file)} alt={alt} width={width} height={h} loading="lazy" decoding="async" className="sln-image" />;
+}
+
 /**
- * Logos through the years: official files where Wikipedia or Commons has them, an
- * illustrated badge for any other era, and today's official logo last.
+ * Which uniform, in SportsLogos.net's own words (hockey has Light and Dark sweaters, basketball
+ * White and Dark, baseball and football Home and Road), so the label is never wrong about
+ * which one a team wore at home in a given year.
  */
-function LogoCarousel({team}: {team: Team}) {
+function uniformSide(img: SlnImage, fallback: string) {
+  const m = img.label.match(/(Primary White|Primary Dark|Primary Light|Light|Dark|White|Home|Road|Away|Colou?red)\s+Uniform/);
+  return m ? m[1].replace('Primary ', '') : fallback;
+}
+
+/** Light/home and dark/road uniforms from SportsLogos.net, one card each, in order. */
+function UniformCarousel({team, sln, label}: {team: Team; sln: SlnTeam; label: string}) {
+  const cards = [...sln.home.map((img) => ({img, side: uniformSide(img, 'Home')})), ...sln.away.map((img) => ({img, side: uniformSide(img, 'Road')}))].sort(
+    (a, b) => a.img.from - b.img.from || (a.img.to ?? 9999) - (b.img.to ?? 9999) || a.side.localeCompare(b.side),
+  );
+  return (
+    <CardCarousel label={label}>
+      {cards.map(({img, side}) => {
+        const width = Math.min(232, Math.max(112, Math.round((112 * img.width) / img.height) + 24));
+        return (
+          <CarouselCard key={img.file} width={width} caption={`${side} · ${yearsLabel(img.from, img.to)}`} credit={<SportsLogosCredit page={img.page} />}>
+            <SlnPicture img={img} alt={`${team.name} ${side.toLowerCase()} uniform, ${yearsLabel(img.from, img.to)}`} height={112} maxWidth={width - 24} />
+          </CarouselCard>
+        );
+      })}
+    </CardCarousel>
+  );
+}
+
+/**
+ * Logos through the years: SportsLogos.net's primary logo history when it has the team;
+ * otherwise official files where Wikipedia or Commons has them, an illustrated badge for any
+ * other era, and today's official logo last.
+ */
+function LogoCarousel({team, sln}: {team: Team; sln: SlnTeam | null}) {
+  if (sln && sln.logos.length > 0) {
+    return (
+      <CardCarousel label="Logos through the years">
+        {sln.logos.map((img) => (
+          <CarouselCard key={img.file} caption={yearsLabel(img.from, img.to)} credit={<SportsLogosCredit page={img.page} />}>
+            <LogoImage src={slnAsset(img.file)} alt={`${team.name} logo, ${yearsLabel(img.from, img.to)}`} size={104} />
+          </CarouselCard>
+        ))}
+      </CardCarousel>
+    );
+  }
   const files = HISTORICAL_LOGOS[team.id] ?? [];
   const official = LOGOS[team.id];
   const officialEra = official ? (official.eraIndex ?? team.identity.length - 1) : -1;

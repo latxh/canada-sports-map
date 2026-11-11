@@ -2,9 +2,9 @@
  * Core data model for the atlas.
  *
  * Facts are compiled from Wikipedia (CC BY-SA 4.0). Identity eras (logos,
- * uniforms, playing surfaces) are summarised in our own words and drawn as
- * original illustrations in team colours; we link to SportsLogos.net for the
- * actual artwork rather than copying it.
+ * uniforms, playing surfaces) are summarised in our own words; the panels show
+ * SportsLogos.net's images of them (used with permission, src/data/sportslogos.ts)
+ * and original illustrations in team colours where it has none.
  */
 
 export type LeagueId = 'NHL' | 'NBA' | 'MLB' | 'MLS' | 'CFL' | 'CPL' | 'NLL' | 'CEBL' | 'PWHL' | 'WNBA' | 'NSL' | 'CDL';
@@ -21,7 +21,7 @@ export interface League {
   color: string;
   founded: number;
   wikipedia: string;
-  /** League index on SportsLogos.net (linked, never scraped). */
+  /** League index on SportsLogos.net. */
   sportsLogos: string;
 }
 

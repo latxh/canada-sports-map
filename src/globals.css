@@ -380,6 +380,14 @@
   }
 }
 
+/* SportsLogos.net uniforms and playing surfaces inside carousel cards. */
+@layer components {
+  .sln-image {
+    display: block;
+    object-fit: contain;
+  }
+}
+
 /* Link-preview cards (?og=…): fixed 1200×630 images, so fixed sizes and colours. */
 @layer components {
   .og-card {

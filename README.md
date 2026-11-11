@@ -38,7 +38,7 @@ Four round toggles sit beside the league filter; one is on at a time. The first 
 ### City and team panels
 
 - **City**: its teams as logo tiles (league and years underneath), a trophy cabinet with one trophy per title, and its active venues in a dropdown, each with a 3D model (or a photo) and cards for year opened, capacity, surface and roof.
-- **Team**: a hero card, the trophy cabinet, every venue the team has called home, carousels of logos, home and away uniforms and playing surfaces for each era, a photo carousel, and links to Wikipedia and logo archives. Opened from a city, it has a back button to that city.
+- **Team**: a hero card, the trophy cabinet, every venue the team has called home, carousels of logos, uniforms and playing surfaces through the years (from SportsLogos.net, used with permission), a photo carousel, and links to Wikipedia and logo archives. Opened from a city, it has a back button to that city.
 - **Trophies**: original illustrations of all twelve championship trophies, drawn from photos of the real ones.
 
 | Team page | Uniforms, rinks and photos |
@@ -125,6 +125,7 @@ Each current venue has a model function in `src/three/models/<city>.ts`, built f
 ### Rebuilding the map and media
 
 - `scripts/build-geo.mjs` explains how to download the Natural Earth source files and regenerate the base map and the zoomed-in detail layer.
+- `scripts/fetch-sportslogos.py` downloads each team's logo, uniform and playing-surface history from SportsLogos.net (with permission; slowly, with every page cached), and `scripts/build-sportslogos.py` turns it into `public/sportslogos/` and `src/data/sportslogos.ts`.
 - `scripts/fetch-media.py` downloads historical logos and freely licensed photos from Wikipedia and Wikimedia Commons, and `scripts/build-media.py` turns them into `public/media/` and `src/data/media.ts`.
 
 ### Share links and preview cards
@@ -155,8 +156,8 @@ Every push to `main` runs CI (type-check, tests, build) and `.github/workflows/p
 - **[Statistics Canada](https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=9810000301)**: 2021 Census population for the Population layer.
 - **[Natural Earth](https://www.naturalearthdata.com/)**: countries, provinces, coastlines, lakes, rivers, towns and geography names (public domain).
 - **[OpenStreetMap](https://www.openstreetmap.org/copyright)**: venue footprints and dimensions used as references for the 3D models (© OpenStreetMap contributors, ODbL).
-- **[SportsLogos.net](https://www.sportslogos.net/)**: linked for full logo histories. SportsLogos.net asks automated tools not to collect its content, so nothing was copied from it.
+- **[SportsLogos.net](https://www.sportslogos.net/)**: logo, uniform and playing-surface history images (`public/sportslogos/`), used with permission. Every image is credited and links to its page there, and each team links to its full history.
 - **[Google Analytics](https://marketingplatform.google.com/about/analytics/)**: visit counts (see Analytics above).
 - **[Astryx](https://github.com/facebook/astryx)**, **[three.js](https://threejs.org/)** / **[React Three Fiber](https://r3f.docs.pmnd.rs/)**, **[d3](https://d3js.org/)**, **[TopoJSON](https://github.com/topojson/topojson)**.
 
-Trophies, uniforms, playing surfaces and the badges for eras without a logo file are original illustrations. Team names, logos and uniforms are trademarks of their owners. This is an unofficial fan project, not affiliated with or endorsed by any league or team.
+Trophies are original illustrations, and so are the badges, uniforms and playing surfaces for teams SportsLogos.net doesn't cover. Team names, logos and uniforms are trademarks of their owners. This is an unofficial fan project, not affiliated with or endorsed by any league or team.

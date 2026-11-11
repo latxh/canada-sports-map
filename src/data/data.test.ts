@@ -143,3 +143,17 @@ describe('link-preview cards', () => {
     expect(html).toContain('"../../#/team/toronto-raptors"');
   });
 });
+
+describe('SportsLogos.net images', () => {
+  it('points every image at a file and a SportsLogos.net page', async () => {
+    const {SPORTSLOGOS} = await import('./sportslogos');
+    const {existsSync} = await import('node:fs');
+    for (const [teamId, team] of Object.entries(SPORTSLOGOS)) {
+      expect(TEAMS.some((t) => t.id === teamId)).toBe(true);
+      for (const img of [...team.logos, ...team.home, ...team.away, ...team.surfaces]) {
+        expect(existsSync(`public/sportslogos/${img.file}`)).toBe(true);
+        expect(img.page.startsWith('https://www.sportslogos.net/')).toBe(true);
+      }
+    }
+  });
+});

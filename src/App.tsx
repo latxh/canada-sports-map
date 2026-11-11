@@ -8,7 +8,7 @@ import {LOGOS} from './data/logos';
 import {logoAsset} from './visuals/Logos';
 import {latestEra} from './lib/venues';
 import {SportsMap, type MapTakeover} from './components/SportsMap';
-import {CityPanel, TeamPanel} from './components/Panels';
+import {CityPanel, TeamPanel, loadSportsLogos} from './components/Panels';
 import {CreditsDialog} from './components/CreditsDialog';
 import {LeagueSelect, MAP_VIEWS, SiteMenu, type Appearance, type MapView} from './components/HeaderControls';
 import {MapToolToggles, PinCard, distanceColor, distanceKm, type LatLon, type PinDistance} from './components/MapTools';
@@ -173,6 +173,11 @@ export function App() {
     [route, league, view, showClosest],
   );
   useEffect(() => trackPageView(shareEntry.path, shareEntry.title), [shareEntry]);
+  // Team pages' SportsLogos.net list: fetch it once the page has settled.
+  useEffect(() => {
+    const id = window.setTimeout(() => void loadSportsLogos(), 1500);
+    return () => window.clearTimeout(id);
+  }, []);
 
   const selectedCityId =
     route.kind === 'city' ? route.id : route.kind === 'team' ? (TEAM_BY_ID[route.id]?.cityId ?? null) : null;

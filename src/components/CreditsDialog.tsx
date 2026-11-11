@@ -22,7 +22,7 @@ const SOURCES = [
   {
     name: 'SportsLogos.net',
     href: 'https://www.sportslogos.net/',
-    note: 'Reference for logo and uniform eras. We link to the league archives there and do not copy their images. Logos and uniforms are trademarks of their teams and leagues.',
+    note: 'Logo, uniform and playing-surface history images, used with permission; each links to its page there. Logos and uniforms are trademarks of their teams and leagues.',
   },
   {
     name: 'Wikipedia & Wikimedia Commons logos',
@@ -153,9 +153,9 @@ export function CreditsDialog({isOpen, onOpenChange}: {isOpen: boolean; onOpenCh
         <VStack gap={1}>
           <SectionTitle>About the visuals</SectionTitle>
           <Text type="supporting">
-            Logos are the official marks of their teams and leagues; eras without a logo file show an illustrated badge instead.
-            Trophies (drawn from reference photos), uniforms and playing surfaces are original illustrations, not reproductions of
-            official artwork. The 3D models of the 24 venues current
+            Logos are the official marks of their teams and leagues. Logo, uniform and playing-surface history comes from
+            SportsLogos.net, used with permission; where it has none, the badges, uniforms and playing surfaces are original
+            illustrations. Trophies are original illustrations drawn from reference photos. The 3D models of the 24 venues current
             NHL, NBA, MLB, MLS, CFL and CPL teams play in are hand-built, low-poly approximations drawn to scale from OpenStreetMap footprints, with Wikimedia Commons photos
             used only as visual references. Former venues are not modelled, and venues used only by the newer leagues are not modelled yet.
           </Text>

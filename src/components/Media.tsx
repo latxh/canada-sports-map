@@ -39,15 +39,29 @@ export function CardCarousel({label, children}: {label: string; children: ReactN
   );
 }
 
-export function CarouselCard({width = 168, caption, children}: {width?: number; caption: ReactNode; children: ReactNode}) {
+export function CarouselCard({width = 168, caption, credit, children}: {width?: number; caption: ReactNode; credit?: ReactNode; children: ReactNode}) {
   return (
     <Card variant="muted" padding={3} width={width} className="shrink-0">
       <VStack gap={2} hAlign="center">
         {children}
-        <Text size="sm" weight="semibold" hasTabularNumbers justify="center">
-          {caption}
-        </Text>
+        <VStack gap={0.5} hAlign="center">
+          <Text size="sm" weight="semibold" hasTabularNumbers justify="center">
+            {caption}
+          </Text>
+          {credit}
+        </VStack>
       </VStack>
     </Card>
+  );
+}
+
+/** "SportsLogos.net" under an image from there, linking to its page. */
+export function SportsLogosCredit({page}: {page: string}) {
+  return (
+    <Text size="sm" color="secondary">
+      <Link href={page} target="_blank" label="SportsLogos.net (opens in new tab)">
+        SportsLogos.net
+      </Link>
+    </Text>
   );
 }

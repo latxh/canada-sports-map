@@ -28,4 +28,6 @@ logos and uniforms are trademarks of their owners. The logo files in
 public/logos/ and the logos and photos in public/media/ come from
 Wikipedia/Wikimedia Commons and are NOT covered by the MIT licence; see
 src/data/logos.ts and src/data/media.ts for each file's source, author and
-licence.
+licence. The images in public/sportslogos/ are from SportsLogos.net, used with
+permission, and are NOT covered by the MIT licence; see src/data/sportslogos.ts
+for each image's page.
