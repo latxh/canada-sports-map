@@ -227,6 +227,8 @@ export function SportsMap({
       world: geo.world.features.map((f) => gen(f) ?? ''),
       lakes: geo.lakes.features.map((f) => gen(f) ?? ''),
       bounds: gen.bounds(geo.provinces),
+      /** The whole projected world (Mercator stops short of the poles), for the pan and zoom limits. */
+      worldBounds: gen.bounds({type: 'FeatureCollection', features: [...geo.world.features, ...geo.neighbours.features, ...geo.provinces.features]}),
     };
   }, [projection, geo]);
 
@@ -299,11 +301,18 @@ export function SportsMap({
   useEffect(() => {
     const svg = svgRef.current;
     if (!svg || !size) return;
+    // Zoom out until the whole world fits, and pan anywhere within it (plus a little margin).
+    const [[wx0, wy0], [wx1, wy1]] = paths?.worldBounds ?? [
+      [-size.w, -size.h],
+      [size.w * 2, size.h * 2],
+    ];
+    const minK = Math.max(0.05, Math.min(size.w / (wx1 - wx0), size.h / (wy1 - wy0)));
+    const margin = Math.max(size.w, size.h) * 0.1;
     const behavior = d3zoom<SVGSVGElement, unknown>()
-      .scaleExtent([0.4, MAX_ZOOM])
+      .scaleExtent([minK, MAX_ZOOM])
       .translateExtent([
-        [-size.w, -size.h],
-        [size.w * 2, size.h * 2],
+        [wx0 - margin, wy0 - margin],
+        [wx1 + margin, wy1 + margin],
       ])
       .on('zoom', (event: {transform: ZoomTransform}) => {
         transformRef.current = event.transform;
