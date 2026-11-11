@@ -380,6 +380,37 @@
   }
 }
 
+/*
+ * Lightbox look for enlarged images and the 3D arena view: the app stays visible behind a
+ * soft, blurred scrim, and the media is held to most of the screen rather than all of it.
+ */
+@layer components {
+  .astryx-lightbox::backdrop,
+  dialog:has(.arena-lightbox)::backdrop {
+    background: rgb(12 13 16 / 0.5);
+    backdrop-filter: blur(10px) saturate(120%);
+    -webkit-backdrop-filter: blur(10px) saturate(120%);
+  }
+  .astryx-lightbox img {
+    max-width: min(78vw, 960px) !important;
+    max-height: 74dvh !important;
+  }
+  dialog:has(.arena-lightbox) {
+    background: light-dark(rgb(255 255 255 / 0.78), rgb(30 31 36 / 0.78));
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+  }
+  .lightbox-trigger {
+    display: inline-flex;
+    cursor: zoom-in;
+    border-radius: inherit;
+  }
+  .lightbox-trigger:focus-visible {
+    outline: 2px solid var(--color-border-focus, var(--map-selected));
+    outline-offset: 3px;
+  }
+}
+
 /* SportsLogos.net uniforms and playing surfaces inside carousel cards. */
 @layer components {
   .sln-image {

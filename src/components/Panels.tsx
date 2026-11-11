@@ -11,7 +11,7 @@ import {Grid} from '@astryxdesign/core/Grid';
 import {ClickableCard} from '@astryxdesign/core/ClickableCard';
 import {CITY_BY_ID, LEAGUES, TEAMS, teamsForCity, yearsLabel, type Sport, type Team, type LeagueFilter} from '../data';
 import {HISTORICAL_LOGOS, TEAM_PHOTOS, VENUE_PHOTOS, type MediaPhoto} from '../data/media';
-import {EraLogo, LeagueLogo, LogoImage, TeamLogo} from '../visuals/Logos';
+import {EraLogo, LeagueLogo, LogoImage, TeamLogo, logoAsset} from '../visuals/Logos';
 import {LOGOS} from '../data/logos';
 import {Jersey} from '../visuals/Jersey';
 import {PlayingSurface} from '../visuals/PlayingSurface';
@@ -19,7 +19,7 @@ import type {SlnImage, SlnTeam} from '../data/sportslogos';
 import {latestEra, venueEntriesForCity, venueEntriesForTeam} from '../lib/venues';
 import {TitleCabinet, TrophyCabinet} from '../visuals/Trophies';
 import {VenueSection} from './VenueSection';
-import {CardCarousel, CarouselCard, PhotoFigure, mediaAsset, SportsLogosCredit} from './Media';
+import {CardCarousel, CarouselCard, GalleryCarousel, PhotoCarousel, mediaAsset, SportsLogosCredit, type GalleryItem} from './Media';
 import {SectionTitle, StatusBadge} from './bits';
 import {ExternalIcon, PinIcon} from './icons';
 
@@ -295,32 +295,37 @@ export function TeamPanel({
       </Section>
 
       <Section title={SURFACES[sport]}>
-        <CardCarousel label={`${SURFACES[sport]} by era`}>
-          {sln && sln.surfaces.length > 0
-            ? sln.surfaces.map((img) => (
-                <CarouselCard key={img.file} width={260} caption={yearsLabel(img.from, img.to)} credit={<SportsLogosCredit page={img.page} />}>
-                  <SlnPicture img={img} alt={`${team.name} ${SURFACES[sport].toLowerCase().replace(/s$/, '')}, ${yearsLabel(img.from, img.to)}`} height={150} maxWidth={228} />
-                </CarouselCard>
-              ))
-            : team.identity.map((e, i) => (
-                <CarouselCard key={i} width={260} caption={yearsLabel(e.from, e.to)}>
-                  <PlayingSurface era={e} sport={sport} width={228} />
-                </CarouselCard>
-              ))}
-        </CardCarousel>
+        {sln && sln.surfaces.length > 0 ? (
+          <GalleryCarousel
+            label={`${SURFACES[sport]} by era`}
+            items={sln.surfaces.map((img) => {
+              const alt = `${team.name} ${SURFACES[sport].toLowerCase().replace(/s$/, '')}, ${yearsLabel(img.from, img.to)}`;
+              return {
+                key: img.file,
+                width: 260,
+                caption: yearsLabel(img.from, img.to),
+                credit: <SportsLogosCredit page={img.page} />,
+                thumb: <SlnPicture img={img} alt={alt} height={150} maxWidth={228} />,
+                full: slnFull(img, alt),
+              };
+            })}
+          />
+        ) : (
+          <CardCarousel label={`${SURFACES[sport]} by era`}>
+            {team.identity.map((e, i) => (
+              <CarouselCard key={i} width={260} caption={yearsLabel(e.from, e.to)}>
+                <PlayingSurface era={e} sport={sport} width={228} />
+              </CarouselCard>
+            ))}
+          </CardCarousel>
+        )}
       </Section>
       </>
       )}
 
       {photos.length > 0 && (
         <Section title="Photos">
-          <CardCarousel label="Photos">
-            {photos.map((p) => (
-              <span key={p.file} className="w-64 shrink-0">
-                <PhotoFigure photo={p} height={170} />
-              </span>
-            ))}
-          </CardCarousel>
+          <PhotoCarousel photos={photos} />
         </Section>
       )}
 
@@ -339,6 +344,12 @@ function teamPhotos(team: Team): MediaPhoto[] {
 }
 
 const slnAsset = (file: string) => `${import.meta.env.BASE_URL}sportslogos/${file}`;
+/** The larger copy of a SportsLogos.net image, for the lightbox. */
+const slnFull = (img: SlnImage, alt: string) => ({
+  src: slnAsset(img.file.replace(/\.webp$/, '-lg.webp')),
+  alt,
+  caption: `${yearsLabel(img.from, img.to)} · ${img.label} · Source: SportsLogos.net`,
+});
 
 /** An image from SportsLogos.net at a set height, its width following its shape. */
 function SlnPicture({img, alt, height, maxWidth}: {img: SlnImage; alt: string; height: number; maxWidth: number}) {
@@ -363,16 +374,22 @@ function UniformCarousel({team, sln, label}: {team: Team; sln: SlnTeam; label: s
     (a, b) => a.img.from - b.img.from || (a.img.to ?? 9999) - (b.img.to ?? 9999) || a.side.localeCompare(b.side),
   );
   return (
-    <CardCarousel label={label}>
-      {cards.map(({img, side}) => {
+    <GalleryCarousel
+      label={label}
+      items={cards.map(({img, side}) => {
         const width = Math.min(232, Math.max(112, Math.round((112 * img.width) / img.height) + 24));
-        return (
-          <CarouselCard key={img.file} width={width} caption={`${side} · ${yearsLabel(img.from, img.to)}`} credit={<SportsLogosCredit page={img.page} />}>
-            <SlnPicture img={img} alt={`${team.name} ${side.toLowerCase()} uniform, ${yearsLabel(img.from, img.to)}`} height={112} maxWidth={width - 24} />
-          </CarouselCard>
-        );
+        const years = yearsLabel(img.from, img.to);
+        const alt = `${team.name} ${side.toLowerCase()} uniform, ${years}`;
+        return {
+          key: img.file,
+          width,
+          caption: `${side} · ${years}`,
+          credit: <SportsLogosCredit page={img.page} />,
+          thumb: <SlnPicture img={img} alt={alt} height={112} maxWidth={width - 24} />,
+          full: slnFull(img, alt),
+        };
       })}
-    </CardCarousel>
+    />
   );
 }
 
@@ -382,42 +399,43 @@ function UniformCarousel({team, sln, label}: {team: Team; sln: SlnTeam; label: s
  * other era, and today's official logo last.
  */
 function LogoCarousel({team, sln}: {team: Team; sln: SlnTeam | null}) {
+  const label = 'Logos through the years';
   if (sln && sln.logos.length > 0) {
     return (
-      <CardCarousel label="Logos through the years">
-        {sln.logos.map((img) => (
-          <CarouselCard key={img.file} caption={yearsLabel(img.from, img.to)} credit={<SportsLogosCredit page={img.page} />}>
-            <LogoImage src={slnAsset(img.file)} alt={`${team.name} logo, ${yearsLabel(img.from, img.to)}`} size={104} />
-          </CarouselCard>
-        ))}
-      </CardCarousel>
+      <GalleryCarousel
+        label={label}
+        items={sln.logos.map((img) => {
+          const years = yearsLabel(img.from, img.to);
+          return {
+            key: img.file,
+            caption: years,
+            credit: <SportsLogosCredit page={img.page} />,
+            thumb: <LogoImage src={slnAsset(img.file)} alt={`${team.name} logo, ${years}`} size={104} />,
+            full: slnFull(img, `${team.name} logo, ${years}`),
+          };
+        })}
+      />
     );
   }
   const files = HISTORICAL_LOGOS[team.id] ?? [];
   const official = LOGOS[team.id];
   const officialEra = official ? (official.eraIndex ?? team.identity.length - 1) : -1;
   const overlaps = (from: number, to: number | undefined, f: {from: number; to?: number}) => from <= (f.to ?? 9999) && (to ?? 9999) >= f.from;
-  const items: {key: string; from: number; caption: string; node: ReactNode}[] = files.map((f) => ({
-    key: f.file,
-    from: f.from,
-    caption: yearsLabel(f.from, f.to),
-    node: <LogoImage src={mediaAsset(f.file)} alt={`${team.name} logo, ${yearsLabel(f.from, f.to)}`} size={104} />,
-  }));
+  const items: (GalleryItem & {from: number})[] = files.map((f) => {
+    const years = yearsLabel(f.from, f.to);
+    const alt = `${team.name} logo, ${years}`;
+    return {key: f.file, from: f.from, caption: years, thumb: <LogoImage src={mediaAsset(f.file)} alt={alt} size={104} />, full: {src: mediaAsset(f.file), alt, caption: `${years} · ${team.name} logo · Wikimedia Commons`}};
+  });
   team.identity.forEach((e, i) => {
-    if (i === officialEra) {
-      items.push({key: `official-${i}`, from: e.from, caption: yearsLabel(e.from, e.to), node: <TeamLogo team={team} size={104} />});
+    const years = yearsLabel(e.from, e.to);
+    if (i === officialEra && official) {
+      const alt = `${team.name} logo, ${years}`;
+      items.push({key: `official-${i}`, from: e.from, caption: years, thumb: <TeamLogo team={team} size={104} />, full: {src: logoAsset(official.file), alt, caption: `${years} · ${team.name} logo · Wikipedia`}});
     } else if (!files.some((f) => overlaps(e.from, e.to, f))) {
-      items.push({key: `era-${i}`, from: e.from, caption: `${yearsLabel(e.from, e.to)}${e.name ? ` · ${e.name}` : ''}`, node: <EraLogo team={team} index={i} size={104} />});
+      // An illustrated badge: shown in the carousel, but there's no image to enlarge.
+      items.push({key: `era-${i}`, from: e.from, caption: `${years}${e.name ? ` · ${e.name}` : ''}`, thumb: <EraLogo team={team} index={i} size={104} />});
     }
   });
   items.sort((a, b) => a.from - b.from);
-  return (
-    <CardCarousel label="Logos through the years">
-      {items.map((it) => (
-        <CarouselCard key={it.key} caption={it.caption}>
-          {it.node}
-        </CarouselCard>
-      ))}
-    </CardCarousel>
-  );
+  return <GalleryCarousel label={label} items={items} />;
 }

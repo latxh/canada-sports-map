@@ -13,7 +13,7 @@ import {VENUE_PHOTOS} from '../data/media';
 import {hasStadiumModel} from '../three/modelIds';
 import {ExpandIcon} from './icons';
 import {SectionTitle} from './bits';
-import {PhotoFigure} from './Media';
+import {ZoomablePhoto} from './Media';
 
 const StadiumViewer = lazy(() => import('../three/StadiumViewer'));
 
@@ -124,7 +124,7 @@ export function VenueSection({entries, title = 'Venues'}: {entries: VenueEntry[]
           {v.name}
         </Text>
       )}
-      {hasModel ? isExpanded ? <Skeleton width="100%" height={260} /> : viewer(260) : photo ? <PhotoFigure photo={photo} height={200} /> : null}
+      {hasModel ? isExpanded ? <Skeleton width="100%" height={260} /> : viewer(260) : photo ? <ZoomablePhoto photo={photo} height={200} /> : null}
       <Grid columns={2} gap={2}>
         <Stat label={v.closed ? 'Years' : 'Opened'} value={v.closed ? venueYears(v) : v.opened ? String(v.opened) : '—'} />
         <Stat label="Capacity" value={v.capacity ? v.capacity.toLocaleString('en-CA') : '—'} />
@@ -132,9 +132,10 @@ export function VenueSection({entries, title = 'Venues'}: {entries: VenueEntry[]
         <Stat label="Roof" value={ROOF_LABEL[v.roof]} />
       </Grid>
 
-      <Dialog isOpen={isExpanded} onOpenChange={setIsExpanded} variant="fullscreen" padding={4}>
+      {/* A lightbox, like enlarged images: the app stays visible behind it. */}
+      <Dialog isOpen={isExpanded} onOpenChange={setIsExpanded} width="min(1180px, 94vw)" maxHeight="94dvh" padding={4}>
         <DialogHeader title={v.name} subtitle={`${CITY_BY_ID[v.cityId]?.name ?? ''} · ${venueYears(v)} · ${formatCapacity(v.capacity)}`} onOpenChange={setIsExpanded} />
-        <div className="pt-3">{isExpanded && hasModel && viewer('calc(100dvh - 180px)', true)}</div>
+        <div className="arena-lightbox pt-3">{isExpanded && hasModel && viewer('min(74dvh, 820px)', true)}</div>
       </Dialog>
     </VStack>
   );

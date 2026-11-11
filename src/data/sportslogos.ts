@@ -6,7 +6,7 @@
  */
 
 export interface SlnImage {
-  /** Path under public/sportslogos/. */
+  /** Path under public/sportslogos/ (the lightbox uses the same name with -lg). */
   file: string;
   from: number;
   to?: number;

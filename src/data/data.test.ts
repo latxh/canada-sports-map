@@ -152,6 +152,7 @@ describe('SportsLogos.net images', () => {
       expect(TEAMS.some((t) => t.id === teamId)).toBe(true);
       for (const img of [...team.logos, ...team.home, ...team.away, ...team.surfaces]) {
         expect(existsSync(`public/sportslogos/${img.file}`)).toBe(true);
+        expect(existsSync(`public/sportslogos/${img.file.replace(/\.webp$/, '-lg.webp')}`)).toBe(true);
         expect(img.page.startsWith('https://www.sportslogos.net/')).toBe(true);
       }
     }

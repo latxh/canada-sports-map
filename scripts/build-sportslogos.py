@@ -22,8 +22,9 @@ DATA = os.path.join(ROOT, 'src', 'data', 'sportslogos.ts')
 # SportsLogos.net dates winter-sport seasons by the year they end (1995–96 is "1996");
 # the atlas dates seasons by the year they start, so shift the start back a year.
 WINTER = {'NHL', 'NBA', 'NLL', 'PWHL'}
-# Longest side in pixels: about twice the size the cards show them at.
+# Longest side in pixels: about twice the size the cards show them at; the -lg copy is for the lightbox.
 SIZE = {'logo': 360, 'home': 420, 'away': 420, 'surface': 640}
+LARGE = 1200
 
 
 def main():
@@ -48,10 +49,11 @@ def main():
         clear = []
         if kind != 'surface':
             clear = ['-alpha', 'set', '-bordercolor', 'white', '-border', '1', '-fuzz', '6%', '-fill', 'none', '-draw', 'color 0,0 floodfill', '-shave', '1x1']
-        subprocess.run(
-            ['magick', src + '[0]', *clear, '-trim', '+repage', '-background', 'none', '-resize', f'{size}x{size}>', '-strip', '-quality', '82', '-define', 'webp:alpha-quality=90', dest],
-            check=True,
-        )
+        for out_path, px in ((dest, size), (dest[: -len('.webp')] + '-lg.webp', LARGE)):
+            subprocess.run(
+                ['magick', src + '[0]', *clear, '-trim', '+repage', '-background', 'none', '-resize', f'{px}x{px}>', '-strip', '-quality', '82', '-define', 'webp:alpha-quality=90', out_path],
+                check=True,
+            )
         w, h = map(int, subprocess.run(['magick', 'identify', '-format', '%w %h', dest], check=True, capture_output=True, text=True).stdout.split())
         start, end = it['slnFrom'], it['slnTo']
         if start and league.get(team) in WINTER:
@@ -88,7 +90,7 @@ def main():
         ' */',
         '',
         'export interface SlnImage {',
-        '  /** Path under public/sportslogos/. */',
+        '  /** Path under public/sportslogos/ (the lightbox uses the same name with -lg). */',
         '  file: string;',
         '  from: number;',
         '  to?: number;',

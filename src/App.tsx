@@ -28,8 +28,15 @@ const PILL_HALF = 104;
 /** Background colours for map takeovers, where the logo would vanish on the team's primary colour. */
 const TAKEOVER_BACKGROUND: Record<string, string> = {
   'toronto-blue-jays': '#6cace4',
+  // The 1995 Raptors logo sits on black, so its purple spikes and red raptor stand out.
+  'toronto-raptors': '#111214',
   // The Tempo logo is solid bordeaux, so it sits on the team's borealis blue.
   'toronto-tempo': '#b3c7e7',
+};
+
+/** Logos to use for a takeover instead of today's: the Raptors' original 1995 logo (SportsLogos.net). */
+const TAKEOVER_LOGO: Record<string, string> = {
+  'toronto-raptors': `${import.meta.env.BASE_URL}sportslogos/toronto-raptors/logo-1996-kqmesaae0efg-lg.webp`,
 };
 
 /** The league's only current Canadian team, if it has exactly one (the Raptors, the Blue Jays, the Tempo). */
@@ -48,7 +55,7 @@ function takeoverFor(team: Team | undefined): MapTakeover | null {
   if (!logo) return null;
   return {
     id: team.id,
-    logoHref: logoAsset(logo.file),
+    logoHref: TAKEOVER_LOGO[team.id] ?? logoAsset(logo.file),
     background: TAKEOVER_BACKGROUND[team.id] ?? latestEra(team).colors[0],
     label: team.name,
   };
