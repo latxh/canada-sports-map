@@ -344,7 +344,8 @@
   /* The phone drawer's scroll area has no top padding, so its header sticks at the very top
      (the desktop panel's header sticks 16px up, into the panel's padding). */
   .astryx-bottom-sheet .glass-panel-header {
-    top: 0;
+    /* !important: beats the header's own -top-4 utility, which sits in a later layer. */
+    top: 0 !important;
   }
   @media (prefers-reduced-transparency: reduce) {
     .glass-panel,
