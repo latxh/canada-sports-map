@@ -286,15 +286,6 @@ export function SportsMap({
     return zoomIdentity.translate(padL + (w2 - padL - padR) / 2 - k * cx, topInset + h2 / 2 - k * cy).scale(k);
   }, [size, cityBand, rightInset, bottomInset, topInset]);
 
-  /** The whole country, fitted to the part of the map not covered by panels (used for logo takeovers). */
-  const countryTransform = useCallback(() => {
-    if (!size || !paths) return zoomIdentity;
-    const w2 = size.w - rightInset;
-    const h2 = size.h - bottomInset - topInset;
-    const [[x0, y0], [x1, y1]] = paths.bounds;
-    const k = Math.min((w2 * 0.94) / (x1 - x0), (h2 * 0.94) / (y1 - y0));
-    return zoomIdentity.translate(w2 / 2 - k * ((x0 + x1) / 2), topInset + h2 / 2 - k * ((y0 + y1) / 2)).scale(k);
-  }, [size, paths, rightInset, bottomInset, topInset]);
 
   // Attach d3-zoom once the svg exists.
   const didInit = useRef(false);
@@ -323,7 +314,7 @@ export function SportsMap({
     sel.call(behavior).on('dblclick.zoom', null);
     if (!didInit.current) {
       didInit.current = true;
-      sel.call(behavior.transform, takeover ? countryTransform() : homeTransform());
+      sel.call(behavior.transform, homeTransform());
     }
     return () => {
       sel.on('.zoom', null);
@@ -345,9 +336,31 @@ export function SportsMap({
   }, []);
 
   const takeoverId = takeover?.id ?? null;
+
+  /**
+   * Where a takeover logo sits, in map pixels: over the Prairies with its bottom just above the
+   * US border, as large as half the visible map (460px at most) without running under the top
+   * controls or out over Hudson Bay and the Arctic islands, measured at the home zoom.
+   */
+  const takeoverPlacement = useMemo(() => {
+    if (!takeover || !projection || !size) return null;
+    const t = homeTransform();
+    const border = projection([-102, 49]);
+    const north = projection([-102, 59.5]);
+    const west = projection([-112, 52]);
+    const east = projection([-92, 52]);
+    if (!border || !north || !west || !east) return null;
+    const margin = 8 / t.k;
+    const visibleTop = (topInset + 64 - t.y) / t.k;
+    const wanted = Math.min((size.w - rightInset) * 0.5, (size.h - bottomInset - topInset) * 0.5, 460) / t.k;
+    // Keep to solid mainland: below Hudson Bay and the Arctic islands, west of the bay.
+    const land = Math.min(border[1] - north[1], east[0] - west[0]);
+    const logoSize = Math.max(40 / t.k, Math.min(wanted, land, border[1] - margin - visibleTop));
+    return {anchor: [border[0], border[1] - margin - logoSize / 2] as [number, number], size: logoSize};
+  }, [takeover, projection, size, homeTransform, rightInset, bottomInset, topInset]);
   const resetZoom = useCallback(() => {
-    animateTo(takeoverId ? countryTransform() : homeTransform(), 450);
-  }, [animateTo, takeoverId, countryTransform, homeTransform]);
+    animateTo(homeTransform(), 450);
+  }, [animateTo, homeTransform]);
 
   /** Fly to a city, close enough to separate it from its neighbours. */
   const flyToCity = useCallback(
@@ -375,8 +388,8 @@ export function SportsMap({
   );
 
   // Where the map should be. Opening a city remembers the view you jumped from, and closing the
-  // panel goes back to it (a cluster you had zoomed into stays zoomed). A logo takeover always
-  // shows the whole country.
+  // panel goes back to it (a cluster you had zoomed into stays zoomed). A logo takeover keeps
+  // the usual framing of southern Canada, with the logo over the Prairies.
   const jumpPoint = useRef<ZoomTransform | null>(null);
   const prevSelected = useRef<string | null>(null);
   const prevTakeover = useRef<string | null>(null);
@@ -389,7 +402,7 @@ export function SportsMap({
     prevTakeover.current = takeoverId;
     if (selectionChanged && !wasSelected && selectedCityId) jumpPoint.current = transformRef.current;
     if (takeoverId) {
-      animateTo(countryTransform(), 450);
+      animateTo(homeTransform(), 450);
       return;
     }
     if (selectedCityId) {
@@ -682,8 +695,8 @@ export function SportsMap({
                 <title>{p.name}</title>
               </path>
             ))}
-            {takeover && projection && (
-              <TakeoverLayer key={takeover.id} takeover={takeover} bounds={paths.bounds} anchor={projection([-104, 61]) ?? [0, 0]} width={(projection([-123, 56])?.[0] ?? 0) - (projection([-80, 56])?.[0] ?? 0)} clipId={clipId} />
+            {takeover && takeoverPlacement && (
+              <TakeoverLayer key={takeover.id} takeover={takeover} bounds={paths.bounds} anchor={takeoverPlacement.anchor} logoSize={takeoverPlacement.size} clipId={clipId} />
             )}
             {takeover &&
               paths.provinces.map((p) => (
@@ -988,21 +1001,21 @@ function TakeoverLayer({
   takeover,
   bounds,
   anchor,
-  width,
+  logoSize,
   clipId,
 }: {
   takeover: MapTakeover;
   bounds: [[number, number], [number, number]];
-  /** Where the logo centres: over the Prairies and the territories, clear of Hudson Bay. */
+  /** Where the logo centres: over the Prairies, inside the home framing. */
   anchor: [number, number];
-  /** The mainland's width at that latitude (BC coast to Hudson Bay), which sizes the logo. */
-  width: number;
+  /** Logo size in map pixels. */
+  logoSize: number;
   clipId: string;
 }) {
   const [[x0, y0], [x1, y1]] = bounds;
   const w = x1 - x0;
   const h = y1 - y0;
-  const size = Math.abs(width) * 0.86;
+  const size = logoSize;
   const [cx, cy] = anchor;
   return (
     <g clipPath={`url(#${clipId})`} className="takeover" aria-hidden="true" pointerEvents="none">

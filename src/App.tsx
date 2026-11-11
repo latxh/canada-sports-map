@@ -28,8 +28,6 @@ const PILL_HALF = 104;
 /** Background colours for map takeovers, where the logo would vanish on the team's primary colour. */
 const TAKEOVER_BACKGROUND: Record<string, string> = {
   'toronto-blue-jays': '#6cace4',
-  // The 1995 Raptors logo sits on black, so its purple spikes and red raptor stand out.
-  'toronto-raptors': '#111214',
   // The Tempo logo is solid bordeaux, so it sits on the team's borealis blue.
   'toronto-tempo': '#b3c7e7',
 };
