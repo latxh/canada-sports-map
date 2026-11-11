@@ -412,6 +412,17 @@
   }
 }
 
+/* Panel link buttons: the faintest grey at rest (the theme's 5% hover tint), a touch more on hover. */
+@layer components {
+  .link-button {
+    background: var(--color-overlay-hover) !important;
+  }
+  .link-button:hover,
+  .link-button:focus-visible {
+    background: linear-gradient(var(--color-overlay-hover), var(--color-overlay-hover)), var(--color-overlay-hover) !important;
+  }
+}
+
 /* SportsLogos.net uniforms and playing surfaces inside carousel cards. */
 @layer components {
   .sln-image {

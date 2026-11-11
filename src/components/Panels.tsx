@@ -88,7 +88,7 @@ function LinkButtons({links}: {links: {label: string; href: string}[]}) {
   return (
     <VStack gap={2} paddingBlockStart={2}>
       {links.map((l) => (
-        <Button key={l.href} href={l.href} target="_blank" width="100%" variant="ghost" label={l.label} icon={<Icon icon={ExternalIcon} />} />
+        <Button key={l.href} href={l.href} target="_blank" width="100%" variant="ghost" className="link-button" label={l.label} icon={<Icon icon={ExternalIcon} />} />
       ))}
     </VStack>
   );
