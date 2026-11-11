@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState} from 'react';
 import {geoMercator, geoPath} from 'd3-geo';
+import {DESKTOP_QUERY} from '../hooks/useMediaQuery';
 import {select} from 'd3-selection';
 import 'd3-transition';
 import {zoom as d3zoom, zoomIdentity, type ZoomBehavior, type ZoomTransform} from 'd3-zoom';
@@ -180,14 +181,28 @@ export function SportsMap({
       alive = false;
     };
   }, []);
-  // The detailed layer downloads in the background once the base map is up.
+  // The detailed layer is the biggest download (about 160 KB), and most visits never zoom in
+  // far enough to see it. It loads when you zoom in toward it or open a city (which flies in
+  // past it); desktops also fetch it once the browser is idle.
+  const wantsDetail = !!geo && (transform.k >= DETAIL_K * 0.8 || selectedCityId !== null);
   useEffect(() => {
-    if (!geo) return;
+    if (!wantsDetail) return;
     let alive = true;
-    const id = window.setTimeout(() => loadDetail().then((d) => alive && setDetail(d)), 400);
+    loadDetail().then((d) => alive && setDetail(d));
     return () => {
       alive = false;
-      window.clearTimeout(id);
+    };
+  }, [wantsDetail]);
+  useEffect(() => {
+    if (!geo || !window.matchMedia(DESKTOP_QUERY).matches) return;
+    let alive = true;
+    const run = () => loadDetail().then((d) => alive && setDetail(d));
+    const idle = window.requestIdleCallback?.(run, {timeout: 6000});
+    const timer = idle === undefined ? window.setTimeout(run, 3000) : undefined;
+    return () => {
+      alive = false;
+      if (idle !== undefined) window.cancelIdleCallback(idle);
+      window.clearTimeout(timer);
     };
   }, [geo]);
 

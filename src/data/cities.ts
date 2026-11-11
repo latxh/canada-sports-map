@@ -10,8 +10,6 @@ export const CITIES: City[] = [
     lat: 43.6532,
     lon: -79.3832,
     rank: 1,
-    blurb:
-      'Canada’s largest city and its busiest sports market: teams in the NHL, NBA, MLB, MLS and CFL, the PWHL’s Sceptres, the Tempo (the first WNBA team outside the United States) and clubs in the CPL, CEBL and NSL.',
     wikipedia: wiki('Toronto'),
   },
   {
@@ -21,8 +19,6 @@ export const CITIES: City[] = [
     lat: 45.5019,
     lon: -73.5674,
     rank: 1,
-    blurb:
-      'Birthplace of organized indoor hockey and home of the most decorated franchise in NHL history. Hosted the 1976 Summer Olympics and 35 seasons of Expos baseball; the PWHL’s Victoire won the 2026 Walter Cup.',
     wikipedia: wiki('Montreal'),
   },
   {
@@ -32,8 +28,6 @@ export const CITIES: City[] = [
     lat: 49.2827,
     lon: -123.1207,
     rank: 1,
-    blurb:
-      'West-coast hub with NHL, MLS and CFL teams, the NLL’s Warriors, the PWHL’s Goldeneyes and the Rise, the first NSL champions. Two downtown venues sit side by side on False Creek; the Grizzlies were a brief NBA chapter.',
     wikipedia: wiki('Vancouver'),
   },
   {
@@ -43,8 +37,6 @@ export const CITIES: City[] = [
     lat: 51.0447,
     lon: -114.0719,
     rank: 2,
-    blurb:
-      'Home of the Flames, the Stampeders, Cavalry FC and the NLL’s three-time champion Roughnecks. The Saddledome’s hyperbolic-paraboloid roof is one of the most recognisable arena silhouettes in sport.',
     wikipedia: wiki('Calgary'),
   },
   {
@@ -54,8 +46,6 @@ export const CITIES: City[] = [
     lat: 53.5461,
     lon: -113.4938,
     rank: 2,
-    blurb:
-      '“City of Champions”: five Stanley Cups for the Oilers between 1984 and 1990, 14 Grey Cups for the Elks and two CEBL titles for the Stingers. Commonwealth Stadium is the largest open-air stadium in Canada.',
     wikipedia: wiki('Edmonton'),
   },
   {
@@ -65,8 +55,6 @@ export const CITIES: City[] = [
     lat: 45.4215,
     lon: -75.6972,
     rank: 2,
-    blurb:
-      'The capital has two NHL eras of Senators, a long CFL history from the Rough Riders to the Redblacks, the PWHL’s Charge, and Atlético Ottawa and the NSL’s Rapid at TD Place in Lansdowne Park.',
     wikipedia: wiki('Ottawa'),
   },
   {
@@ -76,8 +64,6 @@ export const CITIES: City[] = [
     lat: 49.8951,
     lon: -97.1384,
     rank: 2,
-    blurb:
-      'The Jets left for Phoenix in 1996 and came back in 2011. The Blue Bombers have played in Winnipeg since 1930, and the CEBL’s Sea Bears won the 2026 title.',
     wikipedia: wiki('Winnipeg'),
   },
   {
@@ -87,8 +73,6 @@ export const CITIES: City[] = [
     lat: 46.8139,
     lon: -71.208,
     rank: 3,
-    blurb:
-      'Former NHL city. The Bulldogs played one NHL season (1919–20) and the Nordiques spent 16 NHL seasons here before moving to Denver in 1995. The Videotron Centre opened in 2015 without a tenant.',
     wikipedia: wiki('Quebec_City'),
   },
   {
@@ -98,8 +82,6 @@ export const CITIES: City[] = [
     lat: 43.2557,
     lon: -79.8711,
     rank: 3,
-    blurb:
-      'Steel-town football: the Tiger-Cats and Forge FC share Hamilton Stadium. The renovated TD Coliseum is home to the NLL’s Toronto Rock and PWHL Hamilton, and the city had a short NHL run with the Tigers in the 1920s.',
     wikipedia: wiki('Hamilton,_Ontario'),
   },
   {
@@ -109,8 +91,6 @@ export const CITIES: City[] = [
     lat: 50.4452,
     lon: -104.6189,
     rank: 3,
-    blurb:
-      'Home of the Saskatchewan Roughriders, the community-owned club with one of the most devoted fan bases in sport. Winners of the 112th Grey Cup in 2025.',
     wikipedia: wiki('Regina,_Saskatchewan'),
   },
   {
@@ -120,8 +100,6 @@ export const CITIES: City[] = [
     lat: 44.6488,
     lon: -63.5752,
     rank: 3,
-    blurb:
-      'Atlantic Canada’s pro sports hub: HFX Wanderers and the NSL’s Tides share the modular Wanderers Grounds, and the NLL’s Thunderbirds play at Scotiabank Centre.',
     wikipedia: wiki('Halifax,_Nova_Scotia'),
   },
   {
@@ -131,7 +109,6 @@ export const CITIES: City[] = [
     lat: 48.4474,
     lon: -123.4956,
     rank: 4,
-    blurb: 'Greater Victoria community on Vancouver Island, home of Pacific FC, the 2021 CPL champions.',
     wikipedia: wiki('Langford,_British_Columbia'),
   },
   {
@@ -141,7 +118,6 @@ export const CITIES: City[] = [
     lat: 49.1044,
     lon: -122.66,
     rank: 4,
-    blurb: 'Fraser Valley township where Vancouver FC has played at Willoughby Stadium since 2023 and the CEBL’s Bandits at the Langley Events Centre since 2022.',
     wikipedia: wiki('Langley,_British_Columbia_(district_municipality)'),
   },
   {
@@ -151,7 +127,6 @@ export const CITIES: City[] = [
     lat: 45.6066,
     lon: -73.7124,
     rank: 4,
-    blurb: 'Island city north of Montréal: Place Bell is home to the Walter Cup champion Victoire, and Stade Boréale to the Montréal Roses and FC Supra du Québec.',
     wikipedia: wiki('Laval,_Quebec'),
   },
   {
@@ -161,8 +136,6 @@ export const CITIES: City[] = [
     lat: 52.1332,
     lon: -106.67,
     rank: 3,
-    blurb:
-      'Saskatchewan’s largest city. SaskTel Centre is home to the NLL’s Rush, champions in 2016 and 2018, and the CEBL’s Mamba, who won the league’s first title as the Rattlers in 2019.',
     wikipedia: wiki('Saskatoon'),
   },
   {
@@ -172,7 +145,6 @@ export const CITIES: City[] = [
     lat: 47.5615,
     lon: -52.7126,
     rank: 3,
-    blurb: 'Newfoundland and Labrador’s capital, on the eastern edge of the continent. The Newfoundland Growlers played a single CEBL season here in 2022.',
     wikipedia: wiki('St._John%27s,_Newfoundland_and_Labrador'),
   },
   {
@@ -182,7 +154,6 @@ export const CITIES: City[] = [
     lat: 43.7315,
     lon: -79.7624,
     rank: 4,
-    blurb: 'Peel Region city west of Toronto. The CEBL’s Honey Badgers moved here from Hamilton in 2023 and play at the CAA Centre.',
     wikipedia: wiki('Brampton'),
   },
   {
@@ -192,7 +163,6 @@ export const CITIES: City[] = [
     lat: 43.1594,
     lon: -79.2469,
     rank: 4,
-    blurb: 'The Niagara Region’s largest city. The River Lions won back-to-back CEBL titles in 2024 and 2025 at the downtown Meridian Centre.',
     wikipedia: wiki('St._Catharines'),
   },
   {
@@ -202,7 +172,6 @@ export const CITIES: City[] = [
     lat: 43.5448,
     lon: -80.2482,
     rank: 4,
-    blurb: 'Home of the Nighthawks, one of the CEBL’s six charter teams, from 2019 until their move to Calgary after the 2022 season.',
     wikipedia: wiki('Guelph'),
   },
   {
@@ -212,7 +181,6 @@ export const CITIES: City[] = [
     lat: 43.8971,
     lon: -78.8658,
     rank: 4,
-    blurb: 'Durham Region city east of Toronto. The NLL’s FireWolves arrived from Albany for the 2026 season and play downtown at the Tribute Communities Centre.',
     wikipedia: wiki('Oshawa'),
   },
 ];

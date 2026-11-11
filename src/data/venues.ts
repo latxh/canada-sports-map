@@ -15,10 +15,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: [
-      'Built inside the shell of Canada Post’s former Toronto Delivery Building.',
-      'Shared by the Maple Leafs and the Raptors; the floor converts between ice and hardwood overnight.',
-    ],
     wikipedia: wiki('Scotiabank_Arena'),
   },
   {
@@ -31,11 +27,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: [
-      'Built in about five months during the Depression and opened in November 1931.',
-      'Hosted the first game in NBA history (as the BAA) on November 1, 1946: Toronto Huskies vs. New York Knicks.',
-      'Now a grocery store and Toronto Metropolitan University’s Mattamy Athletic Centre.',
-    ],
     wikipedia: wiki('Maple_Leaf_Gardens'),
   },
   {
@@ -48,7 +39,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['Home of the Arenas, St. Patricks and early Maple Leafs; one of the first Canadian rinks with artificial ice.'],
     wikipedia: wiki('Mutual_Street_Arena'),
   },
   {
@@ -61,11 +51,6 @@ export const VENUES: Venue[] = [
     kind: 'dome',
     roof: 'retractable',
     surface: 'turf',
-    facts: [
-      'The first stadium with a fully retractable motorised roof; the four panels open in about 20 minutes.',
-      'Renovated 2022–24, which reduced baseball capacity to about 39,150.',
-      'Sits at the foot of the CN Tower on the former Railway Lands.',
-    ],
     wikipedia: wiki('Rogers_Centre'),
   },
   {
@@ -79,10 +64,6 @@ export const VENUES: Venue[] = [
     kind: 'football',
     roof: 'open',
     surface: 'turf',
-    facts: [
-      'A football stadium adapted for baseball; the Blue Jays played their first game here in the snow on April 7, 1977.',
-      'Demolished in 1999. BMO Field now stands on the site.',
-    ],
     wikipedia: wiki('Exhibition_Stadium'),
   },
   {
@@ -94,10 +75,6 @@ export const VENUES: Venue[] = [
     kind: 'soccer',
     roof: 'canopy',
     surface: 'hybrid',
-    facts: [
-      'Built for Toronto FC; expanded and given a canopy in 2015–16 so it could also host the Argonauts.',
-      'One of two Canadian venues for the 2026 FIFA World Cup.',
-    ],
     wikipedia: wiki('BMO_Field'),
   },
   {
@@ -109,10 +86,6 @@ export const VENUES: Venue[] = [
     kind: 'soccer',
     roof: 'canopy',
     surface: 'turf',
-    facts: [
-      'On York University’s Keele campus; built as the athletics stadium of the 2015 Pan American Games.',
-      'The running track was removed in 2021 to make room for a larger artificial turf field.',
-    ],
     wikipedia: wiki('York_Lions_Stadium'),
   },
   {
@@ -125,10 +98,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: [
-      'Built at Exhibition Place for the Canadian National Exhibition and the Royal Agricultural Winter Fair.',
-      'Home of the Toronto Sceptres since 2024 and of the Toronto Tempo, whose 2026 debut was the first WNBA regular-season game played in Canada.',
-    ],
     wikipedia: wiki('Coca-Cola_Coliseum'),
   },
   {
@@ -140,7 +109,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'hardwood',
-    facts: ['On the University of Toronto’s Scarborough campus; built for the 2015 Pan American Games. Its field house is home to the Scarborough Shooting Stars.'],
     wikipedia: wiki('Toronto_Pan_Am_Sports_Centre'),
   },
 
@@ -155,7 +123,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['The largest arena in the NHL by capacity.', 'Home of the Canadiens since March 1996.'],
     wikipedia: wiki('Bell_Centre'),
   },
   {
@@ -168,10 +135,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: [
-      'Built for the Maroons in 1924; the Canadiens moved in for 1926–27.',
-      'More Stanley Cups were won here than in any other building.',
-    ],
     wikipedia: wiki('Montreal_Forum'),
   },
   {
@@ -184,7 +147,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['Burned down on January 2, 1918, which ended the Wanderers and left the Canadiens without a rink.'],
     wikipedia: wiki('Montreal_Arena'),
   },
   {
@@ -197,11 +159,6 @@ export const VENUES: Venue[] = [
     kind: 'dome',
     roof: 'fixed-dome',
     surface: 'turf',
-    facts: [
-      'Main stadium of the 1976 Summer Olympics. Its 165 m inclined tower is the tallest inclined structure in the world.',
-      'The retractable roof hung from the tower never worked reliably and was replaced with a fixed roof.',
-      'Home of the Expos from 1977 to 2004.',
-    ],
     wikipedia: wiki('Olympic_Stadium_(Montreal)'),
   },
   {
@@ -214,10 +171,6 @@ export const VENUES: Venue[] = [
     kind: 'ballpark',
     roof: 'open',
     surface: 'grass',
-    facts: [
-      'Temporary home of the Expos, MLB’s first team outside the United States.',
-      'Rebuilt as a tennis stadium; it now hosts the Canadian Open.',
-    ],
     wikipedia: wiki('Jarry_Park_Stadium'),
   },
   {
@@ -229,10 +182,6 @@ export const VENUES: Venue[] = [
     kind: 'football',
     roof: 'open',
     surface: 'turf',
-    facts: [
-      'McGill University’s stadium on the slope of Mount Royal, with a view of downtown over the end zone.',
-      'Home of the Alouettes since 1998.',
-    ],
     wikipedia: wiki('Percival_Molson_Memorial_Stadium'),
   },
   {
@@ -244,7 +193,6 @@ export const VENUES: Venue[] = [
     kind: 'soccer',
     roof: 'canopy',
     surface: 'grass',
-    facts: ['Soccer-specific stadium in Montréal’s Olympic Park, next to the Big O.'],
     wikipedia: wiki('Saputo_Stadium'),
   },
   {
@@ -256,10 +204,6 @@ export const VENUES: Venue[] = [
     kind: 'soccer',
     roof: 'open',
     surface: 'turf',
-    facts: [
-      'The main field of the Centre sportif Bois-de-Boulogne, ringed by modular grandstands; a raised platform of boxes and a press gallery was added on the west side for 2026.',
-      'A modular stadium built for the Montréal Roses’ first NSL season in 2025; FC Supra du Québec joined them in 2026.',
-    ],
     wikipedia: wiki('Centre_Sportif_Bois-de-Boulogne'),
   },
   {
@@ -271,7 +215,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['The largest arena in Montréal’s west end. The Victoire played their first home games here in 2024; the CEBL’s Alliance play here today.'],
     wikipedia: wiki('Verdun_Auditorium'),
   },
   {
@@ -283,7 +226,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['Home of the AHL’s Laval Rocket and, since 2024–25, the Montréal Victoire, who won the Walter Cup in 2026.'],
     wikipedia: wiki('Place_Bell'),
   },
 
@@ -298,7 +240,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['In suburban Kanata, about 20 km west of downtown Ottawa.'],
     wikipedia: wiki('Canadian_Tire_Centre'),
   },
   {
@@ -311,10 +252,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: [
-      'Built into the north-side stands of the Lansdowne Park stadium; temporary home of the modern Senators, 1992–96.',
-      'Home of the CEBL’s BlackJacks; the Charge played here from 2024 to 2026. Ottawa approved replacing it with a smaller arena in November 2025.',
-    ],
     wikipedia: wiki('TD_Place_Arena'),
   },
   {
@@ -327,7 +264,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['Home of the original Senators from 1923 until they moved to St. Louis in 1934.'],
     wikipedia: wiki('Ottawa_Auditorium'),
   },
   {
@@ -340,7 +276,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['Natural-ice rink where the original Senators won three of their NHL-era Stanley Cups.'],
     wikipedia: wiki('Dey%27s_Arena'),
   },
   {
@@ -353,10 +288,6 @@ export const VENUES: Venue[] = [
     kind: 'football',
     roof: 'canopy',
     surface: 'turf',
-    facts: [
-      'Football has been played at Lansdowne Park since the 1870s; the south stands were rebuilt with a wave-shaped wooden canopy in 2014.',
-      'Home of the Rough Riders, the Renegades, the Redblacks and Atlético Ottawa.',
-    ],
     wikipedia: wiki('TD_Place_Stadium'),
   },
 
@@ -372,7 +303,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['Home of the Nordiques in the WHA and the NHL; demolished in 2021.'],
     wikipedia: wiki('Colisée_de_Québec'),
   },
   {
@@ -385,7 +315,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['Home of the Quebec Bulldogs for their single NHL season, 1919–20.'],
     wikipedia: wiki('Quebec_Bulldogs'),
   },
 
@@ -400,10 +329,6 @@ export const VENUES: Venue[] = [
     kind: 'football',
     roof: 'canopy',
     surface: 'turf',
-    facts: [
-      'Built on the site of Ivor Wynne Stadium for the 2015 Pan American Games.',
-      'Shared by the Tiger-Cats and Forge FC.',
-    ],
     wikipedia: wiki('Hamilton_Stadium'),
   },
   {
@@ -417,7 +342,6 @@ export const VENUES: Venue[] = [
     kind: 'football',
     roof: 'open',
     surface: 'turf',
-    facts: ['Hosted the first British Empire Games in 1930; the Tiger-Cats played here from 1950 to 2012.'],
     wikipedia: wiki('Ivor_Wynne_Stadium'),
   },
   {
@@ -431,7 +355,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['Home of the NHL’s Hamilton Tigers, 1920–25.'],
     wikipedia: wiki('Barton_Street_Arena'),
   },
   {
@@ -444,10 +367,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: [
-      'Downtown Hamilton arena, renovated and renamed TD Coliseum; home of the AHL’s Hamilton Hammers and PWHL Hamilton.',
-      'The Toronto Rock moved their home games here from Toronto in 2021–22.',
-    ],
     wikipedia: wiki('TD_Coliseum'),
   },
 
@@ -462,7 +381,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['The smallest arena in the NHL by capacity. Built on the site of the old Eaton’s department store.'],
     wikipedia: wiki('Canada_Life_Centre'),
   },
   {
@@ -475,7 +393,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['Known for the huge portrait of Queen Elizabeth II above one end; the original Jets played here 1972–96.'],
     wikipedia: wiki('Winnipeg_Arena'),
   },
   {
@@ -488,7 +405,6 @@ export const VENUES: Venue[] = [
     kind: 'football',
     roof: 'canopy',
     surface: 'turf',
-    facts: ['On the University of Manitoba campus. A large canopy covers most of the seats.', 'Hosted the 112th Grey Cup in 2025.'],
     wikipedia: wiki('Princess_Auto_Stadium'),
   },  {
     id: 'ralph-cantafio-soccer-complex',
@@ -500,11 +416,6 @@ export const VENUES: Venue[] = [
     kind: 'soccer',
     roof: 'open',
     surface: 'turf',
-    facts: [
-      'Two artificial-turf fields; the main pitch, John Scouras Field, seats about 2,000.',
-      'A soccer-specific stadium is being built on the site by April 2027, raising capacity to about 4,500, for Winnipeg Ember FC’s first NSL season.',
-      'Hosted soccer at the 1999 Pan American Games and the 2017 Canada Summer Games.',
-    ],
     wikipedia: wiki('Ralph_Cantafio_Soccer_Complex'),
   },
 
@@ -519,7 +430,6 @@ export const VENUES: Venue[] = [
     kind: 'football',
     roof: 'open',
     surface: 'turf',
-    facts: ['Home of the Blue Bombers for six decades; demolished in 2013.'],
     wikipedia: wiki('Canad_Inns_Stadium'),
   },
 
@@ -533,7 +443,6 @@ export const VENUES: Venue[] = [
     kind: 'football',
     roof: 'canopy',
     surface: 'turf',
-    facts: ['A bowl with a partial canopy shaped to shield fans from the prairie wind.'],
     wikipedia: wiki('Mosaic_Stadium'),
   },
   {
@@ -547,7 +456,6 @@ export const VENUES: Venue[] = [
     kind: 'football',
     roof: 'open',
     surface: 'turf',
-    facts: ['The Roughriders’ home for eight decades; demolished in 2017.'],
     wikipedia: wiki('Taylor_Field'),
   },
 
@@ -562,11 +470,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: [
-      'Its concrete hyperbolic-paraboloid roof gives the building its saddle shape.',
-      'Hosted figure skating and hockey at the 1988 Winter Olympics.',
-      'Scotia Place is being built to replace it, with opening planned for the 2027–28 season.',
-    ],
     wikipedia: wiki('Scotiabank_Saddledome'),
   },
   {
@@ -579,7 +482,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['The Flames’ first Calgary home after they moved from Atlanta in 1980.'],
     wikipedia: wiki('Stampede_Corral'),
   },
   {
@@ -591,10 +493,6 @@ export const VENUES: Venue[] = [
     kind: 'football',
     roof: 'open',
     surface: 'turf',
-    facts: [
-      'Built in 103 days in 1960.',
-      'Opening and closing ceremonies of the 1988 Winter Olympics; hosts the 113th Grey Cup on November 15, 2026.',
-    ],
     wikipedia: wiki('McMahon_Stadium'),
   },
   {
@@ -606,7 +504,6 @@ export const VENUES: Venue[] = [
     kind: 'soccer',
     roof: 'canopy',
     surface: 'grass',
-    facts: ['A modular soccer stadium built on an equestrian ring at the Spruce Meadows show-jumping venue just south of Calgary.'],
     wikipedia: wiki('ATCO_Field'),
   },
 
@@ -620,7 +517,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['Anchors the Ice District downtown; its metallic exterior is meant to look like flowing ice.'],
     wikipedia: wiki('Rogers_Place'),
   },
   {
@@ -634,7 +530,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['All five Oilers Stanley Cups were won with this as home ice.'],
     wikipedia: wiki('Northlands_Coliseum'),
   },
   {
@@ -646,7 +541,6 @@ export const VENUES: Venue[] = [
     kind: 'football',
     roof: 'open',
     surface: 'turf',
-    facts: ['Built for the 1978 Commonwealth Games; the largest open-air stadium in Canada.'],
     wikipedia: wiki('Commonwealth_Stadium_(Edmonton)'),
   },
   {
@@ -658,7 +552,6 @@ export const VENUES: Venue[] = [
     kind: 'soccer',
     roof: 'open',
     surface: 'turf',
-    facts: ['Next to Commonwealth Stadium. Home of FC Edmonton for its CPL years, 2019–22.'],
     wikipedia: wiki('Clarke_Stadium'),
   },
 
@@ -673,7 +566,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['Built for the Canucks and the expansion Grizzlies; hosted Olympic hockey in 2010.'],
     wikipedia: wiki('Rogers_Arena'),
   },
   {
@@ -685,7 +577,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['The Canucks’ first home, on the PNE grounds in East Vancouver.', 'Back in the big leagues since 2025 as the home of the PWHL’s Vancouver Goldeneyes.'],
     wikipedia: wiki('Pacific_Coliseum'),
   },
   {
@@ -697,10 +588,6 @@ export const VENUES: Venue[] = [
     kind: 'dome',
     roof: 'retractable',
     surface: 'turf',
-    facts: [
-      'Opened with an air-supported fabric roof. Since 2011 it has had a cable-supported retractable roof hung from 36 masts.',
-      'Hosted the 2010 Winter Olympic ceremonies and 2026 FIFA World Cup matches.',
-    ],
     wikipedia: wiki('BC_Place'),
   },
   {
@@ -713,7 +600,6 @@ export const VENUES: Venue[] = [
     kind: 'football',
     roof: 'open',
     surface: 'turf',
-    facts: ['Built for the 1954 British Empire and Commonwealth Games, where Roger Bannister and John Landy ran the “Miracle Mile”.'],
     wikipedia: wiki('Empire_Stadium_(Vancouver)'),
   },
   {
@@ -726,7 +612,6 @@ export const VENUES: Venue[] = [
     kind: 'soccer',
     roof: 'canopy',
     surface: 'turf',
-    facts: ['Pacific FC’s home on Vancouver Island; expanded with modular stands.'],
     wikipedia: wiki('Starlight_Stadium'),
   },
   {
@@ -738,7 +623,6 @@ export const VENUES: Venue[] = [
     kind: 'soccer',
     roof: 'open',
     surface: 'turf',
-    facts: ['Built at the Langley Events Centre. Vancouver FC opened it with a sell-out 1–1 draw against Cavalry on May 7, 2023.'],
     wikipedia: wiki('Willoughby_Stadium'),
   },
 
@@ -752,7 +636,6 @@ export const VENUES: Venue[] = [
     kind: 'soccer',
     roof: 'open',
     surface: 'grass',
-    facts: ['A modular stadium beside the Halifax Public Gardens; many structures are built from shipping containers, a nod to the port city.'],
     wikipedia: wiki('Wanderers_Grounds'),
   },
 
@@ -767,7 +650,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['Opened with 8,000 seats in 1988 and expanded twice. Home of the WHL’s Blades, the NLL’s Rush and the CEBL’s Mamba.'],
     wikipedia: wiki('SaskTel_Centre'),
   },
 
@@ -782,7 +664,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['The largest multi-purpose venue in Atlantic Canada, built into the slope at the foot of Citadel Hill.'],
     wikipedia: wiki('Scotiabank_Centre'),
   },
 
@@ -797,7 +678,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['Home of the Brampton Honey Badgers since 2023; hosted the 2023 IIHF Women’s World Championship.'],
     wikipedia: wiki('CAA_Centre'),
   },
   {
@@ -809,7 +689,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['Downtown St. Catharines arena shared by the OHL’s Niagara IceDogs and the Niagara River Lions.'],
     wikipedia: wiki('Meridian_Centre'),
   },
   {
@@ -822,7 +701,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['Home of the OHL’s Guelph Storm; hosted the 2002 Memorial Cup.'],
     wikipedia: wiki('Sleeman_Centre_(Guelph)'),
   },
   {
@@ -835,7 +713,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'ice',
-    facts: ['Built to replace the Oshawa Civic Auditorium; home of the OHL’s Generals and, since 2025, the FireWolves.'],
     wikipedia: wiki('Tribute_Communities_Centre'),
   },
 
@@ -849,7 +726,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'hardwood',
-    facts: ['At Canada Olympic Park, a venue of the 1988 Winter Olympics, in western Calgary.'],
     wikipedia: wiki('Canada_Olympic_Park'),
   },
   {
@@ -862,7 +738,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'hardwood',
-    facts: ['Built on the site of the Edmonton Gardens, the Oilers’ first home, across the street from the former Northlands Coliseum.'],
     wikipedia: wiki('Edmonton_Expo_Centre'),
   },
   {
@@ -874,7 +749,6 @@ export const VENUES: Venue[] = [
     kind: 'arena',
     roof: 'indoor',
     surface: 'hardwood',
-    facts: ['Home of the Vancouver Bandits; the NLL’s Vancouver Stealth played here from 2014 to 2018.'],
     wikipedia: wiki('Langley_Events_Centre'),
   },
   {
@@ -886,7 +760,6 @@ export const VENUES: Venue[] = [
     kind: 'soccer',
     roof: 'open',
     surface: 'grass',
-    facts: ['In Burnaby’s Central Park, the historic home of the Whitecaps’ predecessors; the Vancouver Rise have played here since 2025.'],
     wikipedia: wiki('Swangard_Stadium'),
   },
 ];

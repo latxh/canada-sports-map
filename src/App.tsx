@@ -1,19 +1,20 @@
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import {Suspense, lazy, useCallback, useEffect, useMemo, useState} from 'react';
 import {Theme} from '@astryxdesign/core/theme';
 import {neutralTheme} from '@astryxdesign/theme-neutral/built';
 import {BottomSheet} from '@astryxdesign/core/BottomSheet';
 import {VisuallyHidden} from '@astryxdesign/core/VisuallyHidden';
-import {LEAGUE_ORDER, TEAMS, TEAM_BY_ID, citiesWithTeams, type LeagueFilter, type LeagueId, type Team} from './data';
+import {LEAGUE_ORDER, TEAMS, TEAM_BY_ID, citiesWithTeams, isPlayingNow, type LeagueFilter, type LeagueId, type Team} from './data';
 import {LOGOS} from './data/logos';
 import {logoAsset} from './visuals/Logos';
 import {latestEra} from './lib/venues';
 import {SportsMap, type MapTakeover} from './components/SportsMap';
-import {CityPanel, TeamPanel, loadSportsLogos} from './components/Panels';
-import {CreditsDialog} from './components/CreditsDialog';
+import {Skeleton} from '@astryxdesign/core/Skeleton';
+import {VStack} from '@astryxdesign/core/VStack';
+import {loadSportsLogos} from './lib/sportslogos';
 import {LeagueSelect, MAP_VIEWS, SiteMenu, type Appearance, type MapView} from './components/HeaderControls';
 import {MapToolToggles, PinCard, distanceColor, distanceKm, type LatLon, type PinDistance} from './components/MapTools';
 import {DESKTOP_QUERY, useMediaQuery} from './hooks/useMediaQuery';
-import {TrophyDefs} from './visuals/Trophies';
+import {TrophyDefs} from './visuals/TrophyDefs';
 import {useHashRoute} from './hooks/useHashRoute';
 import {SITE_URL, shareEntryFor} from './og/manifest';
 import {trackEvent, trackPageView} from './lib/analytics';
@@ -22,6 +23,28 @@ const PANEL_WIDTH = 400;
 const PANEL_GUTTER = 12;
 /** Height of the floating top controls plus their gutter; the panel and map fit below it. */
 const CHROME_H = 64;
+// The city and team panels and the credits are their own chunks, loaded when first needed (and
+// prefetched once the map is up). A shared link to a city or team starts fetching straight away.
+// Once loaded, the panels render directly: a lazy component suspends on every first mount,
+// and React then holds the content back for a moment even when the code is already here.
+let panels: typeof import('./components/Panels') | null = null;
+const loadPanels = () => import('./components/Panels').then((m) => (panels = m));
+if (/^#\/(city|team)\//.test(window.location.hash)) void loadPanels();
+const LazyCityPanel = lazy(() => loadPanels().then((m) => ({default: m.CityPanel})));
+const LazyTeamPanel = lazy(() => loadPanels().then((m) => ({default: m.TeamPanel})));
+const CreditsDialog = lazy(() => import('./components/CreditsDialog').then((m) => ({default: m.CreditsDialog})));
+
+/** While a panel's chunk loads: its title row and a few blocks. */
+function PanelSkeleton() {
+  return (
+    <VStack gap={4}>
+      <Skeleton width="60%" height={28} />
+      <Skeleton width="100%" height={180} />
+      <Skeleton width="100%" height={120} />
+    </VStack>
+  );
+}
+
 /** Half the width of the centred controls pill (league picker + menu), for overlap checks. */
 const PILL_HALF = 104;
 
@@ -39,7 +62,7 @@ const TAKEOVER_LOGO: Record<string, string> = {
 
 /** The league's only current Canadian team, if it has exactly one (the Raptors, the Blue Jays, the Tempo). */
 function soleCurrentTeam(league: LeagueId): Team | undefined {
-  const current = TEAMS.filter((t) => t.league === league && t.status === 'current');
+  const current = TEAMS.filter((t) => t.league === league && isPlayingNow(t));
   return current.length === 1 ? current[0] : undefined;
 }
 
@@ -48,7 +71,7 @@ function soleCurrentTeam(league: LeagueId): Team | undefined {
  * Canada while its page is open or its league is the filter.
  */
 function takeoverFor(team: Team | undefined): MapTakeover | null {
-  if (!team || team.status !== 'current' || soleCurrentTeam(team.league) !== team) return null;
+  if (!team || !isPlayingNow(team) || soleCurrentTeam(team.league) !== team) return null;
   const logo = LOGOS[team.id];
   if (!logo) return null;
   return {
@@ -101,6 +124,11 @@ export function App() {
     () => initialView() === 'teams' && initialPin() === null && new URLSearchParams(window.location.search).get('closest') === '1',
   );
   const [isCreditsOpen, setIsCreditsOpen] = useState(false);
+  // Credits load the first time they're opened, then stay mounted so the dialog can animate closed.
+  const [hasOpenedCredits, setHasOpenedCredits] = useState(false);
+  useEffect(() => {
+    if (isCreditsOpen) setHasOpenedCredits(true);
+  }, [isCreditsOpen]);
   const isDesktop = useMediaQuery(DESKTOP_QUERY);
   const [route, navigate] = useHashRoute();
 
@@ -178,9 +206,12 @@ export function App() {
     [route, league, view, showClosest],
   );
   useEffect(() => trackPageView(shareEntry.path, shareEntry.title), [shareEntry]);
-  // Team pages' SportsLogos.net list: fetch it once the page has settled.
+  // Panels and team pages' SportsLogos.net list: fetch them once the page has settled.
   useEffect(() => {
-    const id = window.setTimeout(() => void loadSportsLogos(), 1500);
+    const id = window.setTimeout(() => {
+      void loadPanels();
+      void loadSportsLogos();
+    }, 1500);
     return () => window.clearTimeout(id);
   }, []);
 
@@ -204,6 +235,8 @@ export function App() {
 
   const isPanelOpen = route.kind !== 'home';
 
+  const TeamPanel = panels?.TeamPanel ?? LazyTeamPanel;
+  const CityPanel = panels?.CityPanel ?? LazyCityPanel;
   let panel = null;
   if (route.kind === 'team') {
     panel = (
@@ -353,7 +386,7 @@ export function App() {
             aria-label="Details"
             className="glass-panel absolute overflow-y-auto overscroll-contain rounded-2xl p-4"
             style={{top: panelTop, right: PANEL_GUTTER, bottom: PANEL_GUTTER, width: PANEL_WIDTH, boxShadow: '0 1px 3px rgb(0 0 0 / 0.06)'}}>
-            {panel}
+            <Suspense fallback={<PanelSkeleton />}>{panel}</Suspense>
           </aside>
         )}
       </main>
@@ -368,11 +401,15 @@ export function App() {
           hasScrim={false}
           height="capped"
           snapPoints={[0.3]}>
-          {panel}
+          <Suspense fallback={<PanelSkeleton />}>{panel}</Suspense>
         </BottomSheet>
       )}
 
-      <CreditsDialog isOpen={isCreditsOpen} onOpenChange={setIsCreditsOpen} />
+      {hasOpenedCredits && (
+        <Suspense fallback={null}>
+          <CreditsDialog isOpen={isCreditsOpen} onOpenChange={setIsCreditsOpen} />
+        </Suspense>
+      )}
     </Theme>
   );
 }

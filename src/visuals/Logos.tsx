@@ -37,11 +37,6 @@ export function EraLogo({team, index, size = 56}: {team: Team; index: number; si
   return <TeamBadge era={team.identity[index]} size={size} />;
 }
 
-export function hasOfficialLogo(team: Team, index: number) {
-  const logo = LOGOS[team.id];
-  return !!logo && index === (logo.eraIndex ?? team.identity.length - 1);
-}
-
 export function LeagueLogo({
   league,
   size = 20,

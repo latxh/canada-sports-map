@@ -1,10 +1,11 @@
 /**
  * Core data model for the atlas.
  *
- * Facts are compiled from Wikipedia (CC BY-SA 4.0). Identity eras (logos,
- * uniforms, playing surfaces) are summarised in our own words; the panels show
- * SportsLogos.net's images of them (used with permission, src/data/sportslogos.ts)
- * and original illustrations in team colours where it has none.
+ * Facts are compiled from Wikipedia (CC BY-SA 4.0). Only what the app shows is kept
+ * here; the written research behind it (summaries, milestones, fates, venue facts,
+ * colour names, era notes) lives in research/notes.json, outside the bundle. The
+ * panels show SportsLogos.net's images of each era (used with permission,
+ * src/data/sportslogos.ts) and original illustrations where it has none.
  */
 
 export type LeagueId = 'NHL' | 'NBA' | 'MLB' | 'MLS' | 'CFL' | 'CPL' | 'NLL' | 'CEBL' | 'PWHL' | 'WNBA' | 'NSL' | 'CDL';
@@ -35,7 +36,6 @@ export interface City {
   lon: number;
   /** Lower number = more important; drives label placement priority. */
   rank: number;
-  blurb: string;
   wikipedia: string;
 }
 
@@ -64,7 +64,6 @@ export interface Venue {
   kind: VenueKind;
   roof: RoofType;
   surface: Surface;
-  facts: string[];
   wikipedia: string;
 }
 
@@ -104,19 +103,13 @@ export interface IdentityEra {
   name?: string;
   /** Palette, primary first. */
   colors: string[];
-  colorNames: string[];
-  /** What the primary logo looked like, in our own words. */
-  logo: string;
   /** Shape used for our original badge illustration. */
   badge: BadgeShape;
   /** Short text drawn on the badge (2–4 chars). */
   mark: string;
   jersey: {
     pattern: JerseyPattern;
-    note: string;
   };
-  /** Playing-surface notes for this era (court, rink, field). */
-  surface?: string;
 }
 
 export interface Team {
@@ -128,16 +121,10 @@ export interface Team {
   /** Years in this league and city. */
   from: number;
   to?: number;
-  /** One-sentence what-happened for defunct / relocated teams. */
-  fate?: string;
   abbr: string;
   formerNames?: NameSpan[];
   venues: TenureSpan[];
   championships: number[];
-  /** Other notable titles or honours, in plain words. */
-  honours?: string[];
-  summary: string;
-  milestones: {year: number; text: string}[];
   identity: IdentityEra[];
   wikipedia: string;
 }

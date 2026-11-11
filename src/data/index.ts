@@ -61,6 +61,12 @@ export function citiesWithTeams(league: LeagueFilter): {city: City; teams: Team[
 /** The latest season the data covers; a team starting after it hasn't played yet. */
 export const DATA_YEAR = 2026;
 
+/** Playing now: current, and past its first season's start (not an announced expansion club). */
+export const isPlayingNow = (team: Team) => team.status === 'current' && team.from <= DATA_YEAR;
+
+/** All the championships a set of teams has won. */
+export const titleCount = (teams: Team[]) => teams.reduce((n, t) => n + t.championships.length, 0);
+
 export function yearsLabel(from: number, to?: number): string {
   if (to === from) return String(from);
   if (!to && from > DATA_YEAR) return `From ${from}`;

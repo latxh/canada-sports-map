@@ -11,14 +11,15 @@ import {zoomIdentity} from 'd3-zoom';
 import type {GeoPermissibleObjects} from 'd3-geo';
 import {Theme} from '@astryxdesign/core/theme';
 import {neutralTheme} from '@astryxdesign/theme-neutral/built';
-import {CITY_BY_ID, LEAGUES, LEAGUE_ORDER, PROVINCE_NAMES, TEAMS, TEAM_BY_ID, compareTeams, yearsLabel, type LeagueId, type Team} from '../data';
+import {CITY_BY_ID, LEAGUES, LEAGUE_ORDER, PROVINCE_NAMES, TEAMS, TEAM_BY_ID, compareTeams, yearsLabel, isPlayingNow, titleCount, type LeagueId, type Team} from '../data';
 import {POPULATION} from '../data/population';
 import {loadGeo, type Geo} from '../components/SportsMap';
 import {DitherLayer, siteColor, type DitherMode, type Site} from '../components/DitherLayer';
 import {LeagueLogo, TeamLogo} from '../visuals/Logos';
-import {TrophyArt, TrophyDefs} from '../visuals/Trophies';
+import {TrophyArt} from '../visuals/Trophies';
+import {TrophyDefs} from '../visuals/TrophyDefs';
 import {latestEra} from '../lib/venues';
-import {OG_BY_KEY, OG_ENTRIES, SITE_NAME, isPlayingNow, titlesLabel, type OgEntry} from './manifest';
+import {OG_BY_KEY, OG_ENTRIES, SITE_NAME, titlesLabel, type OgEntry} from './manifest';
 
 const W = 1200;
 const H = 630;
@@ -27,9 +28,8 @@ const PANEL_W = 520;
 const MUTED: [number, number, number] = [54, 57, 66];
 const FAVICON = `${import.meta.env.BASE_URL}favicon.svg`;
 
-const titleCount = (teams: Team[]) => teams.reduce((n, t) => n + t.championships.length, 0);
 const teamRgb = (team: Team) => siteColor(latestEra(team).colors);
-const currentTeams = (league?: LeagueId) => TEAMS.filter((t) => t.status === 'current' && (!league || t.league === league));
+const currentTeams = (league?: LeagueId) => TEAMS.filter((t) => isPlayingNow(t) && (!league || t.league === league));
 
 /** The top current team of each city, as closest-team sites. */
 function citySites(): {cityId: string; team: Team}[] {

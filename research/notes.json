@@ -1,0 +1,3548 @@
+{
+ "about": "Written research behind the atlas, compiled from Wikipedia (CC BY-SA 4.0). Not bundled with the app.",
+ "teams": {
+  "toronto-maple-leafs": {
+   "summary": "A founding NHL franchise and one of the Original Six. Conn Smythe bought the St. Patricks in 1927 and renamed them the Maple Leafs. The 13 Stanley Cups are second only to Montréal, but the team has not won since 1967, the longest active drought in the league.",
+   "milestones": [
+    {
+     "year": 1918,
+     "text": "As the Arenas, win the Stanley Cup in the NHL’s first season."
+    },
+    {
+     "year": 1927,
+     "text": "Conn Smythe buys the St. Patricks and renames them the Maple Leafs."
+    },
+    {
+     "year": 1931,
+     "text": "Move into Maple Leaf Gardens."
+    },
+    {
+     "year": 1942,
+     "text": "Come back from 3–0 down in the Final against Detroit, the only such comeback in a Stanley Cup Final."
+    },
+    {
+     "year": 1967,
+     "text": "Beat Montréal in the Centennial-year Final for their 13th Cup."
+    },
+    {
+     "year": 1999,
+     "text": "Move to the Air Canada Centre (now Scotiabank Arena)."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1917,
+     "to": 1919,
+     "colorNames": [
+      "Blue",
+      "White"
+     ],
+     "logo": "A simple white “T” on a blue sweater.",
+     "jerseyNote": "Blue wool sweaters with white trim."
+    },
+    {
+     "from": 1919,
+     "to": 1927,
+     "colorNames": [
+      "Green",
+      "White"
+     ],
+     "logo": "“St. Pats” lettering in a green-and-white crest, a nod to the city’s Irish community.",
+     "jerseyNote": "Green sweaters with a white band carrying the crest."
+    },
+    {
+     "from": 1927,
+     "to": 1967,
+     "colorNames": [
+      "Blue",
+      "White"
+     ],
+     "logo": "A detailed maple leaf with visible veins and the team name across it. The design was refined several times over the Original Six years.",
+     "jerseyNote": "Blue sweaters with white stripes on the arms and hem, worn through 11 Cup wins.",
+     "surface": "Natural-to-artificial ice at the Gardens with a plain centre circle; ads came to the boards in the 1980s."
+    },
+    {
+     "from": 1967,
+     "to": 2016,
+     "colorNames": [
+      "Navy blue",
+      "White"
+     ],
+     "logo": "A simplified 11-point leaf with the name set in a clean sans-serif, introduced for the 1967 Centennial and updated in 1970, 1987 and 1992.",
+     "jerseyNote": "Darker blue, with lace-up collars returning in the 1990s.",
+     "surface": "Centre-ice leaf at the Gardens and, from 1999, the Air Canada Centre."
+    },
+    {
+     "from": 2016,
+     "colorNames": [
+      "Blue",
+      "White"
+     ],
+     "logo": "A 31-point leaf based on the veined leaves of the Original Six era, introduced for the 2016–17 centennial season.",
+     "jerseyNote": "A simple centennial uniform with one bold stripe on the arms and hem.",
+     "surface": "Centennial leaf at centre ice of Scotiabank Arena."
+    }
+   ]
+  },
+  "montreal-canadiens": {
+   "summary": "“Les Glorieux”, nicknamed the Habs, have won 24 Stanley Cups, more than any other team (the 1916 Cup came in the NHA). The team’s Original Six dynasties included Maurice Richard, Jean Béliveau, Guy Lafleur and Ken Dryden.",
+   "honours": [
+    "Five straight Stanley Cups, 1956–60, an NHL record.",
+    "Founded in 1909 (National Hockey Association); the oldest continuously operating pro hockey club."
+   ],
+   "milestones": [
+    {
+     "year": 1909,
+     "text": "Founded as a francophone team in the National Hockey Association."
+    },
+    {
+     "year": 1917,
+     "text": "Founding member of the NHL."
+    },
+    {
+     "year": 1926,
+     "text": "Move into the Montreal Forum."
+    },
+    {
+     "year": 1955,
+     "text": "The suspension of Maurice Richard sets off the Richard Riot."
+    },
+    {
+     "year": 1960,
+     "text": "Win a record fifth straight Stanley Cup."
+    },
+    {
+     "year": 1993,
+     "text": "Win the 24th Cup, still the most recent by a Canadian team."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1909,
+     "to": 1917,
+     "colorNames": [
+      "Blue",
+      "Red",
+      "White"
+     ],
+     "logo": "Early crests changed often, including a “C” with an “A” for Club athlétique Canadien and a maple-leaf design.",
+     "jerseyNote": "Blue, then red sweaters as the club settled on its colours."
+    },
+    {
+     "from": 1917,
+     "colorNames": [
+      "Red",
+      "Blue",
+      "White"
+     ],
+     "logo": "The “CH” monogram: a red C around a white H, for Club de hockey Canadien. It has only been refined slightly since the 1950s.",
+     "jerseyNote": "The red home sweater with a blue chest band outlined in white is one of the most enduring uniforms in sport.",
+     "surface": "CH logo at centre ice of the Forum and, since 1996, the Bell Centre."
+    }
+   ]
+  },
+  "ottawa-senators": {
+   "summary": "An expansion team that brought the NHL back to the capital 58 years after the original Senators left. The team built a contender around Daniel Alfredsson in the 2000s and reached the 2007 Final.",
+   "honours": [
+    "Presidents’ Trophy, 2003.",
+    "Stanley Cup Final, 2007."
+   ],
+   "milestones": [
+    {
+     "year": 1992,
+     "text": "Play the first game, a 5–3 win over Montréal at the Civic Centre."
+    },
+    {
+     "year": 1996,
+     "text": "Move to the Palladium (now Canadian Tire Centre) in Kanata."
+    },
+    {
+     "year": 2003,
+     "text": "Win the Presidents’ Trophy."
+    },
+    {
+     "year": 2007,
+     "text": "Reach the Stanley Cup Final; lose to Anaheim."
+    },
+    {
+     "year": 2017,
+     "text": "Reach Game 7 of the Eastern Conference Final, losing in double overtime."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1992,
+     "to": 1997,
+     "colorNames": [
+      "Black",
+      "Red",
+      "Gold"
+     ],
+     "logo": "A front-facing Roman centurion in a gold-trimmed circle.",
+     "jerseyNote": "White and black jerseys with red and gold striping."
+    },
+    {
+     "from": 1997,
+     "to": 2020,
+     "colorNames": [
+      "Red",
+      "Black",
+      "Gold"
+     ],
+     "logo": "A side-profile centurion with a swept helmet plume, nicknamed the “3D Sens” logo. Refreshed in 2007.",
+     "jerseyNote": "Red home jerseys were the primary look for most of this era.",
+     "surface": "Centurion head at centre ice in Kanata."
+    },
+    {
+     "from": 2020,
+     "colorNames": [
+      "Black",
+      "Red",
+      "Gold"
+     ],
+     "logo": "A flat, modern version of the original 1992 centurion, introduced with black home jerseys.",
+     "jerseyNote": "Black-first uniforms with “OTTAWA” and the centurion as the crest."
+    }
+   ]
+  },
+  "winnipeg-jets": {
+   "summary": "True North Sports & Entertainment bought the Atlanta Thrashers and moved them to Winnipeg in 2011, bringing back the Jets name 15 years after the original team left for Phoenix.",
+   "honours": [
+    "Presidents’ Trophy, 2025."
+   ],
+   "milestones": [
+    {
+     "year": 2011,
+     "text": "The Atlanta Thrashers move to Winnipeg and become the Jets."
+    },
+    {
+     "year": 2018,
+     "text": "Reach the Western Conference Final for the first time."
+    },
+    {
+     "year": 2025,
+     "text": "Win the Presidents’ Trophy with the league’s best regular-season record."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2011,
+     "colorNames": [
+      "Polar night blue",
+      "Aviator blue",
+      "Red",
+      "Silver"
+     ],
+     "logo": "A roundel inspired by the Royal Canadian Air Force: a fighter jet over a red maple leaf on a navy disc.",
+     "jerseyNote": "Navy home jerseys with military-inspired lettering; a 1990s-style heritage alternate in later seasons.",
+     "surface": "RCAF-style roundel at centre ice of Canada Life Centre."
+    }
+   ]
+  },
+  "calgary-flames": {
+   "summary": "Founded in Atlanta in 1972 and moved to Calgary in 1980. The Flames won the 1989 Stanley Cup on Montréal Forum ice, the only time a visiting team clinched the Cup there against the Canadiens.",
+   "honours": [
+    "Stanley Cup Final, 1986 and 2004."
+   ],
+   "milestones": [
+    {
+     "year": 1980,
+     "text": "The Atlanta Flames move to Calgary."
+    },
+    {
+     "year": 1983,
+     "text": "Open the Olympic Saddledome."
+    },
+    {
+     "year": 1986,
+     "text": "Beat Edmonton in the “Battle of Alberta” and reach the Final."
+    },
+    {
+     "year": 1989,
+     "text": "Win the Stanley Cup over Montréal; Lanny McDonald retires a champion."
+    },
+    {
+     "year": 2004,
+     "text": "Reach Game 7 of the Final with Jarome Iginla."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1980,
+     "to": 1995,
+     "colorNames": [
+      "Red",
+      "Yellow",
+      "White"
+     ],
+     "logo": "A flaming “C” in red with yellow flames trailing off the top.",
+     "jerseyNote": "Red and white jerseys with yellow striping."
+    },
+    {
+     "from": 1995,
+     "to": 2020,
+     "colorNames": [
+      "Red",
+      "Black",
+      "Gold"
+     ],
+     "logo": "The flaming C with black trim, plus a horse-head alternate (1998–2006).",
+     "jerseyNote": "Black was added, and the 2000s jerseys had wide side panels.",
+     "surface": "Flaming C at centre ice of the Saddledome."
+    },
+    {
+     "from": 2020,
+     "colorNames": [
+      "Red",
+      "Yellow",
+      "White"
+     ],
+     "logo": "Back to the original red-and-yellow flaming C.",
+     "jerseyNote": "The 1980s-style retro red jerseys became the primary uniform."
+    }
+   ]
+  },
+  "edmonton-oilers": {
+   "summary": "Founded in the WHA in 1972 and admitted to the NHL in 1979. Wayne Gretzky, Mark Messier and the 1980s dynasty won five Stanley Cups in seven seasons. Connor McDavid has led the team to back-to-back Finals in 2024 and 2025.",
+   "honours": [
+    "Stanley Cup Final, 2006, 2024 and 2025."
+   ],
+   "milestones": [
+    {
+     "year": 1972,
+     "text": "Founded as the Alberta Oilers, an original WHA team."
+    },
+    {
+     "year": 1979,
+     "text": "Join the NHL in the WHA merger."
+    },
+    {
+     "year": 1984,
+     "text": "Win the first of five Stanley Cups."
+    },
+    {
+     "year": 1988,
+     "text": "Wayne Gretzky is traded to Los Angeles."
+    },
+    {
+     "year": 2016,
+     "text": "Move to Rogers Place."
+    },
+    {
+     "year": 2025,
+     "text": "Lose a second straight Final to Florida."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1979,
+     "to": 1996,
+     "colorNames": [
+      "Royal blue",
+      "Orange",
+      "White"
+     ],
+     "logo": "A blue oil-drop roundel with “OILERS” in orange.",
+     "jerseyNote": "The dynasty look: blue with an orange shoulder yoke, or white with blue."
+    },
+    {
+     "from": 1996,
+     "to": 2011,
+     "colorNames": [
+      "Midnight blue",
+      "Copper",
+      "Red"
+     ],
+     "logo": "The same roundel recoloured in midnight blue, copper and red.",
+     "jerseyNote": "Darker uniforms, plus an oil-rig gear alternate in the early 2000s."
+    },
+    {
+     "from": 2011,
+     "colorNames": [
+      "Royal blue",
+      "Orange",
+      "White"
+     ],
+     "logo": "The classic royal-blue-and-orange roundel came back, first as an alternate and then as the full identity, with orange home jerseys from 2015.",
+     "jerseyNote": "Orange, then royal-blue home jerseys in the McDavid era.",
+     "surface": "Oil-drop logo at centre ice of Rogers Place."
+    }
+   ]
+  },
+  "vancouver-canucks": {
+   "summary": "Joined the NHL in the 1970 expansion. The Canucks have reached three Finals, including Game 7 losses in 1994 and 2011. Players in the Sedin-twins era are among the franchise’s best.",
+   "honours": [
+    "Stanley Cup Final, 1982, 1994 and 2011.",
+    "Presidents’ Trophy, 2011 and 2012."
+   ],
+   "milestones": [
+    {
+     "year": 1970,
+     "text": "Join the NHL with the Buffalo Sabres."
+    },
+    {
+     "year": 1982,
+     "text": "“Towel Power” run to the team’s first Final."
+    },
+    {
+     "year": 1994,
+     "text": "Lose Game 7 of the Final to the Rangers."
+    },
+    {
+     "year": 2011,
+     "text": "Win the Presidents’ Trophy; lose Game 7 of the Final to Boston."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1970,
+     "to": 1978,
+     "colorNames": [
+      "Blue",
+      "Green",
+      "White"
+     ],
+     "logo": "“Stick-in-rink”: a hockey stick laid inside an outline of a rink so the shape reads as a C.",
+     "jerseyNote": "Blue and green with a broad hem stripe."
+    },
+    {
+     "from": 1978,
+     "to": 1997,
+     "colorNames": [
+      "Black",
+      "Gold",
+      "Red-orange"
+     ],
+     "logo": "The “Flying Skate”: a stylised skate in black, gold and red.",
+     "jerseyNote": "Started with the bold “Flying V” jerseys (1978–85), then more conventional black jerseys."
+    },
+    {
+     "from": 1997,
+     "to": 2007,
+     "colorNames": [
+      "Navy",
+      "Maroon",
+      "Silver"
+     ],
+     "logo": "An orca breaking out of an ice “C”, drawn in a Northwest Coast style.",
+     "jerseyNote": "Navy jerseys with maroon and silver trim."
+    },
+    {
+     "from": 2007,
+     "colorNames": [
+      "Blue",
+      "Green",
+      "White"
+     ],
+     "logo": "The orca recoloured in blue and green; the stick-in-rink came back as a shoulder patch and third jersey. Refreshed in 2019.",
+     "jerseyNote": "Blue home jerseys with “VANCOUVER” arched over the orca.",
+     "surface": "Orca at centre ice of Rogers Arena."
+    }
+   ]
+  },
+  "quebec-nordiques": {
+   "summary": "Founded in the WHA in 1972 and admitted to the NHL in 1979. The “Battle of Quebec” rivalry with Montréal was one of the most intense in hockey. Small-market finances forced a sale and move just as a young core with Joe Sakic and Peter Forsberg emerged.",
+   "fate": "Moved to Denver in 1995 and became the Colorado Avalanche, who won the Stanley Cup in their first season.",
+   "honours": [
+    "Avco World Trophy (WHA), 1977."
+   ],
+   "milestones": [
+    {
+     "year": 1977,
+     "text": "Win the WHA championship."
+    },
+    {
+     "year": 1979,
+     "text": "Join the NHL in the WHA merger."
+    },
+    {
+     "year": 1984,
+     "text": "The Good Friday Massacre brawl with the Canadiens."
+    },
+    {
+     "year": 1992,
+     "text": "Trade Eric Lindros’s rights in a deal that brings back Forsberg and others."
+    },
+    {
+     "year": 1995,
+     "text": "Sold and moved to Denver."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1972,
+     "to": 1995,
+     "colorNames": [
+      "Blue",
+      "Red",
+      "White"
+     ],
+     "logo": "A red lowercase “n” over a hockey stick and puck. Fans have long debated whether it is also an igloo.",
+     "jerseyNote": "Light blue or white sweaters with fleurs-de-lis on the stripes and shoulders.",
+     "surface": "Nordiques logo and fleur-de-lis accents on Colisée ice."
+    }
+   ]
+  },
+  "winnipeg-jets-1972": {
+   "summary": "A WHA powerhouse with Bobby Hull, Anders Hedberg and Ulf Nilsson, the original Jets joined the NHL in 1979 and spent 17 seasons in the Smythe and Central divisions before rising costs and a weak Canadian dollar forced a move.",
+   "fate": "Moved to Phoenix in 1996 and became the Coyotes; that franchise was deactivated in 2024.",
+   "honours": [
+    "Avco World Trophy (WHA), 1976, 1978 and 1979."
+   ],
+   "milestones": [
+    {
+     "year": 1972,
+     "text": "Sign Bobby Hull to a record-setting contract, giving the WHA instant credibility."
+    },
+    {
+     "year": 1979,
+     "text": "Win the last WHA title, then join the NHL."
+    },
+    {
+     "year": 1993,
+     "text": "Teemu Selänne scores a rookie-record 76 goals."
+    },
+    {
+     "year": 1996,
+     "text": "Last game in Winnipeg; the team moves to Phoenix."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1972,
+     "to": 1990,
+     "colorNames": [
+      "Blue",
+      "Red",
+      "White"
+     ],
+     "logo": "A jet climbing through a hockey stick, with “JETS” in blue block letters.",
+     "jerseyNote": "Blue and white with red-and-white stripes."
+    },
+    {
+     "from": 1990,
+     "to": 1996,
+     "colorNames": [
+      "Blue",
+      "Red",
+      "Silver"
+     ],
+     "logo": "An updated jet over a red-and-blue disc.",
+     "jerseyNote": "Simpler uniforms with a blue shoulder yoke."
+    }
+   ]
+  },
+  "ottawa-senators-original": {
+   "summary": "Hockey’s first dynasty. As the “Silver Seven” the club won Cup challenges from 1903 to 1906. It was a founding member of the NHL and won four more Cups in the 1920s before the Depression made a city of Ottawa’s size too small to support the team.",
+   "fate": "Moved to St. Louis in 1934 as the Eagles and folded after one season.",
+   "honours": [
+    "The club won 11 Stanley Cups in all, counting challenge-era Cups from 1903 onward (sources count 9, 10 or 11)."
+   ],
+   "milestones": [
+    {
+     "year": 1903,
+     "text": "Win the first of the “Silver Seven” Stanley Cup challenges."
+    },
+    {
+     "year": 1917,
+     "text": "Founding member of the NHL."
+    },
+    {
+     "year": 1927,
+     "text": "Win the last of four NHL-era Cups."
+    },
+    {
+     "year": 1931,
+     "text": "Sit out the season because of financial losses."
+    },
+    {
+     "year": 1934,
+     "text": "Move to St. Louis."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1917,
+     "to": 1934,
+     "colorNames": [
+      "Black",
+      "Red",
+      "White"
+     ],
+     "logo": "An “O” crest on red, white and black sweaters.",
+     "jerseyNote": "Horizontal “barber-pole” stripes in red, white and black."
+    }
+   ]
+  },
+  "montreal-maroons": {
+   "summary": "Founded to give Montréal’s anglophone community its own team. The Forum was built for them. The Maroons won two Stanley Cups and played in the longest game in NHL history, a six-overtime playoff loss to Detroit in 1936.",
+   "fate": "Suspended operations in 1938 during the Depression and never returned.",
+   "milestones": [
+    {
+     "year": 1924,
+     "text": "Join the NHL and open the Montreal Forum."
+    },
+    {
+     "year": 1926,
+     "text": "Win the Stanley Cup in their second season."
+    },
+    {
+     "year": 1935,
+     "text": "Win a second Cup."
+    },
+    {
+     "year": 1936,
+     "text": "Lose to Detroit after 116 minutes of overtime, the longest game in NHL history."
+    },
+    {
+     "year": 1938,
+     "text": "Suspend operations."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1924,
+     "to": 1938,
+     "colorNames": [
+      "Maroon",
+      "White"
+     ],
+     "logo": "A large white “M” on a maroon sweater.",
+     "jerseyNote": "Solid maroon with a white M crest."
+    }
+   ]
+  },
+  "hamilton-tigers": {
+   "summary": "Formed from the Quebec Bulldogs franchise. The Tigers went from last place to first in 1924–25, then refused to play in the playoffs unless they were paid more. The league suspended them and sold the team to New York.",
+   "fate": "Players went on strike in 1925 for playoff pay. The franchise was sold and became the New York Americans.",
+   "milestones": [
+    {
+     "year": 1920,
+     "text": "The Quebec franchise moves to Hamilton."
+    },
+    {
+     "year": 1925,
+     "text": "Finish first, then strike over playoff pay and are disqualified."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1920,
+     "to": 1925,
+     "colorNames": [
+      "Gold",
+      "Black"
+     ],
+     "logo": "A tiger crest on gold-and-black sweaters.",
+     "jerseyNote": "Gold-and-black stripes."
+    }
+   ]
+  },
+  "montreal-wanderers": {
+   "summary": "An early powerhouse that won four Stanley Cups before the NHL existed. Weakened by the loss of players to the war, the club won its first NHL game and then folded after the Westmount Arena fire on January 2, 1918.",
+   "fate": "Withdrew six games into the NHL’s first season after their arena burned down.",
+   "honours": [
+    "Four pre-NHL Stanley Cups (1906, 1907, 1908 and 1910)."
+   ],
+   "milestones": [
+    {
+     "year": 1906,
+     "text": "Win the first of four Stanley Cups."
+    },
+    {
+     "year": 1917,
+     "text": "Beat Toronto 10–9 on the NHL’s opening night, December 19, 1917."
+    },
+    {
+     "year": 1918,
+     "text": "The Westmount Arena burns down; the team withdraws."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1903,
+     "to": 1918,
+     "colorNames": [
+      "Red",
+      "White"
+     ],
+     "logo": "A red “W” across a white sweater.",
+     "jerseyNote": "White sweaters with a red band across the chest."
+    }
+   ]
+  },
+  "quebec-bulldogs": {
+   "summary": "Two-time Stanley Cup champions in the NHA. The Bulldogs joined the NHL in 1919 and lasted one season, which included Joe Malone’s record seven goals in a game.",
+   "fate": "Moved to Hamilton after one NHL season and became the Tigers.",
+   "honours": [
+    "Two pre-NHL Stanley Cups (1912 and 1913)."
+   ],
+   "milestones": [
+    {
+     "year": 1912,
+     "text": "Win the Stanley Cup."
+    },
+    {
+     "year": 1920,
+     "text": "Joe Malone scores seven goals in one game, still an NHL record."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1911,
+     "to": 1920,
+     "colorNames": [
+      "Blue",
+      "White"
+     ],
+     "logo": "A “Q” crest on blue-and-white sweaters.",
+     "jerseyNote": "Blue-and-white sweaters."
+    }
+   ]
+  },
+  "toronto-raptors": {
+   "summary": "Canada’s NBA team since the 1995 expansion. The Raptors grew from the Vince Carter highlight era to the “We the North” teams, and in 2019 Kawhi Leonard led them to the franchise’s first championship, the first NBA title won by a team outside the United States.",
+   "milestones": [
+    {
+     "year": 1995,
+     "text": "Play the first game at SkyDome, a win over the New Jersey Nets."
+    },
+    {
+     "year": 2000,
+     "text": "Vince Carter wins the Slam Dunk Contest; the team makes its first playoffs."
+    },
+    {
+     "year": 2014,
+     "text": "“We the North” campaign launches."
+    },
+    {
+     "year": 2019,
+     "text": "Kawhi Leonard’s four-bounce Game 7 buzzer-beater against Philadelphia; beat Golden State for the title."
+    },
+    {
+     "year": 2020,
+     "text": "Play the 2020–21 season in Tampa because of COVID-19 border restrictions."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1995,
+     "to": 2008,
+     "colorNames": [
+      "Purple",
+      "Red",
+      "Black",
+      "Silver"
+     ],
+     "logo": "A red cartoon raptor dribbling a basketball, with jagged “RAPTORS” lettering. It was picked in the year Jurassic Park was in theatres.",
+     "jerseyNote": "Purple and white jerseys with the dinosaur on the front and jagged claw-mark side trim.",
+     "surface": "The first court had the dinosaur at centre court and purple keys."
+    },
+    {
+     "from": 2008,
+     "to": 2015,
+     "colorNames": [
+      "Red",
+      "Black",
+      "Silver"
+     ],
+     "logo": "A red basketball with three claw slashes and the “RAPTORS” wordmark. Purple was dropped.",
+     "jerseyNote": "Red, white and black uniforms; the first green Raptors “St. Patrick’s” alternates were worn in this era.",
+     "surface": "A red-trimmed court at the Air Canada Centre."
+    },
+    {
+     "from": 2015,
+     "colorNames": [
+      "Red",
+      "Black",
+      "Silver",
+      "Gold"
+     ],
+     "logo": "A ball-and-claw roundel. It launched in black and silver in 2015 and was recoloured with a red ball in 2020.",
+     "jerseyNote": "Includes the black-and-gold “OVO” alternates and the chevron “North” jerseys.",
+     "surface": "Chevron-patterned “North” courts and alternate black courts in the We the North years."
+    }
+   ]
+  },
+  "vancouver-grizzlies": {
+   "summary": "Joined the NBA with the Raptors in 1995. The team never won more than 23 games in a season, the Canadian dollar was weak, and 1999 draft pick Steve Francis refused to report. After six seasons the team was sold and moved to Memphis.",
+   "fate": "Moved to Memphis in 2001 and became the Memphis Grizzlies.",
+   "milestones": [
+    {
+     "year": 1995,
+     "text": "Win the first game, on the road in Portland."
+    },
+    {
+     "year": 1996,
+     "text": "Draft Shareef Abdur-Rahim."
+    },
+    {
+     "year": 1999,
+     "text": "Steve Francis, the second overall pick, refuses to play in Vancouver and is traded."
+    },
+    {
+     "year": 2001,
+     "text": "Play the final season in Vancouver."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1995,
+     "to": 2001,
+     "colorNames": [
+      "Turquoise",
+      "Bronze",
+      "Red",
+      "Black"
+     ],
+     "logo": "A grizzly bear clutching a basketball, with lettering inspired by Pacific Northwest Indigenous art.",
+     "jerseyNote": "White or turquoise jerseys with Indigenous-inspired trim. Memphis has since brought both back as throwbacks.",
+     "surface": "Turquoise-accented court at GM Place with the bear at centre court."
+    }
+   ]
+  },
+  "toronto-huskies": {
+   "summary": "Hosted the first game in NBA history (then the BAA) on November 1, 1946, losing 68–66 to the New York Knicks at Maple Leaf Gardens. Attendance quickly fell away and the team folded at the end of the season.",
+   "fate": "Folded after one season in the Basketball Association of America (BAA), the league that became the NBA.",
+   "milestones": [
+    {
+     "year": 1946,
+     "text": "Host the first BAA/NBA game at Maple Leaf Gardens."
+    },
+    {
+     "year": 1947,
+     "text": "Fold after one season."
+    },
+    {
+     "year": 2009,
+     "text": "The Raptors wear Huskies throwback uniforms."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1946,
+     "to": 1947,
+     "colorNames": [
+      "Blue",
+      "White"
+     ],
+     "logo": "“HUSKIES” lettering across the chest, plus a husky-dog mascot used in promotion.",
+     "jerseyNote": "Simple blue-and-white wool uniforms.",
+     "surface": "A temporary wooden floor laid over the Gardens ice."
+    }
+   ]
+  },
+  "toronto-blue-jays": {
+   "summary": "An American League expansion team in 1977. The Blue Jays became the first team outside the United States to win the World Series (1992) and won again in 1993 on Joe Carter’s walk-off home run. In 2025 they won the pennant and took the Dodgers to Game 7 of the World Series.",
+   "honours": [
+    "American League pennants: 1992, 1993 and 2025."
+   ],
+   "milestones": [
+    {
+     "year": 1977,
+     "text": "Play the first game in a snowstorm at Exhibition Stadium and beat the White Sox."
+    },
+    {
+     "year": 1985,
+     "text": "Win the first AL East title."
+    },
+    {
+     "year": 1989,
+     "text": "Move into SkyDome mid-season."
+    },
+    {
+     "year": 1992,
+     "text": "Win the World Series over Atlanta."
+    },
+    {
+     "year": 1993,
+     "text": "Joe Carter’s walk-off home run beats Philadelphia in Game 6."
+    },
+    {
+     "year": 2015,
+     "text": "José Bautista’s bat flip in the ALDS."
+    },
+    {
+     "year": 2025,
+     "text": "Win the AL pennant; lose Game 7 of the World Series to the Dodgers in 11 innings."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1977,
+     "to": 1997,
+     "colorNames": [
+      "Royal blue",
+      "Powder blue",
+      "Red",
+      "White"
+     ],
+     "logo": "A blue jay’s head over a baseball, with a red maple leaf and “Blue Jays” in a rounded sans-serif.",
+     "jerseyNote": "Powder-blue road uniforms until 1989; the World Series teams wore royal-blue lettering on white and grey.",
+     "surface": "Artificial turf at Exhibition Stadium and SkyDome, with dirt only in the sliding pits."
+    },
+    {
+     "from": 1997,
+     "to": 2004,
+     "colorNames": [
+      "Navy",
+      "Red",
+      "Silver"
+     ],
+     "logo": "A sharper, more aggressive jay in front of a red maple leaf, with a darker palette.",
+     "jerseyNote": "Darker blues, with some uniforms in this period carrying side piping."
+    },
+    {
+     "from": 2004,
+     "to": 2012,
+     "colorNames": [
+      "Black",
+      "Navy",
+      "Graphite"
+     ],
+     "logo": "A stylised “J” with a jay head in black and silver; red was mostly dropped.",
+     "jerseyNote": "Black-trimmed uniforms with “BLUE JAYS” or “TORONTO” in an angular font."
+    },
+    {
+     "from": 2012,
+     "colorNames": [
+      "Royal blue",
+      "Navy",
+      "Red",
+      "White"
+     ],
+     "logo": "A modernised version of the original jay over a maple leaf, with a royal-blue palette.",
+     "jerseyNote": "Classic royal-blue lettering; powder-blue alternates returned in 2020.",
+     "surface": "A full dirt infield was installed at Rogers Centre in 2016; the outfield remains artificial turf."
+    }
+   ]
+  },
+  "montreal-expos": {
+   "summary": "Major League Baseball’s first team outside the United States. Named for Expo 67, the Expos developed Hall of Famers Gary Carter, Andre Dawson, Tim Raines and Vladimir Guerrero. The strike that wiped out the 1994 season, when the Expos had the best record in baseball, began their decline.",
+   "fate": "Moved to Washington, D.C. in 2005 and became the Nationals, who won the 2019 World Series.",
+   "honours": [
+    "National League East (second half) champions, 1981.",
+    "Best record in baseball (74–40) when the 1994 strike ended the season."
+   ],
+   "milestones": [
+    {
+     "year": 1969,
+     "text": "Win the first game, 11–10 at Shea Stadium; open Jarry Park."
+    },
+    {
+     "year": 1977,
+     "text": "Move to Olympic Stadium."
+    },
+    {
+     "year": 1981,
+     "text": "Rick Monday’s “Blue Monday” home run ends the NLCS."
+    },
+    {
+     "year": 1994,
+     "text": "Have the best record in MLB when the strike ends the season."
+    },
+    {
+     "year": 2003,
+     "text": "Play 22 “home” games in San Juan, Puerto Rico, in 2003 and again in 2004."
+    },
+    {
+     "year": 2004,
+     "text": "Play the final game in Montréal."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1969,
+     "to": 2004,
+     "colorNames": [
+      "Red",
+      "Blue",
+      "White"
+     ],
+     "logo": "A red, white and blue stylised “M” that also contains an “e” and a “b” (Expos baseball). Fans debate other readings.",
+     "jerseyNote": "The tricolour pillbox-panel cap, powder-blue road uniforms through 1991, then a darker blue.",
+     "surface": "Natural grass at Jarry Park; artificial turf under the Big O roof."
+    }
+   ]
+  },
+  "toronto-fc": {
+   "summary": "MLS’s first Canadian club. After years near the bottom of the table, TFC signed Michael Bradley, Jozy Altidore and Sebastian Giovinco, reached three MLS Cup finals in four years, and won a treble in 2017.",
+   "honours": [
+    "2017 domestic treble: MLS Cup, Supporters’ Shield and Canadian Championship.",
+    "CONCACAF Champions League finalists, 2018."
+   ],
+   "milestones": [
+    {
+     "year": 2007,
+     "text": "Join MLS and open BMO Field; Danny Dichio scores the first goal, and fans throw seat cushions."
+    },
+    {
+     "year": 2015,
+     "text": "Make the playoffs for the first time."
+    },
+    {
+     "year": 2016,
+     "text": "Lose the MLS Cup final on penalties at home."
+    },
+    {
+     "year": 2017,
+     "text": "Win the MLS Cup, the Supporters’ Shield and the Canadian Championship."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2007,
+     "colorNames": [
+      "Red",
+      "Grey",
+      "White"
+     ],
+     "logo": "A shield-style crest in red and grey with a maple leaf and the club name.",
+     "jerseyNote": "Red home kits, often with tonal horizontal bands and black or grey trim.",
+     "surface": "Natural grass, then a hybrid pitch at BMO Field."
+    }
+   ]
+  },
+  "vancouver-whitecaps-fc": {
+   "summary": "The MLS version of a club that has carried the Whitecaps name since 1974. The team moved into the renovated BC Place in 2011 and reached its first MLS Cup final in 2025, losing to Inter Miami.",
+   "honours": [
+    "MLS Cup finalists, 2025.",
+    "The Whitecaps name goes back to 1974; the NASL Whitecaps won the 1979 Soccer Bowl."
+   ],
+   "milestones": [
+    {
+     "year": 1974,
+     "text": "The NASL Whitecaps are founded."
+    },
+    {
+     "year": 2011,
+     "text": "Join MLS; move into BC Place in October under its new retractable roof."
+    },
+    {
+     "year": 2012,
+     "text": "Become the first Canadian club to make the MLS playoffs."
+    },
+    {
+     "year": 2025,
+     "text": "Reach the MLS Cup final; lose 3–1 to Inter Miami."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2011,
+     "colorNames": [
+      "Deep sea blue",
+      "Whitecaps blue",
+      "White"
+     ],
+     "logo": "A shield showing the North Shore mountains and white-capped waves, the two things the name refers to.",
+     "jerseyNote": "White or deep-sea-blue kits; a 50th-anniversary kit in 2024 and an 86ers-inspired archive kit in 2026.",
+     "surface": "Artificial turf at BC Place."
+    }
+   ]
+  },
+  "cf-montreal": {
+   "summary": "The Impact moved up from the second division to MLS in 2012. Didier Drogba’s 2015 stint is a highlight. The club rebranded in 2021 with a snowflake crest, and after fans objected it returned to blue-and-black stripes and the fleur-de-lis in 2023.",
+   "honours": [
+    "CONCACAF Champions League finalists, 2015 (as the Impact).",
+    "Canadian Championship finalists, 2026."
+   ],
+   "milestones": [
+    {
+     "year": 2012,
+     "text": "Join MLS as the Montreal Impact."
+    },
+    {
+     "year": 2015,
+     "text": "Reach the CONCACAF Champions League final; Didier Drogba joins mid-season."
+    },
+    {
+     "year": 2021,
+     "text": "Rebrand as Club de Foot Montréal."
+    },
+    {
+     "year": 2023,
+     "text": "A new crest returns to the club’s traditional colours."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2012,
+     "to": 2021,
+     "colorNames": [
+      "Blue",
+      "Black",
+      "Silver",
+      "White"
+     ],
+     "logo": "A blue, black and silver shield with a stylised fleur-de-lis, four silver stars and the Impact wordmark.",
+     "jerseyNote": "Blue-and-black (bleu-noir) striped home kits."
+    },
+    {
+     "from": 2021,
+     "to": 2023,
+     "colorNames": [
+      "Black",
+      "Blue",
+      "Grey"
+     ],
+     "logo": "A black-and-blue roundel built around a snowflake and arrows representing the city. It was unpopular with fans.",
+     "jerseyNote": "Black-first kits."
+    },
+    {
+     "from": 2023,
+     "colorNames": [
+      "Blue",
+      "Black",
+      "White"
+     ],
+     "logo": "Blue-and-black stripes and the fleur-de-lis return in a shield-style crest.",
+     "jerseyNote": "Bleu-noir stripes are back on the home kit.",
+     "surface": "Natural grass at Stade Saputo."
+    }
+   ]
+  },
+  "bc-lions": {
+   "summary": "Founded in 1954 as Vancouver’s entry in the Western Interprovincial Football Union. During the CFL’s US-expansion years the Lions beat the Baltimore Stallions in the 1994 Grey Cup, which kept the Cup in Canada.",
+   "milestones": [
+    {
+     "year": 1954,
+     "text": "Play the first season at Empire Stadium."
+    },
+    {
+     "year": 1964,
+     "text": "Win the first Grey Cup."
+    },
+    {
+     "year": 1983,
+     "text": "Move indoors to BC Place."
+    },
+    {
+     "year": 1994,
+     "text": "Beat Baltimore 26–23 at BC Place on Lui Passaglia’s last-play field goal."
+    },
+    {
+     "year": 2011,
+     "text": "Win the Grey Cup at home after starting the season 0–5."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1954,
+     "to": 1990,
+     "colorNames": [
+      "Orange",
+      "Black",
+      "White"
+     ],
+     "logo": "A lion’s head in orange and black, redrawn several times.",
+     "jerseyNote": "Orange or black jerseys with contrasting shoulder stripes."
+    },
+    {
+     "from": 1990,
+     "to": 2005,
+     "colorNames": [
+      "Orange",
+      "Black",
+      "Silver"
+     ],
+     "logo": "A side-profile lion with a flowing mane.",
+     "jerseyNote": "Black-first uniforms with silver accents."
+    },
+    {
+     "from": 2005,
+     "colorNames": [
+      "Orange",
+      "Black",
+      "White"
+     ],
+     "logo": "A roaring lion’s head, sharpened in later updates.",
+     "jerseyNote": "Orange home jerseys came back as the primary look.",
+     "surface": "Artificial turf under the BC Place roof; the field has 20-yard CFL end zones."
+    }
+   ]
+  },
+  "calgary-stampeders": {
+   "summary": "The Stampeders’ undefeated 1948 season and the fans who travelled with horses, chuckwagons and white Stetsons to that year’s Grey Cup in Toronto helped turn the game into a national festival.",
+   "milestones": [
+    {
+     "year": 1948,
+     "text": "Go undefeated and win the first Grey Cup; Calgary fans bring the Grey Cup party east."
+    },
+    {
+     "year": 1960,
+     "text": "Open McMahon Stadium."
+    },
+    {
+     "year": 1992,
+     "text": "Win the Grey Cup with Doug Flutie."
+    },
+    {
+     "year": 1998,
+     "text": "Mark McLoughlin’s last-second field goal beats Hamilton."
+    },
+    {
+     "year": 2018,
+     "text": "Win the eighth Grey Cup."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1945,
+     "colorNames": [
+      "Red",
+      "Black",
+      "White"
+     ],
+     "logo": "A horse and rider at full gallop, drawn in many versions over the decades.",
+     "jerseyNote": "Red home jerseys with white and black trim; a horse on the helmet.",
+     "surface": "Artificial turf at McMahon Stadium."
+    }
+   ]
+  },
+  "edmonton-elks": {
+   "summary": "One of the CFL’s most successful clubs, with 14 Grey Cups including a record five in a row under Hugh Campbell with Warren Moon. The team dropped the Eskimos name in 2020 and became the Elks in 2021.",
+   "honours": [
+    "Five straight Grey Cups (1978–82), a record."
+   ],
+   "milestones": [
+    {
+     "year": 1954,
+     "text": "Win the first of three straight Grey Cups."
+    },
+    {
+     "year": 1978,
+     "text": "Move into Commonwealth Stadium and start a run of five straight Grey Cups."
+    },
+    {
+     "year": 2020,
+     "text": "Drop the Eskimos name."
+    },
+    {
+     "year": 2021,
+     "text": "Become the Elks."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1949,
+     "to": 2021,
+     "colorNames": [
+      "Green",
+      "Gold",
+      "White"
+     ],
+     "logo": "An interlocking double “E” inside an oval.",
+     "jerseyNote": "Green and gold with the EE on the helmet."
+    },
+    {
+     "from": 2021,
+     "colorNames": [
+      "Green",
+      "Gold",
+      "White"
+     ],
+     "logo": "A stylised elk became the primary logo and the EE became secondary. After fans asked for it, the EE went back on the helmets in 2022.",
+     "jerseyNote": "Same green and gold; elk-antler helmets in 2021 only.",
+     "surface": "Artificial turf at Commonwealth Stadium."
+    }
+   ]
+  },
+  "saskatchewan-roughriders": {
+   "summary": "A community-owned team that represents a whole province. Rider Nation is known for wearing watermelon helmets, and the team has won five Grey Cups, most recently the 112th in 2025 over Montréal.",
+   "milestones": [
+    {
+     "year": 1948,
+     "text": "Switch from red and black to green and white."
+    },
+    {
+     "year": 1966,
+     "text": "Win the first Grey Cup, led by Ron Lancaster and George Reed."
+    },
+    {
+     "year": 1989,
+     "text": "Dave Ridgway kicks a last-second field goal to beat Hamilton."
+    },
+    {
+     "year": 2013,
+     "text": "Win the Grey Cup at home in Regina."
+    },
+    {
+     "year": 2017,
+     "text": "Open the new Mosaic Stadium."
+    },
+    {
+     "year": 2025,
+     "text": "Beat Montréal 25–17 in Winnipeg for the fifth Grey Cup."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1910,
+     "to": 1948,
+     "colorNames": [
+      "Red",
+      "Black"
+     ],
+     "logo": "Simple Regina lettering and crests in red and black.",
+     "jerseyNote": "Red-and-black striped jerseys."
+    },
+    {
+     "from": 1948,
+     "colorNames": [
+      "Green",
+      "White",
+      "Black",
+      "Silver"
+     ],
+     "logo": "A green “S” wrapped with a sheaf of wheat, refined over the decades.",
+     "jerseyNote": "Green home jerseys; fans dress in green and wear watermelons.",
+     "surface": "Artificial turf at Taylor Field and Mosaic Stadium."
+    }
+   ]
+  },
+  "winnipeg-blue-bombers": {
+   "summary": "In 1935 the Bombers became the first western team to win the Grey Cup. After a 29-year drought they won in 2019 and 2021, and they played in five straight Grey Cups from 2019 to 2024 (there was no 2020 season).",
+   "milestones": [
+    {
+     "year": 1935,
+     "text": "Become the first western team to win the Grey Cup."
+    },
+    {
+     "year": 1962,
+     "text": "The “Fog Bowl” Grey Cup in Toronto is finished the next day; Winnipeg wins."
+    },
+    {
+     "year": 2013,
+     "text": "Open the stadium now called Princess Auto Stadium."
+    },
+    {
+     "year": 2019,
+     "text": "End the drought with the 107th Grey Cup."
+    },
+    {
+     "year": 2021,
+     "text": "Win again in Hamilton."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1930,
+     "colorNames": [
+      "Blue",
+      "Gold",
+      "White"
+     ],
+     "logo": "Variations on a bold “W”, with blue and gold kept since the 1930s.",
+     "jerseyNote": "Royal-blue home jerseys with gold trim.",
+     "surface": "Artificial turf at Princess Auto Stadium."
+    }
+   ]
+  },
+  "hamilton-tiger-cats": {
+   "summary": "Formed in 1950 when the Hamilton Tigers merged with the Hamilton Wildcats. The Tiger-Cats were a power in the 1950s and 60s. The 1999 Grey Cup is their most recent title.",
+   "honours": [
+    "Including the predecessor Tigers and Flying Wildcats, Hamilton clubs have won 15 Grey Cups."
+   ],
+   "milestones": [
+    {
+     "year": 1950,
+     "text": "The Tigers and Wildcats merge."
+    },
+    {
+     "year": 1953,
+     "text": "Win the first Grey Cup as the Tiger-Cats."
+    },
+    {
+     "year": 1999,
+     "text": "Win the Grey Cup with Danny McManus."
+    },
+    {
+     "year": 2014,
+     "text": "Open the new stadium after a season playing in Guelph."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1950,
+     "colorNames": [
+      "Black",
+      "Gold",
+      "White"
+     ],
+     "logo": "A leaping tiger-cat in black and gold.",
+     "jerseyNote": "Black-and-gold jerseys with sleeve stripes; the “Oskee Wee Wee” chant.",
+     "surface": "Artificial turf at Hamilton Stadium."
+    }
+   ]
+  },
+  "toronto-argonauts": {
+   "summary": "Founded by the Argonaut Rowing Club in 1873 and named after the heroes of Greek myth. The “Double Blue” have won 19 Grey Cups, the most in the league. Highlights include Rocket Ismail in 1991 and Doug Flutie in 1996–97.",
+   "honours": [
+    "19 Grey Cups, more than any other team.",
+    "Founded in 1873; the oldest pro sports team in North America still using its original name."
+   ],
+   "milestones": [
+    {
+     "year": 1873,
+     "text": "Founded by the Argonaut Rowing Club."
+    },
+    {
+     "year": 1945,
+     "text": "Begin three straight Grey Cup wins."
+    },
+    {
+     "year": 1991,
+     "text": "Win the Grey Cup with Raghib “Rocket” Ismail."
+    },
+    {
+     "year": 2016,
+     "text": "Move to BMO Field."
+    },
+    {
+     "year": 2024,
+     "text": "Win the record 19th Grey Cup."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1873,
+     "colorNames": [
+      "Oxford blue",
+      "Cambridge blue",
+      "White"
+     ],
+     "logo": "Rowing-inspired marks such as boats, oars and a crested “A”, always in the “Double Blue”.",
+     "jerseyNote": "Navy and light-blue uniforms throughout the team’s history.",
+     "surface": "A hybrid grass pitch at BMO Field, which makes the Argos one of the few CFL teams not on artificial turf."
+    }
+   ]
+  },
+  "ottawa-redblacks": {
+   "summary": "Brought the CFL back to Ottawa in 2014 at the rebuilt TD Place. The Redblacks reached the Grey Cup in their second season and won it in their third, beating Calgary in overtime.",
+   "milestones": [
+    {
+     "year": 2014,
+     "text": "First season, at the rebuilt TD Place."
+    },
+    {
+     "year": 2015,
+     "text": "Reach the Grey Cup in their second season."
+    },
+    {
+     "year": 2016,
+     "text": "Win the 104th Grey Cup in overtime over Calgary with Henry Burris."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2014,
+     "colorNames": [
+      "Red",
+      "Black",
+      "White"
+     ],
+     "logo": "A stylised “R” crest in Ottawa’s traditional red and black.",
+     "jerseyNote": "Black home jerseys with red trim.",
+     "surface": "Artificial turf at TD Place, under the wooden canopy."
+    }
+   ]
+  },
+  "montreal-alouettes": {
+   "summary": "Founded in 1946. The franchise played as the Concordes from 1982 to 1985, folded in 1987, and returned in 1996 when the Baltimore Stallions moved to Montréal. The CFL counts the 1946–86 history as part of today’s team. Anthony Calvillo led the team to three Grey Cups in the 2000s.",
+   "milestones": [
+    {
+     "year": 1949,
+     "text": "Win the first Grey Cup."
+    },
+    {
+     "year": 1977,
+     "text": "The “Ice Bowl” Grey Cup at Olympic Stadium."
+    },
+    {
+     "year": 1987,
+     "text": "Fold on the eve of the season."
+    },
+    {
+     "year": 1996,
+     "text": "Revived when the Baltimore Stallions move to Montréal."
+    },
+    {
+     "year": 2010,
+     "text": "Win back-to-back Grey Cups with Anthony Calvillo."
+    },
+    {
+     "year": 2023,
+     "text": "Upset Winnipeg to win the 110th Grey Cup."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1946,
+     "to": 1982,
+     "colorNames": [
+      "Red",
+      "Blue",
+      "White"
+     ],
+     "logo": "A lark (alouette) in flight. The team switched to red, white and blue in 1974 to match other Montréal teams.",
+     "jerseyNote": "Red or blue jerseys with a lark on the helmet."
+    },
+    {
+     "from": 1996,
+     "to": 2019,
+     "colorNames": [
+      "Navy",
+      "Red",
+      "Silver"
+     ],
+     "logo": "A fierce bird head, nicknamed the “angry bird” logo.",
+     "jerseyNote": "Navy and red uniforms with silver accents."
+    },
+    {
+     "from": 2019,
+     "colorNames": [
+      "Navy",
+      "Red",
+      "White"
+     ],
+     "logo": "A stylised “M” that reads as both a bird and a plane, with the “MontreALS” tagline.",
+     "jerseyNote": "Cleaner uniforms designed by GRDN Studio.",
+     "surface": "Artificial turf at Molson Stadium, with downtown towers behind the north end zone."
+    }
+   ]
+  },
+  "ottawa-rough-riders": {
+   "summary": "One of the oldest pro sports clubs in North America. The Rough Riders won nine Grey Cups. Their best years came under Russ Jackson in the 1960s, and Tony Gabriel’s catch won the 1976 Grey Cup. Two decades of losses and ownership turmoil ended the team in 1996.",
+   "fate": "Folded after the 1996 season.",
+   "milestones": [
+    {
+     "year": 1876,
+     "text": "Founded as the Ottawa Football Club."
+    },
+    {
+     "year": 1898,
+     "text": "Adopt the Rough Riders name and red-and-black colours."
+    },
+    {
+     "year": 1925,
+     "text": "Win the first Grey Cup."
+    },
+    {
+     "year": 1969,
+     "text": "Win back-to-back Grey Cups in Russ Jackson’s final season."
+    },
+    {
+     "year": 1976,
+     "text": "Tony Gabriel’s late touchdown catch wins the Grey Cup."
+    },
+    {
+     "year": 1996,
+     "text": "Fold."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1898,
+     "to": 1996,
+     "colorNames": [
+      "Red",
+      "Black",
+      "White"
+     ],
+     "logo": "A red-and-black “R” crest in several versions, with a new mark introduced in 1992.",
+     "jerseyNote": "Red and black, the colours Ottawa teams still use."
+    }
+   ]
+  },
+  "ottawa-renegades": {
+   "summary": "A four-season expansion team at Frank Clair Stadium that never won a playoff game. Its logo borrowed heavily from the old Rough Riders.",
+   "fate": "Suspended operations before the 2006 season.",
+   "milestones": [
+    {
+     "year": 2002,
+     "text": "First season."
+    },
+    {
+     "year": 2006,
+     "text": "The league suspends the franchise."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2002,
+     "to": 2005,
+     "colorNames": [
+      "Black",
+      "Red",
+      "White"
+     ],
+     "logo": "An “R” mark that looked a lot like the logo the Rough Riders used until 1992.",
+     "jerseyNote": "Black jerseys with red side panels."
+    }
+   ]
+  },
+  "montreal-concordes": {
+   "summary": "Formed after Nelson Skalbania’s original Alouettes collapsed in 1982. Skalbania kept the Alouettes name, so the new team played as the Concordes at Olympic Stadium for four seasons. It took back the Alouettes name in 1986 but folded a year later.",
+   "fate": "Renamed the Alouettes in 1986, then folded on the eve of the 1987 season.",
+   "milestones": [
+    {
+     "year": 1982,
+     "text": "Formed to replace the collapsed Alouettes."
+    },
+    {
+     "year": 1986,
+     "text": "Take back the Alouettes name."
+    },
+    {
+     "year": 1987,
+     "text": "Fold in June, before the season."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1982,
+     "to": 1985,
+     "colorNames": [
+      "Blue",
+      "Red",
+      "White"
+     ],
+     "logo": "A sleek mark inspired by the Concorde, in Montréal’s red, white and blue.",
+     "jerseyNote": "Blue and white with red trim."
+    }
+   ]
+  },
+  "forge-fc": {
+   "summary": "The CPL’s most decorated club. Forge won the first league final and reached six straight finals from 2019 to 2024. In 2026 it became the first CPL side to win the Canadian Championship.",
+   "honours": [
+    "2026 Canadian Championship, the first won by a CPL club (beat CF Montréal in the final).",
+    "CPL Shield winners as regular-season champions."
+   ],
+   "milestones": [
+    {
+     "year": 2019,
+     "text": "Win the first CPL Final over Cavalry."
+    },
+    {
+     "year": 2020,
+     "text": "Repeat in the “Island Games” bubble in Charlottetown."
+    },
+    {
+     "year": 2023,
+     "text": "Win the fourth title."
+    },
+    {
+     "year": 2026,
+     "text": "Win the Canadian Championship over CF Montréal."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2019,
+     "colorNames": [
+      "Spark orange",
+      "Platinum steel",
+      "Waterfall white"
+     ],
+     "logo": "A shield crest in orange and steel grey that refers to Hamilton’s steel industry and the sparks from a hammer strike.",
+     "jerseyNote": "Orange home kits; a black-and-gold kit honours Hamilton’s sporting colours each June.",
+     "surface": "Artificial turf at Hamilton Stadium."
+    }
+   ]
+  },
+  "cavalry-fc": {
+   "summary": "Named for Lord Strathcona’s Horse, a Calgary-based armoured regiment. Cavalry was a regular-season power from the start and won the North Star Cup in 2024 by beating Forge.",
+   "honours": [
+    "CPL Shield (regular season), including 2026."
+   ],
+   "milestones": [
+    {
+     "year": 2019,
+     "text": "Reach the first CPL Final."
+    },
+    {
+     "year": 2024,
+     "text": "Win the first North Star Cup, 2–1 over Forge."
+    },
+    {
+     "year": 2026,
+     "text": "Win the CPL Shield on the last day of the regular season."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2019,
+     "colorNames": [
+      "Army green",
+      "Calgary red",
+      "Black"
+     ],
+     "logo": "A crest with a chevron for the regiment and the Rocky Mountain foothills, plus a football.",
+     "jerseyNote": "Army-green home kits.",
+     "surface": "Natural grass at ATCO Field."
+    }
+   ]
+  },
+  "pacific-fc": {
+   "summary": "Vancouver Island’s club. Pacific won the 2021 CPL Final 1–0 over Forge.",
+   "milestones": [
+    {
+     "year": 2019,
+     "text": "First season at Westhills (now Starlight) Stadium."
+    },
+    {
+     "year": 2021,
+     "text": "Beat Forge 1–0 in the CPL Final."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2019,
+     "colorNames": [
+      "Starfish purple",
+      "Lagoon blue",
+      "Lighthouse white"
+     ],
+     "logo": "A Douglas fir split in two, with the right half shaped like Vancouver Island, bordered by ocean.",
+     "jerseyNote": "Purple home kits with teal trim.",
+     "surface": "Artificial turf at Starlight Stadium."
+    }
+   ]
+  },
+  "inter-toronto-fc": {
+   "summary": "The first club announced for the CPL. It began as York9 FC, named for the nine municipalities of York Region, became York United in 2021 and Inter Toronto FC in November 2025.",
+   "milestones": [
+    {
+     "year": 2019,
+     "text": "Play the CPL’s first match, a 1–1 draw at Forge."
+    },
+    {
+     "year": 2021,
+     "text": "Rebrand as York United FC."
+    },
+    {
+     "year": 2025,
+     "text": "Rebrand as Inter Toronto FC."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2019,
+     "to": 2021,
+     "colorNames": [
+      "Electric green",
+      "Charcoal grey",
+      "Black"
+     ],
+     "logo": "A crest topped with nine beams, one for each York Region municipality.",
+     "jerseyNote": "Green home kits."
+    },
+    {
+     "from": 2021,
+     "to": 2025,
+     "colorNames": [
+      "Dark green",
+      "Dark blue",
+      "Gold",
+      "White"
+     ],
+     "logo": "A crest based on the Queen’s York Rangers and the arms of the old Town of York.",
+     "jerseyNote": "Green-and-gold kits."
+    },
+    {
+     "from": 2025,
+     "colorNames": [
+      "Lake Ontario blue",
+      "Trillium white",
+      "Sunrise gold",
+      "Tower stone"
+     ],
+     "logo": "A new identity built around the city of Toronto rather than York Region.",
+     "jerseyNote": "Lake-Ontario-blue kits for the 2026 season.",
+     "surface": "Artificial turf at York Lions Stadium."
+    }
+   ]
+  },
+  "hfx-wanderers-fc": {
+   "summary": "Atlantic Canada’s first top-flight pro soccer club. The Wanderers reached the 2020 final in the PEI bubble.",
+   "honours": [
+    "CPL finalists, 2020."
+   ],
+   "milestones": [
+    {
+     "year": 2019,
+     "text": "Open the pop-up Wanderers Grounds."
+    },
+    {
+     "year": 2020,
+     "text": "Reach the CPL Final in Charlottetown."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2019,
+     "colorNames": [
+      "Harbour blue",
+      "Naval grey",
+      "Aqua ocean"
+     ],
+     "logo": "A shield in navy and aqua whose colours stand for the night sky, the Royal Canadian Navy and the Atlantic.",
+     "jerseyNote": "Navy home kits with aqua accents.",
+     "surface": "Natural grass at the Wanderers Grounds."
+    }
+   ]
+  },
+  "atletico-ottawa": {
+   "summary": "Founded in 2020 as a sister club of Atlético Madrid. Ottawa won the 2022 regular season and the 2025 North Star Cup.",
+   "honours": [
+    "CPL Shield, 2022."
+   ],
+   "milestones": [
+    {
+     "year": 2020,
+     "text": "Founded; play the first season in the PEI bubble."
+    },
+    {
+     "year": 2022,
+     "text": "Win the regular season; lose the final to Forge before a record crowd of 14,992."
+    },
+    {
+     "year": 2025,
+     "text": "Go unbeaten at home and win the first North Star Cup."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2020,
+     "colorNames": [
+      "Federal red",
+      "Blanc d’Ottawa",
+      "Rideau blue"
+     ],
+     "logo": "A blue Peace Tower silhouette over red-and-white stripes, after the Atlético Madrid crest, with a maple leaf at the base.",
+     "jerseyNote": "Red-and-white striped home kits, like Atlético Madrid’s.",
+     "surface": "Artificial turf at TD Place."
+    }
+   ]
+  },
+  "vancouver-fc": {
+   "summary": "A 2023 expansion team based in Langley that plays at the purpose-built Willoughby Stadium.",
+   "milestones": [
+    {
+     "year": 2023,
+     "text": "Open Willoughby Stadium with a 1–1 draw against Cavalry before a sell-out crowd."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2023,
+     "colorNames": [
+      "Charcoal black",
+      "Silver",
+      "Warm red"
+     ],
+     "logo": "A stylised eagle shaped like the letter V.",
+     "jerseyNote": "Black home kits with red details.",
+     "surface": "Artificial turf at Willoughby Stadium."
+    }
+   ]
+  },
+  "fc-supra-du-quebec": {
+   "summary": "The CPL’s first Québec club. It was awarded in September 2025 and beat Pacific 3–2 in its first match on April 11, 2026. The name and identity revive the Montréal Supra of the 1988–92 Canadian Soccer League.",
+   "milestones": [
+    {
+     "year": 2025,
+     "text": "Expansion club announced for Laval."
+    },
+    {
+     "year": 2026,
+     "text": "Win the first match, 3–2 over Pacific."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2026,
+     "colorNames": [
+      "Blue",
+      "Red",
+      "White"
+     ],
+     "logo": "A crest inspired by the 1988–92 Montréal Supra. Our palette is an approximation.",
+     "jerseyNote": "First-season kits in the club’s Supra-inspired colours.",
+     "surface": "Artificial turf at Stade Boréale."
+    }
+   ]
+  },
+  "fc-edmonton": {
+   "summary": "The only CPL founding club that existed before the league: it had played in the NASL. FC Edmonton relaunched with a new identity in 2019, struggled on the field and at the gate, and folded after 2022.",
+   "fate": "Ceased operations after the 2022 season.",
+   "milestones": [
+    {
+     "year": 2010,
+     "text": "Founded (NASL era)."
+    },
+    {
+     "year": 2019,
+     "text": "Join the CPL with a new crest."
+    },
+    {
+     "year": 2022,
+     "text": "Last season."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2019,
+     "to": 2022,
+     "colorNames": [
+      "Prairie blue sky",
+      "River City navy",
+      "White rabbit"
+     ],
+     "logo": "A blue-and-navy crest for the CPL relaunch; the colours refer to the Prairie sky, the North Saskatchewan River and the club’s “Rally Rabbit”.",
+     "jerseyNote": "Blue home kits."
+    }
+   ]
+  },
+  "valour-fc": {
+   "summary": "Winnipeg’s CPL club, owned by the Winnipeg Football Club (the Blue Bombers). Valour played seven seasons at Princess Auto Stadium before low crowds and losses ended it.",
+   "fate": "Suspended operations after the 2025 season.",
+   "milestones": [
+    {
+     "year": 2019,
+     "text": "Founding CPL season."
+    },
+    {
+     "year": 2025,
+     "text": "Final season."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2019,
+     "to": 2025,
+     "colorNames": [
+      "Valour maroon",
+      "Wheat gold",
+      "Earth black"
+     ],
+     "logo": "A “V” like a folded medal ribbon, with a Victoria Cross circle and wheat. The V also marks where the Red and Assiniboine rivers meet.",
+     "jerseyNote": "Maroon home kits."
+    }
+   ]
+  },
+  "toronto-rock": {
+   "summary": "The NLL’s first Canadian franchise and, with seven titles, tied with Buffalo as its most decorated. Founded as the Ontario Raiders in Hamilton, the Rock won four championships in their first five seasons in Toronto. They still carry Toronto’s name but have played in Hamilton since 2021–22.",
+   "milestones": [
+    {
+     "year": 1998,
+     "text": "Play one season as the Ontario Raiders at Copps Coliseum in Hamilton."
+    },
+    {
+     "year": 1999,
+     "text": "Move to Maple Leaf Gardens as the Rock and win the title in the first season there."
+    },
+    {
+     "year": 2001,
+     "text": "Move to the Air Canada Centre, home for 20 seasons."
+    },
+    {
+     "year": 2003,
+     "text": "Win a fourth title in five seasons."
+    },
+    {
+     "year": 2022,
+     "text": "Move home games to Hamilton."
+    },
+    {
+     "year": 2025,
+     "text": "Spend a season in Mississauga while the Hamilton arena is renovated."
+    },
+    {
+     "year": 2026,
+     "text": "Sweep the Halifax Thunderbirds 2–0 in the NLL Finals for a seventh title."
+    }
+   ],
+   "identity": [
+    {
+     "from": 1999,
+     "colorNames": [
+      "Blue",
+      "Red",
+      "Silver",
+      "White"
+     ],
+     "logo": "A chiselled blue “ROCK” wordmark over a red maple leaf, with “Toronto” across it.",
+     "jerseyNote": "Blue home jerseys trimmed in red and silver.",
+     "surface": "Turf laid over the arena floor, as across the NLL."
+    }
+   ]
+  },
+  "calgary-roughnecks": {
+   "summary": "Named for the roughnecks who work Alberta’s drilling rigs, and known to fans as the Riggers. Calgary made the playoffs every year from 2003 to 2016 and won all three of its titles on home floor at the Saddledome.",
+   "milestones": [
+    {
+     "year": 2002,
+     "text": "Join the NLL in the expansion that also added Montréal and Vancouver."
+    },
+    {
+     "year": 2004,
+     "text": "Win the Champion’s Cup over Buffalo before 19,289 fans at home."
+    },
+    {
+     "year": 2009,
+     "text": "Beat the New York Titans for a second title."
+    },
+    {
+     "year": 2019,
+     "text": "Beat Buffalo again for a third."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2002,
+     "colorNames": [
+      "Black",
+      "Red",
+      "Grey",
+      "White"
+     ],
+     "logo": "A hard-hatted roughneck shouldering a lacrosse stick above a jagged “Roughnecks” wordmark.",
+     "jerseyNote": "Black and red sets.",
+     "surface": "Turf laid over the Saddledome floor."
+    }
+   ]
+  },
+  "saskatchewan-rush": {
+   "summary": "The Rush moved from Edmonton after winning the 2015 title, then repeated in their first season in Saskatoon. In 2018 they won the first NLL Cup, which replaced the Champion’s Cup that year.",
+   "honours": [
+    "Won the 2015 title as the Edmonton Rush, then opened in Saskatoon as defending champions.",
+    "Lost the 2025 NLL Finals to Buffalo in three games."
+   ],
+   "milestones": [
+    {
+     "year": 2016,
+     "text": "Clinch a second straight title with a last-minute 11–10 win at SaskTel Centre."
+    },
+    {
+     "year": 2018,
+     "text": "Beat Rochester to win the first NLL Cup: three titles in four years."
+    },
+    {
+     "year": 2025,
+     "text": "Reach the NLL Finals, losing to Buffalo in three games."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2016,
+     "colorNames": [
+      "Green",
+      "Black",
+      "White"
+     ],
+     "logo": "A horned green face splitting the “RU SH” wordmark.",
+     "jerseyNote": "Green and black sets.",
+     "surface": "Turf laid over the arena floor; branded Co-op Field at SaskTel Centre on game nights."
+    }
+   ]
+  },
+  "vancouver-warriors": {
+   "summary": "The franchise came north from Everett, Washington, in 2014 and played in Langley as the Stealth. Canucks Sports & Entertainment bought it in 2018, renamed it the Warriors and moved it into Rogers Arena.",
+   "honours": [
+    "The franchise won the 2010 Champion’s Cup as the Washington Stealth, before its move to B.C."
+   ],
+   "milestones": [
+    {
+     "year": 2014,
+     "text": "Arrive from Washington State as the Vancouver Stealth, playing in Langley."
+    },
+    {
+     "year": 2018,
+     "text": "Sold to the Canucks’ owners; renamed the Warriors and moved downtown."
+    },
+    {
+     "year": 2025,
+     "text": "Make the playoffs for the first time as the Warriors."
+    },
+    {
+     "year": 2026,
+     "text": "Finish first in the regular season."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2018,
+     "colorNames": [
+      "Gold",
+      "White",
+      "Black"
+     ],
+     "logo": "A black shield edged in gold, with a “W” of gold and white stripes under a small star.",
+     "jerseyNote": "Black and gold sets.",
+     "surface": "Turf laid over the Rogers Arena floor."
+    }
+   ]
+  },
+  "halifax-thunderbirds": {
+   "summary": "The T-Birds brought the NLL to Atlantic Canada in 2019–20, when the original Rochester Knighthawks moved to Halifax with their history and records. In 2026 they ran from the eighth seed to the NLL Finals.",
+   "honours": [
+    "Franchise records include five titles won as the Rochester Knighthawks between 1997 and 2014.",
+    "Reached the 2026 NLL Finals as the eighth seed."
+   ],
+   "milestones": [
+    {
+     "year": 2019,
+     "text": "Debut on December 7 with a 12–4 win over the New York Riptide in front of 6,847 at Scotiabank Centre."
+    },
+    {
+     "year": 2026,
+     "text": "Reach the NLL Finals as the eighth seed, losing to Toronto."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2020,
+     "colorNames": [
+      "Purple",
+      "Orange",
+      "White",
+      "Black"
+     ],
+     "logo": "A purple thunderbird’s head with an orange feather and a lightning bolt.",
+     "jerseyNote": "Purple and orange sets.",
+     "surface": "Turf laid over the Scotiabank Centre floor."
+    }
+   ]
+  },
+  "oshawa-firewolves": {
+   "summary": "Formerly the Albany FireWolves, the team moved to Oshawa for the 2025–26 season and shares the Tribute Communities Centre with the OHL’s Generals.",
+   "honours": [
+    "The franchise traces back to the Philadelphia Wings, a charter team of the league in 1987."
+   ],
+   "milestones": [
+    {
+     "year": 2025,
+     "text": "The NLL announces the move from Albany on August 19; the Oshawa FireWolves name is confirmed on September 9."
+    },
+    {
+     "year": 2026,
+     "text": "Play the first season in Oshawa."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2026,
+     "colorNames": [
+      "Maroon",
+      "Tan",
+      "White"
+     ],
+     "logo": "A wolf’s head framed by flames above the “FireWolves” wordmark.",
+     "jerseyNote": "Maroon and tan sets.",
+     "surface": "Turf laid over the arena floor."
+    }
+   ]
+  },
+  "edmonton-rush": {
+   "summary": "Revived from the dormant Ottawa Rebel franchise, the Rush struggled to draw crowds in Edmonton but became a powerhouse, winning the 2015 title in their final season before the move to Saskatoon.",
+   "fate": "Moved to Saskatoon in 2016 and became the Saskatchewan Rush.",
+   "milestones": [
+    {
+     "year": 2006,
+     "text": "Debut at Rexall Place."
+    },
+    {
+     "year": 2015,
+     "text": "Win the Champion’s Cup, then announce the move to Saskatoon."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2006,
+     "to": 2015,
+     "colorNames": [
+      "Silver",
+      "Black",
+      "White"
+     ],
+     "logo": "A black brush-script “Rush” wordmark with speed streaks.",
+     "jerseyNote": "Black and silver sets."
+    }
+   ]
+  },
+  "ottawa-rebel": {
+   "summary": "The Syracuse Smash moved to Ottawa in 2001. The Rebel started at the Corel Centre, moved part-way through 2002 to the smaller Ottawa Civic Centre, and went dormant after three seasons.",
+   "fate": "Went dormant after 2003; the franchise was revived in Edmonton in 2006 and now plays in Saskatoon.",
+   "milestones": [
+    {
+     "year": 2001,
+     "text": "Arrive from Syracuse."
+    },
+    {
+     "year": 2002,
+     "text": "Move mid-season from the Corel Centre to the Ottawa Civic Centre."
+    },
+    {
+     "year": 2003,
+     "text": "Suspend operations."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2001,
+     "to": 2003,
+     "colorNames": [
+      "Black",
+      "Grey",
+      "Red"
+     ],
+     "logo": "A muscled player swinging a lacrosse stick over a slanted “Rebel” script.",
+     "jerseyNote": "Black, grey and red sets."
+    }
+   ]
+  },
+  "montreal-express": {
+   "summary": "A one-season team at the Molson Centre. Its first game, a 32–17 win over fellow newcomer Calgary, set NLL records for goals by one team, goals by two teams and penalty minutes.",
+   "fate": "Went dormant after one season; the franchise was sold and became the Minnesota Swarm in 2005.",
+   "milestones": [
+    {
+     "year": 2002,
+     "text": "Beat Calgary 32–17 in the first game, a league record for goals."
+    },
+    {
+     "year": 2004,
+     "text": "The dormant franchise is returned to the league and sold to Minnesota."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2002,
+     "to": 2002,
+     "colorNames": [
+      "Black",
+      "Blue"
+     ],
+     "logo": "A blue “X” torn through a black slash, over an “Express” wordmark.",
+     "jerseyNote": "Black and blue sets."
+    }
+   ]
+  },
+  "vancouver-ravens": {
+   "summary": "Vancouver’s first NLL team made the playoffs in 2002 and 2003, but unstable ownership, thin crowds and the end of a three-year lease at GM Place ended the club before the 2005 season.",
+   "fate": "Folded in December 2004 after their GM Place lease ran out.",
+   "milestones": [
+    {
+     "year": 2002,
+     "text": "Beat the Toronto Rock 13–12 in the first home game at GM Place."
+    },
+    {
+     "year": 2004,
+     "text": "Cease operations in December."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2002,
+     "to": 2004,
+     "colorNames": [
+      "Red",
+      "Black",
+      "Yellow"
+     ],
+     "logo": "A black raven clutching a lacrosse stick over a red “Ravens” wordmark.",
+     "jerseyNote": "Black, red and yellow sets."
+    }
+   ]
+  },
+  "ottawa-black-bears": {
+   "summary": "The New York Riptide moved to Ottawa in 2024, bringing pro box lacrosse back to the capital for the first time since the Rebel. The Black Bears lasted two seasons without a winning record.",
+   "fate": "The NLL ended the club’s ownership after the 2025–26 season, and the team ceased operations.",
+   "milestones": [
+    {
+     "year": 2025,
+     "text": "First season at the Canadian Tire Centre."
+    },
+    {
+     "year": 2026,
+     "text": "The league ends the ownership; season-ticket holders are refunded in June."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2025,
+     "to": 2026,
+     "colorNames": [
+      "Black",
+      "Red",
+      "Gold",
+      "White"
+     ],
+     "logo": "A black bear gripping a lacrosse stick inside a red and gold oval.",
+     "jerseyNote": "Black, red and gold sets."
+    }
+   ]
+  },
+  "winnipeg-sea-bears": {
+   "summary": "The CEBL’s tenth team, announced in November 2022. The Sea Bears play in the Jets’ arena and have repeatedly set league attendance records there; they won their first title in 2026.",
+   "milestones": [
+    {
+     "year": 2023,
+     "text": "Beat Vancouver 90–85 in the first game before 7,303 fans, a league record by nearly 3,000."
+    },
+    {
+     "year": 2025,
+     "text": "Host the CEBL Championship Weekend."
+    },
+    {
+     "year": 2026,
+     "text": "Beat Brampton in a one-game final for the title."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2023,
+     "colorNames": [
+      "Black",
+      "Teal",
+      "White"
+     ],
+     "logo": "A white polar bear’s face outlined in teal and black.",
+     "jerseyNote": "Black, teal and white sets.",
+     "surface": "A hardwood court laid over the arena floor."
+    }
+   ]
+  },
+  "niagara-river-lions": {
+   "summary": "Founded in 2015 in NBL Canada. Owner Richard Petko then helped create the CEBL, and the River Lions joined it for its first season. They won back-to-back titles in 2024 and 2025.",
+   "honours": [
+    "Played in the National Basketball League of Canada from 2015 to 2018."
+   ],
+   "milestones": [
+    {
+     "year": 2019,
+     "text": "Win the CEBL’s first game, 99–97 at Saskatchewan."
+    },
+    {
+     "year": 2020,
+     "text": "The pandemic season is played as a bubble tournament in St. Catharines."
+    },
+    {
+     "year": 2024,
+     "text": "Win the first title, over the Vancouver Bandits."
+    },
+    {
+     "year": 2025,
+     "text": "Repeat as champions, beating Calgary in the final."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2019,
+     "colorNames": [
+      "Green",
+      "Black",
+      "Grey"
+     ],
+     "logo": "A roaring white lion with a green mane over a green “River Lions” wordmark.",
+     "jerseyNote": "Green, black and grey sets."
+    }
+   ]
+  },
+  "edmonton-stingers": {
+   "summary": "A charter team whose mascot, Buzz the hornet, is inspired by the CF-18 fighters based at Cold Lake. The Stingers won the 2020 bubble tournament and repeated in 2021.",
+   "honours": [
+    "Represented Canada in the 2021–22 Basketball Champions League Americas."
+   ],
+   "milestones": [
+    {
+     "year": 2020,
+     "text": "Beat the Fraser Valley Bandits 90–73 in the Summer Series final."
+    },
+    {
+     "year": 2021,
+     "text": "Beat Niagara for a second straight title."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2019,
+     "colorNames": [
+      "Yellow",
+      "Blue",
+      "White"
+     ],
+     "logo": "A yellow and navy hornet over a navy “Stingers” wordmark.",
+     "jerseyNote": "Yellow, navy and white sets."
+    }
+   ]
+  },
+  "saskatoon-mamba": {
+   "summary": "A charter team that won the CEBL’s first title as the Saskatchewan Rattlers, at the 2019 Championship Weekend it hosted. It rebranded as the Saskatoon Mamba in February 2026 and now splits home games between SaskTel Centre and Merlis Belsher Place.",
+   "milestones": [
+    {
+     "year": 2019,
+     "text": "Host the CEBL’s first game on a hardwood court bought from the Toronto Raptors."
+    },
+    {
+     "year": 2019,
+     "text": "Win the first CEBL title at home in August."
+    },
+    {
+     "year": 2026,
+     "text": "Rebrand as the Saskatoon Mamba."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2026,
+     "colorNames": [
+      "Magenta",
+      "Purple",
+      "Black"
+     ],
+     "logo": "A coiled magenta snake above the “Saskatoon Mamba” wordmark.",
+     "jerseyNote": "Magenta home and purple away sets, with a lime-green alternate."
+    }
+   ]
+  },
+  "scarborough-shooting-stars": {
+   "summary": "Founded in 2021 by OVO Sound co-founder Niko Carino and Sam Ibrahim; the first professional team based in Scarborough. They reached the final in their first season and won the title in their second.",
+   "honours": [
+    "CEBL finalists in 2022."
+   ],
+   "milestones": [
+    {
+     "year": 2022,
+     "text": "Lose the final to Hamilton, 90–88."
+    },
+    {
+     "year": 2023,
+     "text": "Beat Calgary for the title."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2022,
+     "colorNames": [
+      "Turquoise",
+      "Black",
+      "Grey",
+      "White"
+     ],
+     "logo": "Turquoise stars streaking over a silver “Scarborough Shooting Stars” wordmark.",
+     "jerseyNote": "Turquoise, black and white sets."
+    }
+   ]
+  },
+  "brampton-honey-badgers": {
+   "summary": "A charter team founded in Hamilton. Renovations at the FirstOntario Centre led the league to move the Honey Badgers permanently to Brampton for 2023. Leonard Asper bought the team from the league in 2025.",
+   "honours": [
+    "Won the 2022 title as the Hamilton Honey Badgers.",
+    "CEBL finalists in 2026."
+   ],
+   "milestones": [
+    {
+     "year": 2022,
+     "text": "The league announces the move to Brampton on November 28."
+    },
+    {
+     "year": 2025,
+     "text": "Bought from the league by Leonard Asper."
+    },
+    {
+     "year": 2026,
+     "text": "Reach the final; arena problems in Brampton cut the series to one game, which Winnipeg wins."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2023,
+     "colorNames": [
+      "Black",
+      "Gold",
+      "White"
+     ],
+     "logo": "A snarling honey badger’s face in black and white under a gold crown stripe.",
+     "jerseyNote": "Black, gold and white sets."
+    }
+   ]
+  },
+  "calgary-surge": {
+   "summary": "The Guelph Nighthawks moved west for 2023 and became the Surge, who reached the final in their first season and again in 2025.",
+   "honours": [
+    "CEBL finalists in 2023 and 2025."
+   ],
+   "milestones": [
+    {
+     "year": 2023,
+     "text": "Win the first game 74–70 over Edmonton; lose the final to Scarborough."
+    },
+    {
+     "year": 2025,
+     "text": "Lose the final to Niagara."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2023,
+     "colorNames": [
+      "Red",
+      "Black",
+      "White"
+     ],
+     "logo": "A red bird in flight above the “Calgary Surge” wordmark.",
+     "jerseyNote": "Red, black and white sets."
+    }
+   ]
+  },
+  "vancouver-bandits": {
+   "summary": "A charter team that began at the Abbotsford Centre as the Fraser Valley Bandits, moved to the Langley Events Centre in 2022 and took the Vancouver name after a sale.",
+   "honours": [
+    "CEBL finalists in 2020 and 2024.",
+    "2025: Mitch Creek named league MVP and Kyle Julius coach of the year."
+   ],
+   "milestones": [
+    {
+     "year": 2019,
+     "text": "First season, at the Abbotsford Centre."
+    },
+    {
+     "year": 2020,
+     "text": "Reach the Summer Series final."
+    },
+    {
+     "year": 2022,
+     "text": "Move to the Langley Events Centre."
+    },
+    {
+     "year": 2024,
+     "text": "Reach the final, losing to Niagara."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2019,
+     "colorNames": [
+      "Bandits orange",
+      "Bandits black",
+      "Bandits grey"
+     ],
+     "logo": "A red fox wearing a bandit’s mask, the mark the team launched with in 2018.",
+     "jerseyNote": "Black home and orange away sets with chevron patterns; the away set adds forest, formline and cedar-weaving motifs."
+    }
+   ]
+  },
+  "ottawa-blackjacks": {
+   "summary": "The CEBL’s first expansion team, announced in November 2019, and Ottawa’s second pro basketball team after the Skyhawks. They share TD Place Arena with the OHL’s 67’s.",
+   "milestones": [
+    {
+     "year": 2019,
+     "text": "Announced as the league’s first expansion team."
+    },
+    {
+     "year": 2020,
+     "text": "Debut in the Summer Series bubble in St. Catharines."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2020,
+     "colorNames": [
+      "Black",
+      "Grey",
+      "Red"
+     ],
+     "logo": "A black jackrabbit above the “Ottawa BlackJacks” wordmark.",
+     "jerseyNote": "Black, grey and red sets."
+    }
+   ]
+  },
+  "montreal-alliance": {
+   "summary": "Founded in 2021 and playing at the Verdun Auditorium since 2022. In May 2025 the Alliance hosted the first outdoor pro five-on-five basketball game in Canada, at IGA Stadium; condensation on the court ended it at half-time.",
+   "milestones": [
+    {
+     "year": 2021,
+     "text": "Name and branding revealed on October 27."
+    },
+    {
+     "year": 2025,
+     "text": "Host Ottawa outdoors at IGA Stadium; the game is called off at half-time."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2022,
+     "colorNames": [
+      "Red",
+      "White",
+      "Navy",
+      "Light blue"
+     ],
+     "logo": "A blue and white wolf’s head above the “Montréal Alliance” wordmark.",
+     "jerseyNote": "Navy, light blue and red sets."
+    }
+   ]
+  },
+  "hamilton-honey-badgers": {
+   "summary": "A charter team, named for “the world’s most fearless animal”. The Honey Badgers reached the first CEBL final in 2019 and won the title in 2022.",
+   "fate": "Moved permanently to Brampton for 2023 because of renovations at the FirstOntario Centre.",
+   "honours": [
+    "CEBL finalists in 2019."
+   ],
+   "milestones": [
+    {
+     "year": 2019,
+     "text": "Win the first game, 103–86 over Edmonton; lose the final to Saskatchewan."
+    },
+    {
+     "year": 2022,
+     "text": "Beat the Scarborough Shooting Stars 90–88 for the title."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2019,
+     "to": 2022,
+     "colorNames": [
+      "Black",
+      "Gold",
+      "White"
+     ],
+     "logo": "A snarling honey badger’s face in black and white under a gold crown stripe.",
+     "jerseyNote": "Black, gold and white sets."
+    }
+   ]
+  },
+  "guelph-nighthawks": {
+   "summary": "One of the CEBL’s six charter teams, at the Sleeman Centre. The league announced the move to Calgary in August 2022.",
+   "fate": "Moved to Calgary for 2023 and became the Calgary Surge.",
+   "milestones": [
+    {
+     "year": 2019,
+     "text": "Play the CEBL’s first season as a charter team."
+    },
+    {
+     "year": 2022,
+     "text": "Move to Calgary announced on August 17."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2019,
+     "to": 2022,
+     "colorNames": [
+      "Blue",
+      "Black",
+      "Grey"
+     ],
+     "logo": "A blue and black nighthawk’s head over a “Nighthawks” wordmark.",
+     "jerseyNote": "Blue, black and grey sets."
+    }
+   ]
+  },
+  "newfoundland-growlers": {
+   "summary": "An expansion team for 2022 that lasted one season. The Growlers first agreed to play early home games at Toronto’s Coca-Cola Coliseum, then arranged to use the arena in nearby Conception Bay South instead.",
+   "fate": "Folded after their only season.",
+   "milestones": [
+    {
+     "year": 2021,
+     "text": "Announced as an expansion team alongside Scarborough and Montréal."
+    },
+    {
+     "year": 2022,
+     "text": "The league announces in November that the team is suspending operations."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2022,
+     "to": 2022,
+     "colorNames": [
+      "Gold",
+      "Black"
+     ],
+     "logo": "A Newfoundland dog’s head under an arc of “Newfoundland” lettering.",
+     "jerseyNote": "Gold and black sets."
+    }
+   ]
+  },
+  "montreal-victoire": {
+   "summary": "One of the PWHL’s six charter teams, captained by Marie-Philip Poulin. The Victoire topped the regular season twice and won the Walter Cup in 2026, beating the Ottawa Charge in the final.",
+   "honours": [
+    "Regular-season champions in 2024–25 and 2025–26.",
+    "Captain Marie-Philip Poulin was the league’s most valuable player in 2024–25."
+   ],
+   "milestones": [
+    {
+     "year": 2024,
+     "text": "Win the first game in overtime at Ottawa, before a then-record 8,318 fans."
+    },
+    {
+     "year": 2024,
+     "text": "Play Toronto at Scotiabank Arena before 19,285, a women’s hockey record."
+    },
+    {
+     "year": 2025,
+     "text": "Finish first in the regular season, now based at Place Bell in Laval."
+    },
+    {
+     "year": 2026,
+     "text": "Win the Walter Cup over Ottawa in four games."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2024,
+     "colorNames": [
+      "Burgundy",
+      "Sand",
+      "Storm"
+     ],
+     "logo": "A pointed shield in navy and sand, with “Victoire” across the top over a burgundy V of feathers.",
+     "jerseyNote": "Sweaters in burgundy, sand and storm blue.",
+     "surface": "Ice."
+    }
+   ]
+  },
+  "toronto-sceptres": {
+   "summary": "A charter team that hosted the very first PWHL game, on January 1, 2024, at the Mattamy Athletic Centre in the old Maple Leaf Gardens. Toronto topped the standings in the league’s first season and played its playoff games at Coca-Cola Coliseum, which became its home.",
+   "honours": [
+    "Regular-season champions in the inaugural 2023–24 season.",
+    "Natalie Spooner was the league’s first most valuable player."
+   ],
+   "milestones": [
+    {
+     "year": 2024,
+     "text": "Host the first PWHL game, a 4–0 loss to New York at the Mattamy Athletic Centre."
+    },
+    {
+     "year": 2024,
+     "text": "Finish first overall; move playoff games, and then the team, to Coca-Cola Coliseum."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2024,
+     "colorNames": [
+      "Blue",
+      "Navy",
+      "Gold",
+      "Yellow"
+     ],
+     "logo": "A gold sceptre whose shaft winds into an “S”.",
+     "jerseyNote": "Sweaters in blue, navy and gold.",
+     "surface": "Ice."
+    }
+   ]
+  },
+  "ottawa-charge": {
+   "summary": "A charter team whose first home game set a pro women’s hockey attendance record. The Charge reached the Walter Cup final in 2025 and 2026, and moved to the Canadian Tire Centre for 2026–27.",
+   "honours": [
+    "Walter Cup finalists in 2025 and 2026."
+   ],
+   "milestones": [
+    {
+     "year": 2024,
+     "text": "Host Montréal in the first game before 8,318 fans at TD Place Arena."
+    },
+    {
+     "year": 2025,
+     "text": "Upset first-place Montréal in a semifinal with a four-overtime game; lose the final to Minnesota."
+    },
+    {
+     "year": 2026,
+     "text": "Reach the final again, losing to Montréal; move to the Canadian Tire Centre."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2024,
+     "colorNames": [
+      "Red",
+      "Gold",
+      "White",
+      "Grey"
+     ],
+     "logo": "A red and gold “C” swept forward by speed lines.",
+     "jerseyNote": "Sweaters in red, gold and grey.",
+     "surface": "Ice."
+    }
+   ]
+  },
+  "vancouver-goldeneyes": {
+   "summary": "The PWHL’s first expansion team, announced in April 2025 after a neutral-site game drew 19,038 to Rogers Arena. The Goldeneyes play at the Pacific Coliseum, the Canucks’ original home.",
+   "milestones": [
+    {
+     "year": 2025,
+     "text": "Beat the Seattle Torrent 4–3 in the first game, the first PWHL team to win its debut on home ice."
+    },
+    {
+     "year": 2026,
+     "text": "Miss the playoffs but win the “Gold Plan” for the first overall pick, used on Caroline Harvey."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2025,
+     "colorNames": [
+      "Pacific blue",
+      "Coastal cream",
+      "Earthy bronze",
+      "Sunset gold",
+      "Sky blue"
+     ],
+     "logo": "A roundel framing a goldeneye duck’s golden eye in blue and bronze.",
+     "jerseyNote": "Sweaters in Pacific blue, cream and bronze.",
+     "surface": "Ice."
+    }
+   ]
+  },
+  "pwhl-hamilton": {
+   "summary": "Announced on May 13, 2026, as part of the league’s second round of expansion, and starting play in 2026–27: the first PWHL team in a city without an NHL team.",
+   "milestones": [
+    {
+     "year": 2026,
+     "text": "A neutral-site game in Hamilton on January 3 draws 16,012 fans."
+    },
+    {
+     "year": 2026,
+     "text": "Awarded an expansion team on May 13."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2026,
+     "colorNames": [
+      "Gold",
+      "Maroon",
+      "Cream"
+     ],
+     "logo": "A maroon roundel with a gold monogram, ringed by the team and league names.",
+     "jerseyNote": "Gold, maroon and cream sweaters.",
+     "surface": "Ice."
+    }
+   ]
+  },
+  "toronto-tempo": {
+   "summary": "The first WNBA team based outside the United States. The Tempo debuted in May 2026 at Coca-Cola Coliseum, coached by Sandy Brondello, and also played regular-season games in Vancouver and Montréal in their first season.",
+   "milestones": [
+    {
+     "year": 2024,
+     "text": "The WNBA awards Toronto its 14th franchise on May 23; the name and logo are unveiled on December 5."
+    },
+    {
+     "year": 2025,
+     "text": "Serena Williams joins the ownership group."
+    },
+    {
+     "year": 2026,
+     "text": "Lose the first game 68–65 to Washington before a sell-out 8,210, the first WNBA regular-season game in Canada."
+    },
+    {
+     "year": 2026,
+     "text": "Play two games at Rogers Arena in Vancouver and two at the Bell Centre in Montréal."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2026,
+     "colorNames": [
+      "Bordeaux",
+      "Borealis blue",
+      "Black",
+      "White"
+     ],
+     "logo": "A bordeaux “T” set in a stylised ball with motion lines, above a slanted “Toronto Tempo” wordmark.",
+     "jerseyNote": "Bordeaux and borealis-blue sets.",
+     "surface": "Hardwood laid over the Coliseum floor."
+    }
+   ]
+  },
+  "vancouver-rise-fc": {
+   "summary": "Founded with the Whitecaps as a spiritual successor to their former women’s team. The Rise won the NSL’s first match and its first final, the 2025 Diana B. Matheson Cup.",
+   "milestones": [
+    {
+     "year": 2025,
+     "text": "Beat Calgary 1–0 at BC Place in the first NSL match."
+    },
+    {
+     "year": 2025,
+     "text": "Clinch the last playoff spot, then beat AFC Toronto 2–1 in the final at BMO Field."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2025,
+     "colorNames": [
+      "Teal",
+      "Black",
+      "Gold"
+     ],
+     "logo": "A black shield with the North Shore Mountains above a “Vancouver Rise FC” wordmark.",
+     "jerseyNote": "Teal, black and gold kits.",
+     "surface": "Grass at Swangard Stadium."
+    }
+   ]
+  },
+  "afc-toronto": {
+   "summary": "Founded in 2023 by seven members of Toronto’s soccer community. AFC Toronto topped the first NSL regular season, lost the 2025 final and returned to the final in 2026. Home games are split between York Lions Stadium and BMO Field.",
+   "honours": [
+    "Finished first in the 2025 regular season.",
+    "Finalists in 2025; face Montréal in the 2026 final on November 14."
+   ],
+   "milestones": [
+    {
+     "year": 2025,
+     "text": "Lose the first match 1–0 to Montréal before 14,518 at BMO Field."
+    },
+    {
+     "year": 2025,
+     "text": "Finish first, then lose the final 2–1 to Vancouver."
+    },
+    {
+     "year": 2026,
+     "text": "Win the semifinal 8–2 on aggregate to reach a second final."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2025,
+     "colorNames": [
+      "Maroon",
+      "Vermilion"
+     ],
+     "logo": "A maroon roundel with a vermilion “T” between mirrored 7s, for the club’s seven founders.",
+     "jerseyNote": "Maroon and vermilion kits."
+    }
+   ]
+  },
+  "montreal-roses-fc": {
+   "summary": "Founded in 2023 by entrepreneurs Isabèle Chevalier and Jean-François Crevier, and officially named Roses FC. The club plays in Laval at Stade Boréale, a modular stadium built on its training ground, and won the 2026 regular season.",
+   "honours": [
+    "2026 Supporters’ Shield as regular-season champions.",
+    "Face AFC Toronto in the 2026 final on November 14."
+   ],
+   "milestones": [
+    {
+     "year": 2025,
+     "text": "Win the first home game 2–1 over Ottawa before a sold-out 5,400."
+    },
+    {
+     "year": 2026,
+     "text": "Clinch the Supporters’ Shield on the last day; win the semifinal 5–2 on aggregate."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2025,
+     "colorNames": [
+      "Black",
+      "Blue",
+      "Gold"
+     ],
+     "logo": "A blue rose on a black shield trimmed in gold.",
+     "jerseyNote": "Black, blue and gold kits.",
+     "surface": "Artificial turf at Stade Boréale."
+    }
+   ]
+  },
+  "ottawa-rapid-fc": {
+   "summary": "The last of the six founding clubs, created when league CEO Diana Matheson and co-founder Thomas Gilbert used their equity in the league to launch a team in Ottawa. The Rapid reached the 2025 semifinals.",
+   "milestones": [
+    {
+     "year": 2025,
+     "text": "Beat AFC Toronto 2–1 at TD Place in the first match."
+    },
+    {
+     "year": 2025,
+     "text": "Lose the semifinal to Vancouver."
+    },
+    {
+     "year": 2026,
+     "text": "Arcadia MapleLeaf Soccer becomes majority owner."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2025,
+     "colorNames": [
+      "Light blue",
+      "Black"
+     ],
+     "logo": "A diving peregrine falcon on a light-blue roundel.",
+     "jerseyNote": "Light blue with orange accents; the orange nods to the Centennial Flame on Parliament Hill.",
+     "surface": "Artificial turf at TD Place."
+    }
+   ]
+  },
+  "calgary-wild-fc": {
+   "summary": "The first NSL club to unveil its name and crest, in May 2024. The Wild play in the Stampeders’ stadium and finished fifth in the league’s first season.",
+   "milestones": [
+    {
+     "year": 2025,
+     "text": "Lose the first NSL match 1–0 at Vancouver."
+    },
+    {
+     "year": 2025,
+     "text": "Draw 0–0 with Ottawa in the first home game before 8,556."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2025,
+     "colorNames": [
+      "Red",
+      "Violet"
+     ],
+     "logo": "A red and violet owl’s face whose brow forms a “W”, its five points honouring the Famous Five.",
+     "jerseyNote": "Red and violet kits.",
+     "surface": "Artificial turf at McMahon Stadium."
+    }
+   ]
+  },
+  "halifax-tides-fc": {
+   "summary": "The first professional women’s soccer club in Atlantic Canada, playing at the Wanderers Grounds in downtown Halifax.",
+   "milestones": [
+    {
+     "year": 2025,
+     "text": "Play the first season as one of the NSL’s six founding clubs."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2025,
+     "colorNames": [
+      "Ocean cyan",
+      "Granite purple",
+      "Ship grey"
+     ],
+     "logo": "Nova Scotia’s saltire drawn as two colliding waves before a ship’s bow, with the Moon at the centre.",
+     "jerseyNote": "Ocean cyan and granite purple.",
+     "surface": "Grass at the Wanderers Grounds."
+    }
+   ]
+  },
+  "winnipeg-ember-fc": {
+   "summary": "The NSL’s first expansion club, co-founded by Desiree Scott and Rob Gale; it plays its first season in 2027 at the Ralph Cantafio Soccer Complex.",
+   "milestones": [
+    {
+     "year": 2026,
+     "text": "Founded on July 14 as the NSL’s seventh club, co-founded by Canada midfielder Desiree Scott and coach Rob Gale."
+    },
+    {
+     "year": 2026,
+     "text": "Name, crest and colours unveiled at The Forks on November 4; tagline “Let Them Howl”."
+    },
+    {
+     "year": 2027,
+     "text": "Inaugural NSL season."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2027,
+     "colorNames": [
+      "Midnight Dusk",
+      "Destroyer Pink",
+      "Ember Glow"
+     ],
+     "logo": "A shield in midnight purple with “Ember” in Destroyer Pink over a white, angular sundog with a subtle W, and a gold morning star.",
+     "jerseyNote": "Midnight Dusk and Destroyer Pink, inspired by the prairie sky at sunrise and sunset.",
+     "surface": "Artificial turf at the Ralph Cantafio Soccer Complex."
+    }
+   ]
+  },
+  "toronto-koi": {
+   "summary": "One of the Call of Duty League’s five founding cities. Owned by OverActive Media, the Ultra reached two championship finals and won three Majors before taking the KOI name for the 2026 season.",
+   "honours": [
+    "CDL Championship finalists in 2021 and 2023 (as the Ultra).",
+    "Major wins: 2021 Major 2, 2023 Major 3 and 2024 Major 1."
+   ],
+   "milestones": [
+    {
+     "year": 2019,
+     "text": "Toronto is named one of the first five CDL cities."
+    },
+    {
+     "year": 2021,
+     "text": "Win Major 2; lose the championship final to Atlanta FaZe."
+    },
+    {
+     "year": 2023,
+     "text": "Win Major 3; lose the championship final to the New York Subliners."
+    },
+    {
+     "year": 2024,
+     "text": "Win Major 1."
+    },
+    {
+     "year": 2026,
+     "text": "Play the season as the Toronto KOI."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2020,
+     "to": 2025,
+     "colorNames": [
+      "Purple",
+      "Black",
+      "White"
+     ],
+     "logo": "The Toronto Ultra emblem in purple, black and white.",
+     "jerseyNote": "Purple and black jerseys.",
+     "surface": "League events on a shared stage; no regular home venue."
+    },
+    {
+     "from": 2026,
+     "colorNames": [
+      "Purple",
+      "Black",
+      "White"
+     ],
+     "logo": "A tall purple banner with “TORONTO” across the top over stacked “KOI” letters.",
+     "jerseyNote": "Purple and black jerseys.",
+     "surface": "League events on a shared stage; no regular home venue."
+    }
+   ]
+  },
+  "vancouver-surge": {
+   "summary": "The Seattle Surge moved north for the 2025 season, owned by Enthusiast Gaming and Canucks Sports & Entertainment under the Luminosity Gaming banner. In their first Vancouver season they reached the championship final.",
+   "honours": [
+    "2025 CDL Championship finalists, losing 5–3 to OpTic Texas.",
+    "Won 2022 Major 3 as the Seattle Surge."
+   ],
+   "milestones": [
+    {
+     "year": 2022,
+     "text": "Win Major 3 as the Seattle Surge."
+    },
+    {
+     "year": 2024,
+     "text": "Move to Vancouver as the Vancouver Surge."
+    },
+    {
+     "year": 2025,
+     "text": "Reach the CDL Championship final, losing 5–3 to OpTic Texas."
+    }
+   ],
+   "identity": [
+    {
+     "from": 2025,
+     "colorNames": [
+      "Navy",
+      "Teal",
+      "Deep teal"
+     ],
+     "logo": "A navy and teal trident above a “VANCOUVER SURGE” wordmark.",
+     "jerseyNote": "Navy jerseys with teal accents.",
+     "surface": "League events on a shared stage; no regular home venue."
+    }
+   ]
+  }
+ },
+ "venues": {
+  "scotiabank-arena": {
+   "facts": [
+    "Built inside the shell of Canada Post’s former Toronto Delivery Building.",
+    "Shared by the Maple Leafs and the Raptors; the floor converts between ice and hardwood overnight."
+   ]
+  },
+  "maple-leaf-gardens": {
+   "facts": [
+    "Built in about five months during the Depression and opened in November 1931.",
+    "Hosted the first game in NBA history (as the BAA) on November 1, 1946: Toronto Huskies vs. New York Knicks.",
+    "Now a grocery store and Toronto Metropolitan University’s Mattamy Athletic Centre."
+   ]
+  },
+  "mutual-street-arena": {
+   "facts": [
+    "Home of the Arenas, St. Patricks and early Maple Leafs; one of the first Canadian rinks with artificial ice."
+   ]
+  },
+  "rogers-centre": {
+   "facts": [
+    "The first stadium with a fully retractable motorised roof; the four panels open in about 20 minutes.",
+    "Renovated 2022–24, which reduced baseball capacity to about 39,150.",
+    "Sits at the foot of the CN Tower on the former Railway Lands."
+   ]
+  },
+  "exhibition-stadium": {
+   "facts": [
+    "A football stadium adapted for baseball; the Blue Jays played their first game here in the snow on April 7, 1977.",
+    "Demolished in 1999. BMO Field now stands on the site."
+   ]
+  },
+  "bmo-field": {
+   "facts": [
+    "Built for Toronto FC; expanded and given a canopy in 2015–16 so it could also host the Argonauts.",
+    "One of two Canadian venues for the 2026 FIFA World Cup."
+   ]
+  },
+  "york-lions-stadium": {
+   "facts": [
+    "On York University’s Keele campus; built as the athletics stadium of the 2015 Pan American Games.",
+    "The running track was removed in 2021 to make room for a larger artificial turf field."
+   ]
+  },
+  "coca-cola-coliseum": {
+   "facts": [
+    "Built at Exhibition Place for the Canadian National Exhibition and the Royal Agricultural Winter Fair.",
+    "Home of the Toronto Sceptres since 2024 and of the Toronto Tempo, whose 2026 debut was the first WNBA regular-season game played in Canada."
+   ]
+  },
+  "toronto-pan-am-sports-centre": {
+   "facts": [
+    "On the University of Toronto’s Scarborough campus; built for the 2015 Pan American Games. Its field house is home to the Scarborough Shooting Stars."
+   ]
+  },
+  "bell-centre": {
+   "facts": [
+    "The largest arena in the NHL by capacity.",
+    "Home of the Canadiens since March 1996."
+   ]
+  },
+  "montreal-forum": {
+   "facts": [
+    "Built for the Maroons in 1924; the Canadiens moved in for 1926–27.",
+    "More Stanley Cups were won here than in any other building."
+   ]
+  },
+  "westmount-arena": {
+   "facts": [
+    "Burned down on January 2, 1918, which ended the Wanderers and left the Canadiens without a rink."
+   ]
+  },
+  "olympic-stadium": {
+   "facts": [
+    "Main stadium of the 1976 Summer Olympics. Its 165 m inclined tower is the tallest inclined structure in the world.",
+    "The retractable roof hung from the tower never worked reliably and was replaced with a fixed roof.",
+    "Home of the Expos from 1977 to 2004."
+   ]
+  },
+  "jarry-park": {
+   "facts": [
+    "Temporary home of the Expos, MLB’s first team outside the United States.",
+    "Rebuilt as a tennis stadium; it now hosts the Canadian Open."
+   ]
+  },
+  "molson-stadium": {
+   "facts": [
+    "McGill University’s stadium on the slope of Mount Royal, with a view of downtown over the end zone.",
+    "Home of the Alouettes since 1998."
+   ]
+  },
+  "stade-saputo": {
+   "facts": [
+    "Soccer-specific stadium in Montréal’s Olympic Park, next to the Big O."
+   ]
+  },
+  "stade-boreale": {
+   "facts": [
+    "The main field of the Centre sportif Bois-de-Boulogne, ringed by modular grandstands; a raised platform of boxes and a press gallery was added on the west side for 2026.",
+    "A modular stadium built for the Montréal Roses’ first NSL season in 2025; FC Supra du Québec joined them in 2026."
+   ]
+  },
+  "verdun-auditorium": {
+   "facts": [
+    "The largest arena in Montréal’s west end. The Victoire played their first home games here in 2024; the CEBL’s Alliance play here today."
+   ]
+  },
+  "place-bell": {
+   "facts": [
+    "Home of the AHL’s Laval Rocket and, since 2024–25, the Montréal Victoire, who won the Walter Cup in 2026."
+   ]
+  },
+  "canadian-tire-centre": {
+   "facts": [
+    "In suburban Kanata, about 20 km west of downtown Ottawa."
+   ]
+  },
+  "td-place-arena": {
+   "facts": [
+    "Built into the north-side stands of the Lansdowne Park stadium; temporary home of the modern Senators, 1992–96.",
+    "Home of the CEBL’s BlackJacks; the Charge played here from 2024 to 2026. Ottawa approved replacing it with a smaller arena in November 2025."
+   ]
+  },
+  "ottawa-auditorium": {
+   "facts": [
+    "Home of the original Senators from 1923 until they moved to St. Louis in 1934."
+   ]
+  },
+  "deys-arena": {
+   "facts": [
+    "Natural-ice rink where the original Senators won three of their NHL-era Stanley Cups."
+   ]
+  },
+  "td-place-stadium": {
+   "facts": [
+    "Football has been played at Lansdowne Park since the 1870s; the south stands were rebuilt with a wave-shaped wooden canopy in 2014.",
+    "Home of the Rough Riders, the Renegades, the Redblacks and Atlético Ottawa."
+   ]
+  },
+  "le-colisee": {
+   "facts": [
+    "Home of the Nordiques in the WHA and the NHL; demolished in 2021."
+   ]
+  },
+  "quebec-arena": {
+   "facts": [
+    "Home of the Quebec Bulldogs for their single NHL season, 1919–20."
+   ]
+  },
+  "hamilton-stadium": {
+   "facts": [
+    "Built on the site of Ivor Wynne Stadium for the 2015 Pan American Games.",
+    "Shared by the Tiger-Cats and Forge FC."
+   ]
+  },
+  "ivor-wynne-stadium": {
+   "facts": [
+    "Hosted the first British Empire Games in 1930; the Tiger-Cats played here from 1950 to 2012."
+   ]
+  },
+  "barton-street-arena": {
+   "facts": [
+    "Home of the NHL’s Hamilton Tigers, 1920–25."
+   ]
+  },
+  "td-coliseum": {
+   "facts": [
+    "Downtown Hamilton arena, renovated and renamed TD Coliseum; home of the AHL’s Hamilton Hammers and PWHL Hamilton.",
+    "The Toronto Rock moved their home games here from Toronto in 2021–22."
+   ]
+  },
+  "canada-life-centre": {
+   "facts": [
+    "The smallest arena in the NHL by capacity. Built on the site of the old Eaton’s department store."
+   ]
+  },
+  "winnipeg-arena": {
+   "facts": [
+    "Known for the huge portrait of Queen Elizabeth II above one end; the original Jets played here 1972–96."
+   ]
+  },
+  "princess-auto-stadium": {
+   "facts": [
+    "On the University of Manitoba campus. A large canopy covers most of the seats.",
+    "Hosted the 112th Grey Cup in 2025."
+   ]
+  },
+  "ralph-cantafio-soccer-complex": {
+   "facts": [
+    "Two artificial-turf fields; the main pitch, John Scouras Field, seats about 2,000.",
+    "A soccer-specific stadium is being built on the site by April 2027, raising capacity to about 4,500, for Winnipeg Ember FC’s first NSL season.",
+    "Hosted soccer at the 1999 Pan American Games and the 2017 Canada Summer Games."
+   ]
+  },
+  "winnipeg-stadium": {
+   "facts": [
+    "Home of the Blue Bombers for six decades; demolished in 2013."
+   ]
+  },
+  "mosaic-stadium": {
+   "facts": [
+    "A bowl with a partial canopy shaped to shield fans from the prairie wind."
+   ]
+  },
+  "taylor-field": {
+   "facts": [
+    "The Roughriders’ home for eight decades; demolished in 2017."
+   ]
+  },
+  "saddledome": {
+   "facts": [
+    "Its concrete hyperbolic-paraboloid roof gives the building its saddle shape.",
+    "Hosted figure skating and hockey at the 1988 Winter Olympics.",
+    "Scotia Place is being built to replace it, with opening planned for the 2027–28 season."
+   ]
+  },
+  "stampede-corral": {
+   "facts": [
+    "The Flames’ first Calgary home after they moved from Atlanta in 1980."
+   ]
+  },
+  "mcmahon-stadium": {
+   "facts": [
+    "Built in 103 days in 1960.",
+    "Opening and closing ceremonies of the 1988 Winter Olympics; hosts the 113th Grey Cup on November 15, 2026."
+   ]
+  },
+  "atco-field": {
+   "facts": [
+    "A modular soccer stadium built on an equestrian ring at the Spruce Meadows show-jumping venue just south of Calgary."
+   ]
+  },
+  "rogers-place": {
+   "facts": [
+    "Anchors the Ice District downtown; its metallic exterior is meant to look like flowing ice."
+   ]
+  },
+  "northlands-coliseum": {
+   "facts": [
+    "All five Oilers Stanley Cups were won with this as home ice."
+   ]
+  },
+  "commonwealth-stadium": {
+   "facts": [
+    "Built for the 1978 Commonwealth Games; the largest open-air stadium in Canada."
+   ]
+  },
+  "clarke-stadium": {
+   "facts": [
+    "Next to Commonwealth Stadium. Home of FC Edmonton for its CPL years, 2019–22."
+   ]
+  },
+  "rogers-arena": {
+   "facts": [
+    "Built for the Canucks and the expansion Grizzlies; hosted Olympic hockey in 2010."
+   ]
+  },
+  "pacific-coliseum": {
+   "facts": [
+    "The Canucks’ first home, on the PNE grounds in East Vancouver.",
+    "Back in the big leagues since 2025 as the home of the PWHL’s Vancouver Goldeneyes."
+   ]
+  },
+  "bc-place": {
+   "facts": [
+    "Opened with an air-supported fabric roof. Since 2011 it has had a cable-supported retractable roof hung from 36 masts.",
+    "Hosted the 2010 Winter Olympic ceremonies and 2026 FIFA World Cup matches."
+   ]
+  },
+  "empire-stadium": {
+   "facts": [
+    "Built for the 1954 British Empire and Commonwealth Games, where Roger Bannister and John Landy ran the “Miracle Mile”."
+   ]
+  },
+  "starlight-stadium": {
+   "facts": [
+    "Pacific FC’s home on Vancouver Island; expanded with modular stands."
+   ]
+  },
+  "willoughby-stadium": {
+   "facts": [
+    "Built at the Langley Events Centre. Vancouver FC opened it with a sell-out 1–1 draw against Cavalry on May 7, 2023."
+   ]
+  },
+  "wanderers-grounds": {
+   "facts": [
+    "A modular stadium beside the Halifax Public Gardens; many structures are built from shipping containers, a nod to the port city."
+   ]
+  },
+  "sasktel-centre": {
+   "facts": [
+    "Opened with 8,000 seats in 1988 and expanded twice. Home of the WHL’s Blades, the NLL’s Rush and the CEBL’s Mamba."
+   ]
+  },
+  "scotiabank-centre": {
+   "facts": [
+    "The largest multi-purpose venue in Atlantic Canada, built into the slope at the foot of Citadel Hill."
+   ]
+  },
+  "caa-centre": {
+   "facts": [
+    "Home of the Brampton Honey Badgers since 2023; hosted the 2023 IIHF Women’s World Championship."
+   ]
+  },
+  "meridian-centre": {
+   "facts": [
+    "Downtown St. Catharines arena shared by the OHL’s Niagara IceDogs and the Niagara River Lions."
+   ]
+  },
+  "sleeman-centre": {
+   "facts": [
+    "Home of the OHL’s Guelph Storm; hosted the 2002 Memorial Cup."
+   ]
+  },
+  "tribute-communities-centre": {
+   "facts": [
+    "Built to replace the Oshawa Civic Auditorium; home of the OHL’s Generals and, since 2025, the FireWolves."
+   ]
+  },
+  "winsport-event-centre": {
+   "facts": [
+    "At Canada Olympic Park, a venue of the 1988 Winter Olympics, in western Calgary."
+   ]
+  },
+  "edmonton-expo-centre": {
+   "facts": [
+    "Built on the site of the Edmonton Gardens, the Oilers’ first home, across the street from the former Northlands Coliseum."
+   ]
+  },
+  "langley-events-centre": {
+   "facts": [
+    "Home of the Vancouver Bandits; the NLL’s Vancouver Stealth played here from 2014 to 2018."
+   ]
+  },
+  "swangard-stadium": {
+   "facts": [
+    "In Burnaby’s Central Park, the historic home of the Whitecaps’ predecessors; the Vancouver Rise have played here since 2025."
+   ]
+  }
+ },
+ "cities": {
+  "toronto": {
+   "blurb": "Canada’s largest city and its busiest sports market: teams in the NHL, NBA, MLB, MLS and CFL, the PWHL’s Sceptres, the Tempo (the first WNBA team outside the United States) and clubs in the CPL, CEBL and NSL."
+  },
+  "montreal": {
+   "blurb": "Birthplace of organized indoor hockey and home of the most decorated franchise in NHL history. Hosted the 1976 Summer Olympics and 35 seasons of Expos baseball; the PWHL’s Victoire won the 2026 Walter Cup."
+  },
+  "vancouver": {
+   "blurb": "West-coast hub with NHL, MLS and CFL teams, the NLL’s Warriors, the PWHL’s Goldeneyes and the Rise, the first NSL champions. Two downtown venues sit side by side on False Creek; the Grizzlies were a brief NBA chapter."
+  },
+  "calgary": {
+   "blurb": "Home of the Flames, the Stampeders, Cavalry FC and the NLL’s three-time champion Roughnecks. The Saddledome’s hyperbolic-paraboloid roof is one of the most recognisable arena silhouettes in sport."
+  },
+  "edmonton": {
+   "blurb": "“City of Champions”: five Stanley Cups for the Oilers between 1984 and 1990, 14 Grey Cups for the Elks and two CEBL titles for the Stingers. Commonwealth Stadium is the largest open-air stadium in Canada."
+  },
+  "ottawa": {
+   "blurb": "The capital has two NHL eras of Senators, a long CFL history from the Rough Riders to the Redblacks, the PWHL’s Charge, and Atlético Ottawa and the NSL’s Rapid at TD Place in Lansdowne Park."
+  },
+  "winnipeg": {
+   "blurb": "The Jets left for Phoenix in 1996 and came back in 2011. The Blue Bombers have played in Winnipeg since 1930, and the CEBL’s Sea Bears won the 2026 title."
+  },
+  "quebec-city": {
+   "blurb": "Former NHL city. The Bulldogs played one NHL season (1919–20) and the Nordiques spent 16 NHL seasons here before moving to Denver in 1995. The Videotron Centre opened in 2015 without a tenant."
+  },
+  "hamilton": {
+   "blurb": "Steel-town football: the Tiger-Cats and Forge FC share Hamilton Stadium. The renovated TD Coliseum is home to the NLL’s Toronto Rock and PWHL Hamilton, and the city had a short NHL run with the Tigers in the 1920s."
+  },
+  "regina": {
+   "blurb": "Home of the Saskatchewan Roughriders, the community-owned club with one of the most devoted fan bases in sport. Winners of the 112th Grey Cup in 2025."
+  },
+  "halifax": {
+   "blurb": "Atlantic Canada’s pro sports hub: HFX Wanderers and the NSL’s Tides share the modular Wanderers Grounds, and the NLL’s Thunderbirds play at Scotiabank Centre."
+  },
+  "langford": {
+   "blurb": "Greater Victoria community on Vancouver Island, home of Pacific FC, the 2021 CPL champions."
+  },
+  "langley": {
+   "blurb": "Fraser Valley township where Vancouver FC has played at Willoughby Stadium since 2023 and the CEBL’s Bandits at the Langley Events Centre since 2022."
+  },
+  "laval": {
+   "blurb": "Island city north of Montréal: Place Bell is home to the Walter Cup champion Victoire, and Stade Boréale to the Montréal Roses and FC Supra du Québec."
+  },
+  "saskatoon": {
+   "blurb": "Saskatchewan’s largest city. SaskTel Centre is home to the NLL’s Rush, champions in 2016 and 2018, and the CEBL’s Mamba, who won the league’s first title as the Rattlers in 2019."
+  },
+  "st-johns": {
+   "blurb": "Newfoundland and Labrador’s capital, on the eastern edge of the continent. The Newfoundland Growlers played a single CEBL season here in 2022."
+  },
+  "brampton": {
+   "blurb": "Peel Region city west of Toronto. The CEBL’s Honey Badgers moved here from Hamilton in 2023 and play at the CAA Centre."
+  },
+  "st-catharines": {
+   "blurb": "The Niagara Region’s largest city. The River Lions won back-to-back CEBL titles in 2024 and 2025 at the downtown Meridian Centre."
+  },
+  "guelph": {
+   "blurb": "Home of the Nighthawks, one of the CEBL’s six charter teams, from 2019 until their move to Calgary after the 2022 season."
+  },
+  "oshawa": {
+   "blurb": "Durham Region city east of Toronto. The NLL’s FireWolves arrived from Albany for the 2026 season and play downtown at the Tribute Communities Centre."
+  }
+ }
+}

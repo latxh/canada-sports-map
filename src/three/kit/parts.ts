@@ -39,15 +39,6 @@ export const mixedSeats =
     return colors[colors.length - 1];
   };
 
-/** Colour bands by row fraction, front to back: [[untilFraction, colour], …]. */
-export const rowBands =
-  (bands: [number, ColorIn][]): SeatPaint =>
-  ({row, rows}) => {
-    const f = row / Math.max(1, rows);
-    for (const [until, c] of bands) if (f < until) return c;
-    return bands[bands.length - 1][1];
-  };
-
 /** Colour by position along the stand: [[untilT, colour], …]. */
 export const alongBands =
   (bands: [number, ColorIn][]): SeatPaint =>

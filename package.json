@@ -9,7 +9,8 @@
     "typecheck": "tsc -b",
     "test": "vitest run",
     "geo": "node scripts/build-geo.mjs",
-    "og": "node scripts/render-og.mjs"
+    "og": "node scripts/render-og.mjs",
+    "stills": "node scripts/render-stills.mjs"
   },
   "type": "module",
   "dependencies": {

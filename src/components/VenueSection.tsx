@@ -1,4 +1,5 @@
-import {lazy, Suspense, useEffect, useState} from 'react';
+import {lazy, Suspense, useEffect, useRef, useState} from 'react';
+import {Button} from '@astryxdesign/core/Button';
 import {Icon} from '@astryxdesign/core/Icon';
 import {IconButton} from '@astryxdesign/core/IconButton';
 import {Dialog, DialogHeader} from '@astryxdesign/core/Dialog';
@@ -11,7 +12,9 @@ import {VStack} from '@astryxdesign/core/VStack';
 import {CITY_BY_ID, type Sport, type Venue} from '../data';
 import {VENUE_PHOTOS} from '../data/media';
 import {hasStadiumModel} from '../three/modelIds';
-import {ExpandIcon} from './icons';
+import {stillUrl} from '../three/stills';
+import {DESKTOP_QUERY, useMediaQuery} from '../hooks/useMediaQuery';
+import {CubeIcon, ExpandIcon} from './icons';
 import {SectionTitle} from './bits';
 import {ZoomablePhoto} from './Media';
 
@@ -75,13 +78,61 @@ export function VenueSection({entries, title = 'Venues'}: {entries: VenueEntry[]
   const [isExpanded, setIsExpanded] = useState(false);
   useEffect(() => setSelectedId(entries[0]?.venue.id), [entries]);
   const selected = entries.find((e) => e.venue.id === selectedId) ?? entries[0];
+  const hasModel = !!selected && hasStadiumModel(selected.venue.id);
+
+  // The 3D model (a 260 KB chunk and real GPU work) loads only when wanted: on desktops as soon
+  // as the card scrolls into view, on phones when you tap "View in 3D". Until then, and while
+  // it loads, the card shows a pre-rendered still of the same model.
+  const isDesktop = useMediaQuery(DESKTOP_QUERY);
+  const [isLive, setIsLive] = useState(false);
+  const stillRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const el = stillRef.current;
+    if (!isDesktop || isLive || !hasModel || !el || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(([entry]) => entry.isIntersecting && setIsLive(true), {threshold: 0.2});
+    io.observe(el);
+    return () => io.disconnect();
+  }, [isDesktop, isLive, hasModel, selected]);
+
   if (!selected) return null;
   const v = selected.venue;
-  const hasModel = hasStadiumModel(v.id);
   const photo = VENUE_PHOTOS[v.id];
 
+  const expandButton = (
+    <IconButton
+      size="sm"
+      variant="ghost"
+      className="rounded-full"
+      label={`Open ${v.name} 3D model full screen`}
+      tooltip="Full screen"
+      icon={<Icon icon={ExpandIcon} />}
+      onClick={() => {
+        setIsLive(true);
+        setIsExpanded(true);
+      }}
+    />
+  );
+
+  const still = (showPlay: boolean) => (
+    <section
+      ref={stillRef}
+      className="card-radius relative overflow-hidden border border-border"
+      style={{
+        height: 260,
+        background: 'linear-gradient(180deg, color-mix(in srgb, var(--color-background-blue) 70%, var(--color-background-surface)) 0%, var(--color-background-surface) 100%)',
+      }}>
+      <img src={stillUrl(selected)} alt={`${v.name}, 3D model preview`} className="venue-still" decoding="async" />
+      {showPlay && (
+        <span className="absolute inset-0 flex items-center justify-center">
+          <Button className="glass rounded-full" variant="secondary" size="sm" label="View in 3D" icon={<Icon icon={CubeIcon} />} onClick={() => setIsLive(true)} />
+        </span>
+      )}
+      <span className="glass absolute right-2 bottom-2 flex items-center gap-1 rounded-full p-1">{expandButton}</span>
+    </section>
+  );
+
   const viewer = (height: number | string, isFullscreen = false) => (
-    <Suspense fallback={<Skeleton width="100%" height={typeof height === 'number' ? height : 320} />}>
+    <Suspense fallback={isFullscreen ? <Skeleton width="100%" height={typeof height === 'number' ? height : 320} /> : still(false)}>
       <StadiumViewer
         venue={v}
         sport={selected.sport}
@@ -89,19 +140,7 @@ export function VenueSection({entries, title = 'Venues'}: {entries: VenueEntry[]
         accentColor={selected.accentColor}
         height={height}
         isFullscreen={isFullscreen}
-        endControls={
-          isFullscreen ? undefined : (
-            <IconButton
-              size="sm"
-              variant="ghost"
-              className="rounded-full"
-              label={`Open ${v.name} 3D model full screen`}
-              tooltip="Full screen"
-              icon={<Icon icon={ExpandIcon} />}
-              onClick={() => setIsExpanded(true)}
-            />
-          )
-        }
+        endControls={isFullscreen ? undefined : expandButton}
       />
     </Suspense>
   );
@@ -124,7 +163,7 @@ export function VenueSection({entries, title = 'Venues'}: {entries: VenueEntry[]
           {v.name}
         </Text>
       )}
-      {hasModel ? isExpanded ? <Skeleton width="100%" height={260} /> : viewer(260) : photo ? <ZoomablePhoto photo={photo} height={200} /> : null}
+      {hasModel ? isExpanded ? <Skeleton width="100%" height={260} /> : isLive ? viewer(260) : still(!isDesktop) : photo ? <ZoomablePhoto photo={photo} height={200} /> : null}
       <Grid columns={2} gap={2}>
         <Stat label={v.closed ? 'Years' : 'Opened'} value={v.closed ? venueYears(v) : v.opened ? String(v.opened) : '—'} />
         <Stat label="Capacity" value={v.capacity ? v.capacity.toLocaleString('en-CA') : '—'} />

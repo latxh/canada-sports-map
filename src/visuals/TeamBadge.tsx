@@ -14,7 +14,7 @@ export function TeamBadge({era, size = 48, title}: {era: IdentityEra; size?: num
   const mark = era.mark;
   const fontSize = mark.length <= 1 ? 46 : mark.length === 2 ? 36 : mark.length === 3 ? 27 : 21;
   return (
-    <svg width={size} height={size} viewBox="0 0 100 100" role="img" aria-label={title ?? `Illustrative badge in ${era.colorNames.join(', ')}`}>
+    <svg width={size} height={size} viewBox="0 0 100 100" role="img" aria-label={title ?? `Illustrated badge, ${era.from}${era.to ? `–${era.to}` : ''}`}>
       <BadgeShapePath shape={era.badge} fill={primary} stroke={trim === primary ? ink : trim} />
       {era.badge === 'leaf' ? null : (
         <text

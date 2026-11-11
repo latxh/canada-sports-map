@@ -54,6 +54,25 @@ export default function StadiumViewer({venue, sport, seatColor, accentColor, hei
   const reducedMotion = useMemo(() => media('(prefers-reduced-motion: reduce)'), []);
   const coarse = useMemo(() => media('(pointer: coarse)'), []);
 
+  // Only spin (and so only render every frame) while the model is on screen and the tab is
+  // visible; otherwise the canvas renders on demand, i.e. when you drag it.
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [isOnScreen, setIsOnScreen] = useState(true);
+  const [isPageVisible, setIsPageVisible] = useState(() => typeof document === 'undefined' || document.visibilityState !== 'hidden');
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(([entry]) => setIsOnScreen(entry.isIntersecting), {threshold: 0.05});
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  useEffect(() => {
+    const onChange = () => setIsPageVisible(document.visibilityState !== 'hidden');
+    document.addEventListener('visibilitychange', onChange);
+    return () => document.removeEventListener('visibilitychange', onChange);
+  }, []);
+  const isSpinning = autoRotate && !reducedMotion && isOnScreen && isPageVisible;
+
   useEffect(() => {
     setRoofOpen(true);
   }, [venue.id]);
@@ -65,6 +84,7 @@ export default function StadiumViewer({venue, sport, seatColor, accentColor, hei
   return (
     <div className="flex flex-col gap-2">
       <div
+        ref={cardRef}
         className="card-radius relative overflow-hidden border border-border"
         style={{
           height,
@@ -78,7 +98,7 @@ export default function StadiumViewer({venue, sport, seatColor, accentColor, hei
             flat
             dpr={coarse ? [1, 1.5] : [1, 2]}
             shadows="percentage"
-            frameloop={autoRotate && !reducedMotion ? 'always' : 'demand'}
+            frameloop={isSpinning ? 'always' : 'demand'}
             camera={{fov: 36, near: 1, far: 5000, position: [200, 140, 200]}}
             gl={{antialias: true, powerPreference: 'high-performance'}}
             onCreated={({gl: renderer}) => {
@@ -95,7 +115,7 @@ export default function StadiumViewer({venue, sport, seatColor, accentColor, hei
               model={model}
               showRoof={showRoof}
               roofOpen={roofOpen}
-              autoRotate={autoRotate && !reducedMotion}
+              autoRotate={isSpinning}
               isFullscreen={isFullscreen}
               isCoarse={coarse}
             />

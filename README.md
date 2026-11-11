@@ -47,7 +47,7 @@ Four round toggles sit beside the league filter; one is on at a time. The first 
 
 ### 3D venues
 
-Each of the 24 stadiums and arenas that NHL, NBA, MLB, MLS, CFL and CPL teams play in today has its own hand-built, low-poly model, drawn to scale from OpenStreetMap footprints and reference photos. Rogers Centre's roof opens and closes, BC Place's roof gathers under its 36 masts, and fields switch markings for the sport you're looking at. Models open full screen.
+Each of the 24 stadiums and arenas that NHL, NBA, MLB, MLS, CFL and CPL teams play in today has its own hand-built, low-poly model, drawn to scale from OpenStreetMap footprints and reference photos. Rogers Centre's roof opens and closes, BC Place's roof gathers under its 36 masts, and fields switch markings for the sport you're looking at. Models open full screen. On phones, a pre-rendered still shows first and the 3D model loads when you tap **View in 3D**; desktops load it as soon as the card scrolls into view, and it only animates while it's on screen.
 
 ![The 24 current venues as low-poly 3D models](docs/stadium-models.jpg)
 
@@ -109,6 +109,7 @@ src/
   og/              # share links: manifest (paths, titles, descriptions) and the ?og= preview cards
   lib/analytics.ts # Google Analytics page views and events
 public/
+  stills/          # pre-rendered stills of the 3D venue models (scripts/render-stills.mjs)
   og/              # rendered preview cards, one per share link (scripts/render-og.mjs)
   logos/           # current team and league logos (from Wikipedia)
   media/           # historical logos and photos (from Wikipedia and Wikimedia Commons)
@@ -116,11 +117,19 @@ public/
 
 ### Editing data
 
-Each team is one object in `src/data/teams/*.ts`, typed by `src/data/types.ts`. Add a venue to `src/data/venues.ts` and a city to `src/data/cities.ts`, then run `npm test`: it checks that every reference resolves, that years and statuses agree, that well-known title counts are right, and that every logo and photo file exists.
+Each team is one object in `src/data/teams/*.ts`, typed by `src/data/types.ts`. Add a venue to `src/data/venues.ts` and a city to `src/data/cities.ts`, then run `npm test`: it checks that every reference resolves, that years and statuses agree, that well-known title counts are right, and that every logo, photo, preview card and venue still exists.
+
+The app's data holds only what it shows. The written research behind it (team summaries, milestones, honours and fates, venue facts, city blurbs, colour names and notes on each era's logo, jersey and playing surface) lives in `research/notes.json`, which isn't bundled; the tests check it still has a fate for every former team and a name for every colour.
 
 ### Editing 3D models
 
-Each current venue has a model function in `src/three/models/<city>.ts`, built from the parts in `src/three/kit/`. Sizes are in metres. When a team moves into a new home, add its model there and its id to `src/three/modelIds.ts`; `npm test` checks that exactly the venues of current teams in those six leagues have a model, and that each builds within the triangle and draw-call budget.
+Each current venue has a model function in `src/three/models/<city>.ts`, built from the parts in `src/three/kit/`. Sizes are in metres. When a team moves into a new home, add its model there and its id to `src/three/modelIds.ts`; `npm test` checks that exactly the venues of current teams in those six leagues have a model, and that each builds within the triangle and draw-call budget. Then re-render the stills (one per venue and colour scheme), which `npm test` also checks:
+
+```bash
+npm run dev                                         # in another terminal
+npm i --no-save playwright && npx playwright install chromium
+npm run stills                                      # needs ImageMagick for the WebP conversion
+```
 
 ### Rebuilding the map and media
 
@@ -146,7 +155,7 @@ npm run og                                          # all cards, or: npm run og 
 
 ### Deploying
 
-Every push to `main` runs CI (type-check, tests, build) and `.github/workflows/pages.yml` publishes the site to GitHub Pages.
+`.github/workflows/ci.yml` type-checks, tests and builds every push and pull request once; on `main`, a second job publishes that same build to GitHub Pages. Every run also uploads a relative-path preview build (the run's Artifacts → `preview-build`).
 
 ## Credits
 

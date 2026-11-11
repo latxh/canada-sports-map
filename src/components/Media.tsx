@@ -58,7 +58,7 @@ export function ZoomablePhoto({photo, height}: {photo: MediaPhoto; height?: numb
   return (
     <>
       <PhotoFigure photo={photo} height={height} trigger={lightbox.triggerProps} />
-      {lightbox.element}
+      {lightbox.isOpen && lightbox.element}
     </>
   );
 }
@@ -75,7 +75,7 @@ export function PhotoCarousel({photos, label = 'Photos'}: {photos: MediaPhoto[];
           </span>
         ))}
       </CardCarousel>
-      {lightbox.element}
+      {lightbox.isOpen && lightbox.element}
     </>
   );
 }
@@ -109,7 +109,7 @@ export function GalleryCarousel({label, items}: {label: string; items: GalleryIt
           );
         })}
       </CardCarousel>
-      {zoomable.length > 0 && lightbox.element}
+      {zoomable.length > 0 && lightbox.isOpen && lightbox.element}
     </>
   );
 }

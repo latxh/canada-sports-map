@@ -190,13 +190,6 @@ export function centroid(p: Path): V2 {
   return [x / p.pts.length, z / p.pts.length];
 }
 
-/** Rotate a point around the origin. */
-export function rot2([x, z]: V2, a: number): V2 {
-  const c = Math.cos(a);
-  const s = Math.sin(a);
-  return [x * c - z * s, x * s + z * c];
-}
-
 /** Obround: straight sides z = ±b between x = ±half, elliptical caps of depth a beyond. */
 export function obround(half: number, a: number, b: number, perCap = 18): Path {
   const pts: V2[] = [];
@@ -210,4 +203,3 @@ export function obround(half: number, a: number, b: number, perCap = 18): Path {
   }
   return {pts, closed: true};
 }
-

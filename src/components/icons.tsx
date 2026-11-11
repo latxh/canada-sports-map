@@ -72,27 +72,6 @@ export const PinIcon = (p: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-export const StadiumIcon = (p: SVGProps<SVGSVGElement>) => (
-  <svg {...base(p)}>
-    <ellipse cx="12" cy="9" rx="9" ry="4" />
-    <path d="M3 9v6c0 2.2 4 4 9 4s9-1.8 9-4V9" />
-    <ellipse cx="12" cy="9" rx="4.5" ry="1.8" />
-  </svg>
-);
-
-export const RotateIcon = (p: SVGProps<SVGSVGElement>) => (
-  <svg {...base(p)}>
-    <path d="M21 12a9 9 0 1 1-3-6.7L21 8" />
-    <path d="M21 3v5h-5" />
-  </svg>
-);
-
-export const MapleLeafIcon = (p: SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 24 24" aria-hidden {...p}>
-    <path fill="currentColor" d={MAPLE_LEAF_PATH_24} />
-  </svg>
-);
-
 /** A simplified 11-point maple leaf on a 24×24 grid (original drawing). */
 export const MAPLE_LEAF_PATH_24 =
   'M12 1.5l1.7 3.4 1.9-1-.6 4.9 2.6-2.8.6 1.6 2.9-.6-.9 3.2 1.3.6-4.4 3.8.5 1.7-4.3-.7.1 4.9h-1.4l.1-4.9-4.3.7.5-1.7L3.8 11l1.3-.6-.9-3.2 2.9.6.6-1.6L10.3 9l-.6-4.9 1.9 1z';
@@ -118,31 +97,9 @@ export const InfoIcon = (p: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-export const UserIcon = (p: SVGProps<SVGSVGElement>) => (
-  <svg {...base(p)}>
-    <circle cx="12" cy="8" r="4" />
-    <path d="M4 21a8 8 0 0 1 16 0" />
-  </svg>
-);
-
-export const ListIcon = (p: SVGProps<SVGSVGElement>) => (
-  <svg {...base(p)}>
-    <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
-  </svg>
-);
-
 export const ExternalIcon = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}>
     <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
-  </svg>
-);
-
-
-export const LayersIcon = (p: SVGProps<SVGSVGElement>) => (
-  <svg {...base(p)}>
-    <path d="M12 3 2.5 8 12 13l9.5-5z" />
-    <path d="m2.5 12.5 9.5 5 9.5-5" />
-    <path d="m2.5 16.5 9.5 5 9.5-5" opacity="0.55" />
   </svg>
 );
 
@@ -152,25 +109,6 @@ export const PeopleIcon = (p: SVGProps<SVGSVGElement>) => (
     <path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" />
     <circle cx="17" cy="9" r="2.4" />
     <path d="M16.5 14.1c2.6.3 4.5 2.6 4.5 5.4" />
-  </svg>
-);
-
-export const ClockIcon = (p: SVGProps<SVGSVGElement>) => (
-  <svg {...base(p)}>
-    <circle cx="12" cy="12" r="9" />
-    <path d="M12 7v5l3.5 2" />
-  </svg>
-);
-
-export const PlayIcon = (p: SVGProps<SVGSVGElement>) => (
-  <svg {...base(p)}>
-    <path d="M7 4.5v15l12-7.5z" fill="currentColor" />
-  </svg>
-);
-
-export const PauseIcon = (p: SVGProps<SVGSVGElement>) => (
-  <svg {...base(p)}>
-    <path d="M8 4.5v15M16 4.5v15" strokeWidth="3" />
   </svg>
 );
 

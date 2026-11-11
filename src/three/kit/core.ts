@@ -30,13 +30,6 @@ export function shade(c: ColorIn, f: number): RGB {
   return [Math.min(1, r * f), Math.min(1, g * f), Math.min(1, b * f)];
 }
 
-/** Mix two colours, t = 0 → a, t = 1 → b. */
-export function mixRGB(a: ColorIn, b: ColorIn, t: number): RGB {
-  const x = rgb(a);
-  const y = rgb(b);
-  return [x[0] + (y[0] - x[0]) * t, x[1] + (y[1] - x[1]) * t, x[2] + (y[2] - x[2]) * t];
-}
-
 /** Deterministic pseudo-random number in [0, 1) for a pair of integers. */
 export function hash2(a: number, b: number): number {
   let h = Math.imul(a | 0, 374761393) ^ Math.imul(b | 0, 668265263);

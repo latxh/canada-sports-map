@@ -429,6 +429,26 @@
   }
 }
 
+/* ?still=: the model on a transparent background, so one still suits light and dark. */
+@layer components {
+  :root:has(.still-root),
+  :root:has(.still-root) body {
+    background: transparent !important;
+  }
+  .still-root .card-radius {
+    background: transparent !important;
+    border-color: transparent !important;
+  }
+  /* A venue's still, under the "View in 3D" button. */
+  .venue-still {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+}
+
 /* SportsLogos.net uniforms and playing surfaces inside carousel cards. */
 @layer components {
   .sln-image {

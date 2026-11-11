@@ -1,9 +1,16 @@
 name: CI
 
+# Every push and pull request: type-check, test and build once. On main, the same build is
+# published to GitHub Pages (https://latxh.github.io/canada-sports-map/). Every run also
+# uploads a relative-path preview build (Artifacts → preview-build) that works from any folder.
 on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -17,9 +24,10 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
-      - run: npm run build
-      # Relative-path build that works from any folder or static host; download it from the run's Artifacts.
-      - run: npm run build -- --outDir dist-preview
+      - run: npx vite build
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}/
+      - run: npx vite build --outDir dist-preview
         env:
           BASE_PATH: ./
       - uses: actions/upload-artifact@v4
@@ -27,3 +35,24 @@ jobs:
           name: preview-build
           path: dist-preview
           retention-days: 14
+      - if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: true
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

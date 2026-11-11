@@ -1,4 +1,8 @@
 import {describe, expect, it} from 'vitest';
+import notes from '../../research/notes.json';
+
+/** The written research kept outside the bundle (research/notes.json). */
+const NOTES = notes as {teams: Record<string, {fate?: string; identity: {colorNames: string[]}[]}>};
 import {CITIES, CITY_BY_ID, LEAGUES, TEAMS, VENUES, VENUE_BY_ID} from './index';
 
 const HEX = /^#[0-9a-f]{6}$/i;
@@ -34,10 +38,10 @@ describe('dataset integrity', () => {
     for (const team of TEAMS) {
       if (team.status === 'current') {
         expect(team.to, `${team.id} should be open-ended`).toBeUndefined();
-        expect(team.fate).toBeUndefined();
+        expect(NOTES.teams[team.id]?.fate).toBeUndefined();
       } else {
         expect(team.to, `${team.id} needs an end year`).toBeDefined();
-        expect(team.fate, `${team.id} needs a fate`).toBeTruthy();
+        expect(NOTES.teams[team.id]?.fate, `${team.id} needs a fate in research/notes.json`).toBeTruthy();
       }
       if (team.to) expect(team.to).toBeGreaterThanOrEqual(team.from);
     }
@@ -75,7 +79,7 @@ describe('dataset integrity', () => {
     for (const team of TEAMS) {
       expect(team.identity.length, team.id).toBeGreaterThan(0);
       team.identity.forEach((era, i) => {
-        expect(era.colors.length, `${team.id} era ${i}`).toBe(era.colorNames.length);
+        expect(era.colors.length, `${team.id} era ${i}`).toBe(NOTES.teams[team.id]?.identity[i]?.colorNames.length);
         for (const c of era.colors) expect(c, `${team.id} colour`).toMatch(HEX);
         if (i > 0) expect(era.from).toBeGreaterThanOrEqual(team.identity[i - 1].from);
       });
@@ -156,5 +160,17 @@ describe('SportsLogos.net images', () => {
         expect(img.page.startsWith('https://www.sportslogos.net/')).toBe(true);
       }
     }
+  });
+});
+
+describe('3D venue stills', () => {
+  it('has a pre-rendered still for every venue model a panel can show', async () => {
+    const {allStillEntries, stillKey} = await import('../three/stills');
+    const {existsSync} = await import('node:fs');
+    const missing = allStillEntries()
+      .map(stillKey)
+      .filter((key) => !existsSync(`public/stills/${key}.webp`));
+    // Run `npm run stills` (see scripts/render-stills.mjs) to render missing stills.
+    expect(missing).toEqual([]);
   });
 });

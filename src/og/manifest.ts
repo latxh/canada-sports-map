@@ -10,10 +10,7 @@
  *
  * Plain data only (no React, no import.meta): vite.config.ts imports it too.
  */
-import {CITIES, DATA_YEAR, LEAGUES, LEAGUE_ORDER, PROVINCE_NAMES, TEAMS, CITY_BY_ID, yearsLabel, type LeagueId, type Team} from '../data';
-
-/** Playing now: current, and already past its first season's start (not an announced expansion club). */
-export const isPlayingNow = (t: Team) => t.status === 'current' && t.from <= DATA_YEAR;
+import {CITIES, LEAGUES, LEAGUE_ORDER, PROVINCE_NAMES, TEAMS, CITY_BY_ID, isPlayingNow, titleCount, yearsLabel, type LeagueId, type Team} from '../data';
 
 export const SITE_URL = 'https://latxh.github.io/canada-sports-map/';
 export const SITE_NAME = 'Canadian Sports Atlas';
@@ -44,7 +41,6 @@ export function titlesLabel(team: Team): string {
   return `${n} ${LEAGUES[team.league].trophy} ${n === 1 ? 'title' : 'titles'}`;
 }
 
-const titleCount = (teams: Team[]) => teams.reduce((n, t) => n + t.championships.length, 0);
 
 export const OG_VIEWS: {id: OgView; label: string; target: string; description: string}[] = [
   {

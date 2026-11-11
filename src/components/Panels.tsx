@@ -16,6 +16,7 @@ import {LOGOS} from '../data/logos';
 import {Jersey} from '../visuals/Jersey';
 import {PlayingSurface} from '../visuals/PlayingSurface';
 import type {SlnImage, SlnTeam} from '../data/sportslogos';
+import {loadSportsLogos} from '../lib/sportslogos';
 import {latestEra, venueEntriesForCity, venueEntriesForTeam} from '../lib/venues';
 import {TitleCabinet, TrophyCabinet} from '../visuals/Trophies';
 import {VenueSection} from './VenueSection';
@@ -182,15 +183,6 @@ const JERSEYS: Record<Sport, string> = {
   esports: 'Jerseys',
 };
 
-/**
- * SportsLogos.net images are only needed on team pages, so their list is its own chunk:
- * prefetched once the map is up (see App) and loaded on demand otherwise.
- */
-let sportsLogosPromise: Promise<Record<string, SlnTeam>> | null = null;
-export function loadSportsLogos() {
-  sportsLogosPromise ??= import('../data/sportslogos').then((m) => m.SPORTSLOGOS);
-  return sportsLogosPromise;
-}
 
 /** The team's SportsLogos.net images: undefined while loading, null when it has none. */
 function useSportsLogos(teamId: string): SlnTeam | null | undefined {

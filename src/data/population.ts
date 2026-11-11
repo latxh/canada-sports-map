@@ -13,8 +13,6 @@ export interface PopulationArea {
   lon: number;
 }
 
-export const POPULATION_SOURCE = 'Statistics Canada, 2021 Census';
-
 export const POPULATION: PopulationArea[] = [
   {"name": "Toronto", "type": "CMA", "pop": 6202225, "lat": 43.642, "lon": -79.387},
   {"name": "Montreal", "type": "CMA", "pop": 4291732, "lat": 45.56, "lon": -73.66},
