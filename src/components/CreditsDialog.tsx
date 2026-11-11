@@ -108,19 +108,25 @@ function FileList({title, items}: {title: string; items: FileCredit[]}) {
 export function CreditsDialog({isOpen, onOpenChange}: {isOpen: boolean; onOpenChange: (open: boolean) => void}) {
   return (
     <Dialog isOpen={isOpen} onOpenChange={onOpenChange} width={520} maxHeight="85dvh">
-      {/* The header stays put; the content scrolls. */}
+      {/* The header sticks to the top of the scrolling content, frosted like the side panel's. */}
       <Layout
-        header={<DialogHeader title="Credits" onOpenChange={onOpenChange} />}
         content={
           <LayoutContent>
+            <VStack className="glass-panel-header credits-header sticky z-10 -mx-4">
+              <DialogHeader title="Credits" onOpenChange={onOpenChange} hasDivider={false} />
+            </VStack>
             <VStack gap={5}>
               <VStack gap={3}>
                 <Text>
                   An unofficial fan project by{' '}
-                  <Link href="https://latchman.ca" isExternalLink>
-                    Brian Latchman
-                  </Link>
-                  , not affiliated with or endorsed by any league or team.
+                  {/* Kept with its comma so the comma never wraps onto a line of its own. */}
+                  <span className="whitespace-nowrap">
+                    <Link href="https://latchman.ca" isExternalLink>
+                      Brian Latchman
+                    </Link>
+                    ,
+                  </span>{' '}
+                  not affiliated with or endorsed by any league or team.
                 </Text>
                 <HStack gap={2} wrap="wrap">
                   <Button href={REPO} target="_blank" variant="secondary" size="sm" label="GitHub" icon={<Icon icon={ExternalIcon} />} />

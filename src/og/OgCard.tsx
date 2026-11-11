@@ -27,6 +27,8 @@ const PANEL_W = 520;
 /** Other teams' territories on a team or city card: present, but quiet. */
 const MUTED: [number, number, number] = [54, 57, 66];
 const FAVICON = `${import.meta.env.BASE_URL}favicon.svg`;
+/** Leagues that only play in Canada: their cards don't need "in Canada". */
+const CANADIAN_LEAGUES = new Set<LeagueId>(['CFL', 'CPL', 'CEBL', 'NSL']);
 
 const teamRgb = (team: Team) => siteColor(latestEra(team).colors);
 const currentTeams = (league?: LeagueId) => TEAMS.filter((t) => isPlayingNow(t) && (!league || t.league === league));
@@ -318,7 +320,7 @@ function LeagueCard({geo, league}: {geo: Geo; league: LeagueId}) {
           </LogoTile>
           <h1 className="og-name og-league">
             {info.name}
-            <small>in Canada</small>
+            {!CANADIAN_LEAGUES.has(league) && <small>in Canada</small>}
           </h1>
           <Pills
             items={[

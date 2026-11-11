@@ -445,6 +445,14 @@
   }
 }
 
+/* Credits header: sticks to the very top of the scroll area (past its top padding), frosted. */
+@layer components {
+  .credits-header {
+    top: calc(-1 * var(--credits-pad, 16px)) !important;
+    margin-top: calc(-1 * var(--credits-pad, 16px)) !important;
+  }
+}
+
 /* Credits: each file list sits behind a full-width, rounded, easy-to-tap header. */
 @layer components {
   .credit-files .astryx-collapsible-trigger {
