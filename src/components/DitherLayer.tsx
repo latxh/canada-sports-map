@@ -1,7 +1,7 @@
 import {useEffect, useLayoutEffect, useMemo, useRef} from 'react';
 import type {ZoomTransform} from 'd3-zoom';
 
-/** Screen pixels per dither cell at rest: fine enough to read as texture, coarse enough to stay crisp. */
+/** Screen pixels per dot, at every zoom: fine enough to read as texture, coarse enough to stay crisp. */
 const CELL = 3;
 /** Extra field built around the viewport (share of its size, each side), so pans stay covered. */
 const MARGIN = 0.3;
@@ -166,9 +166,10 @@ function buildField(
 
 /**
  * An animated ordered-dither layer clipped to Canada's land, painted as part of the map:
- * the pattern is built for a view and then drawn with the live zoom transform in the same
- * frame as the map, so it never lags behind a pan or zoom. After the view settles the field
- * is rebuilt so the cells are crisp again. Two modes:
+ * the field is built for a view and then sampled through the live zoom transform in the same
+ * frame as the map, so it never lags behind a pan or zoom. The dots are drawn on a fixed
+ * screen grid, so they keep the same small size at every zoom; after the view settles the
+ * field is rebuilt for the new zoom so its detail is sharp again. Two modes:
  * - closest: each cell takes the colour of its nearest site (a Voronoi map), dense near
  *   the city and falling off quickly with distance;
  * - blobs: soft discs of one colour (population, championships) whose cores are solid.
@@ -203,29 +204,30 @@ export function DitherLayer({
   const lakePaths = useMemo(() => lakes.map((d) => new Path2D(d)), [lakes]);
   const dpr = typeof window !== 'undefined' ? Math.min(2, window.devicePixelRatio || 1) : 1;
 
-  /** Paint the current pattern onto the screen with the live map transform. */
+  /** Paint the dots onto the screen canvas (one pattern pixel = one CELL-sized dot). */
   const blit = () => {
     const canvas = canvasRef.current;
-    const f = fieldRef.current;
     const pattern = patternRef.current;
     const ctx = canvas?.getContext('2d');
     if (!canvas || !ctx) return;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (!f || !pattern) return;
-    const t = transformRef.current;
-    const scale = t.k / f.k;
-    // Build-space pixel p maps back to the map, then forward with today's transform.
-    const x = ((f.sx0 - f.tx) / f.k) * t.k + t.x;
-    const y = ((f.sy0 - f.ty) / f.k) * t.k + t.y;
+    if (!fieldRef.current || !pattern) return;
     ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(pattern.canvas, x * dpr, y * dpr, f.gw * CELL * scale * dpr, f.gh * CELL * scale * dpr);
+    ctx.drawImage(pattern.canvas, 0, 0, pattern.canvas.width * CELL * dpr, pattern.canvas.height * CELL * dpr);
   };
 
-  /** Render the dither pattern for time t (seconds) into the off-screen pattern canvas. */
+  /**
+   * Render the dots for time t (seconds) on a fixed screen grid. The field (colours, density,
+   * ripples) is sampled through the live map transform, so it moves and scales with the map,
+   * while the dots themselves stay the same small size and the grid stays put as you zoom.
+   */
   const renderPattern = (time: number) => {
     const f = fieldRef.current;
     if (!f) return;
+    const sw = Math.ceil(width / CELL);
+    const sh = Math.ceil(height / CELL);
+    if (sw <= 0 || sh <= 0) return;
     let pattern = patternRef.current;
     if (!pattern) {
       const c = document.createElement('canvas');
@@ -233,25 +235,43 @@ export function DitherLayer({
       if (!cctx) return;
       pattern = patternRef.current = {canvas: c, ctx: cctx, image: null};
     }
-    if (pattern.canvas.width !== f.gw || pattern.canvas.height !== f.gh) {
-      pattern.canvas.width = f.gw;
-      pattern.canvas.height = f.gh;
+    if (pattern.canvas.width !== sw || pattern.canvas.height !== sh) {
+      pattern.canvas.width = sw;
+      pattern.canvas.height = sh;
       pattern.image = null;
     }
-    pattern.image ??= pattern.ctx.createImageData(f.gw, f.gh);
+    pattern.image ??= pattern.ctx.createImageData(sw, sh);
     const px = pattern.image.data;
+    const t = transformRef.current;
+    // Screen pixel X maps to build-space pixel a·X + cx (and likewise for Y).
+    const a = f.k / t.k;
+    const cx = f.tx - f.sx0 - a * t.x;
+    const cy = f.ty - f.sy0 - a * t.y;
+    // Ripple spacing stays constant on screen.
+    const phaseScale = (1 / a) * 0.11;
     const tick = Math.floor(time * 6);
-    for (let j = 0; j < f.gh; j++) {
-      for (let i = 0; i < f.gw; i++) {
-        const c = j * f.gw + i;
-        const o = c * 4;
+    for (let j = 0; j < sh; j++) {
+      const fj = Math.floor((a * (j + 0.5) * CELL + cy) / CELL);
+      const rowOut = fj < 0 || fj >= f.gh;
+      for (let i = 0; i < sw; i++) {
+        const o = (j * sw + i) * 4;
+        if (rowOut) {
+          px[o + 3] = 0;
+          continue;
+        }
+        const fi = Math.floor((a * (i + 0.5) * CELL + cx) / CELL);
+        if (fi < 0 || fi >= f.gw) {
+          px[o + 3] = 0;
+          continue;
+        }
+        const c = fj * f.gw + fi;
         const k = f.color[c];
         if (k === NONE) {
           px[o + 3] = 0;
           continue;
         }
         const b = f.base[c];
-        const wave = 0.5 + 0.5 * Math.sin(f.phase[c] * 0.11 - time * 2.6);
+        const wave = 0.5 + 0.5 * Math.sin(f.phase[c] * phaseScale - time * 2.6);
         const h = ((i * 73856093) ^ (j * 19349663) ^ (tick * 83492791)) >>> 0;
         const twinkle = ((h % 1000) / 1000 - 0.5) * 0.1;
         const intensity = b * (0.7 + 0.3 * wave) + twinkle * Math.min(1, b * 3);
@@ -287,6 +307,7 @@ export function DitherLayer({
     if (!canvas) return;
     canvas.width = Math.round(width * dpr);
     canvas.height = Math.round(height * dpr);
+    renderPattern(timeRef.current);
     blit();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [width, height, dpr]);
@@ -297,8 +318,9 @@ export function DitherLayer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, provincePaths, lakePaths, width, height]);
 
-  // Every pan/zoom step: repaint in the same frame as the map, and rebuild once it settles.
+  // Every pan/zoom step: re-sample the field in the same frame as the map, and rebuild once it settles.
   useLayoutEffect(() => {
+    renderPattern(timeRef.current);
     blit();
     const f = fieldRef.current;
     if (!f) return;
