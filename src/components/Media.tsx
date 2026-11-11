@@ -9,6 +9,7 @@ import {Text} from '@astryxdesign/core/Text';
 import {VStack} from '@astryxdesign/core/VStack';
 import type {MediaPhoto} from '../data/media';
 import {ExternalIcon} from './icons';
+import {DESKTOP_QUERY, useMediaQuery} from '../hooks/useMediaQuery';
 
 export const mediaAsset = (file: string) => `${import.meta.env.BASE_URL}media/${file}`;
 
@@ -113,8 +114,27 @@ export function GalleryCarousel({label, items}: {label: string; items: GalleryIt
   );
 }
 
-/** A horizontal carousel of cards with a caption under each. */
+/**
+ * A horizontal carousel of cards with a caption under each. On phones it is swipe-only and runs
+ * the full width of the drawer (its inline padding keeps the first card in line with the content).
+ */
 export function CardCarousel({label, children}: {label: string; children: ReactNode}) {
+  const isDesktop = useMediaQuery(DESKTOP_QUERY);
+  if (!isDesktop) {
+    return (
+      <Carousel
+        aria-label={label}
+        gap={2}
+        hasSnap
+        hasButtons={false}
+        hasEdgeFade={false}
+        padding={4}
+        // Out to both edges of the drawer, past its 16px content padding.
+        style={{marginInline: -16, width: 'calc(100% + 32px)', maxWidth: 'none'}}>
+        {children}
+      </Carousel>
+    );
+  }
   return (
     <Carousel aria-label={label} gap={2} hasSnap>
       {children}

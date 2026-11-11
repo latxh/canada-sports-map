@@ -109,7 +109,10 @@ export function PinCard({
   locateError,
   onClear,
   onOpenCity,
+  isCompact = false,
 }: {
+  /** Phones: the card fills the space beside the map controls instead of a fixed width. */
+  isCompact?: boolean;
   distances: PinDistance[];
   hasPin: boolean;
   onLocate: () => void;
@@ -119,7 +122,7 @@ export function PinCard({
 }) {
   if (!hasPin) {
     return (
-      <div className="glass glass-strong card-radius pointer-events-auto w-64 p-3">
+      <div className={`glass glass-strong card-radius pointer-events-auto p-3 ${isCompact ? 'w-full' : 'w-64'}`}>
         <VStack gap={2}>
           <Text weight="semibold">Drop a pin</Text>
           <Text type="supporting" size="sm">
@@ -138,7 +141,7 @@ export function PinCard({
   const near = distances.slice(0, 5);
   const far = distances.length > 5 ? distances[distances.length - 1] : null;
   return (
-    <div className="glass glass-strong card-radius pointer-events-auto w-64 py-2 ps-3 pe-2">
+    <div className={`glass glass-strong card-radius pointer-events-auto py-2 ps-3 pe-2 ${isCompact ? 'w-full' : 'w-64'}`}>
       <HStack hAlign="between" vAlign="center">
         <Text weight="semibold">Nearest cities</Text>
         <IconButton size="sm" variant="ghost" className="rounded-full" label="Remove pin" tooltip="Remove pin" icon={<Icon icon="close" />} onClick={onClear} />

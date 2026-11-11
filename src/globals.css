@@ -341,6 +341,11 @@
     -webkit-backdrop-filter: blur(18px);
     backdrop-filter: blur(18px);
   }
+  /* The phone drawer's scroll area has no top padding, so its header sticks at the very top
+     (the desktop panel's header sticks 16px up, into the panel's padding). */
+  .astryx-bottom-sheet .glass-panel-header {
+    top: 0;
+  }
   @media (prefers-reduced-transparency: reduce) {
     .glass-panel,
     .glass-panel-header {

@@ -282,7 +282,10 @@ export function App() {
         />
 
         {isPinMode && (
-          <div className="pointer-events-none absolute left-3" style={{top: isDesktop ? PANEL_GUTTER : CHROME_H}}>
+          // Desktop: top-left corner. Phones: along the bottom, beside the map controls.
+          <div
+            className="pointer-events-none absolute"
+            style={isDesktop ? {left: 12, top: PANEL_GUTTER} : {left: 64, right: 12, bottom: bottomInset + 12, transition: 'bottom 200ms ease'}}>
             <PinCard
               distances={pinTargets}
               hasPin={pin !== null}
@@ -290,6 +293,7 @@ export function App() {
               locateError={locateError}
               onClear={() => setPin(null)}
               onOpenCity={openCity}
+              isCompact={!isDesktop}
             />
           </div>
         )}
