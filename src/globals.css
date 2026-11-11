@@ -282,10 +282,6 @@
   .logo-chip > img {
     filter: drop-shadow(0 0 0.6px var(--logo-outline)) drop-shadow(0 0 0.6px var(--logo-outline));
   }
-  .flag-emoji {
-    line-height: 1;
-    font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
-  }
   /* League logos stay flat: no outline or shadow. */
   .logo-chip[data-kind='league'] > img {
     filter: none;
@@ -446,6 +442,36 @@
     height: 100%;
     object-fit: cover;
     object-position: center;
+  }
+}
+
+/* Credits: each file list sits behind a full-width, rounded, easy-to-tap header. */
+@layer components {
+  .credit-files .astryx-collapsible-trigger {
+    min-height: 44px;
+    padding: 10px 14px !important;
+    border-radius: 12px !important;
+    background: var(--color-overlay-hover) !important;
+  }
+  .credit-files .astryx-collapsible-trigger:hover,
+  .credit-files .astryx-collapsible-trigger:focus-visible {
+    background: linear-gradient(var(--color-overlay-hover), var(--color-overlay-hover)), var(--color-overlay-hover) !important;
+  }
+  .credit-files .astryx-list {
+    padding-inline: 14px;
+  }
+  /* A source link at the end of a lightbox caption, in the caption's colour over the dark scrim. */
+  .lightbox-source {
+    white-space: nowrap;
+  }
+  .astryx-lightbox .lightbox-source,
+  .astryx-lightbox .lightbox-source * {
+    color: inherit !important;
+    text-decoration-color: currentColor;
+  }
+  .astryx-lightbox .lightbox-source {
+    text-decoration: underline !important;
+    text-underline-offset: 3px;
   }
 }
 

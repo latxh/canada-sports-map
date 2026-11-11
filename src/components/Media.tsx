@@ -1,14 +1,11 @@
 import type {KeyboardEvent, ReactNode} from 'react';
 import {Card} from '@astryxdesign/core/Card';
 import {Carousel} from '@astryxdesign/core/Carousel';
-import {Icon} from '@astryxdesign/core/Icon';
-import {IconButton} from '@astryxdesign/core/IconButton';
 import {useLightbox} from '@astryxdesign/core/Lightbox';
 import {Link} from '@astryxdesign/core/Link';
 import {Text} from '@astryxdesign/core/Text';
 import {VStack} from '@astryxdesign/core/VStack';
 import type {MediaPhoto} from '../data/media';
-import {ExternalIcon} from './icons';
 import {DESKTOP_QUERY, useMediaQuery} from '../hooks/useMediaQuery';
 
 export const mediaAsset = (file: string) => `${import.meta.env.BASE_URL}media/${file}`;
@@ -26,9 +23,29 @@ function Zoomable({trigger, label, children}: {trigger?: LightboxTrigger; label:
   );
 }
 
-const photoCaption = (photo: MediaPhoto) => `${photo.caption} · Photo: ${photo.artist || 'Wikimedia Commons'}${photo.license ? `, ${photo.license}` : ''}`;
+/** Where an image came from, linked at the end of its lightbox caption. */
+export interface ImageSource {
+  href: string;
+  label: string;
+}
 
-/** A Commons photo with its credit underneath; with a trigger, the photo opens in the lightbox. */
+/** A lightbox caption: the text, then a link to the image's source page. */
+function sourceCaption(text: string, source?: ImageSource): ReactNode {
+  if (!source) return text;
+  return (
+    <>
+      {text} ·{' '}
+      <Link href={source.href} isExternalLink className="lightbox-source">
+        {`Source: ${source.label}`}
+      </Link>
+    </>
+  );
+}
+
+const photoCaption = (photo: MediaPhoto) =>
+  sourceCaption(`${photo.caption} · Photo: ${photo.artist || 'unknown'}${photo.license ? `, ${photo.license}` : ''}`, {href: photo.page, label: 'Wikimedia Commons'});
+
+/** A Commons photo; with a trigger, it opens in the lightbox (which credits it and links its source). */
 export function PhotoFigure({photo, height = 180, width, trigger}: {photo: MediaPhoto; height?: number; width?: number; trigger?: LightboxTrigger}) {
   return (
     <VStack gap={1}>
@@ -42,12 +59,6 @@ export function PhotoFigure({photo, height = 180, width, trigger}: {photo: Media
           style={{height, width}}
         />
       </Zoomable>
-      <Text type="supporting" size="xsm" maxLines={1}>
-        <Link href={photo.page} isExternalLink>
-          {photo.artist || 'Wikimedia Commons'}
-        </Link>
-        {photo.license ? ` · ${photo.license}` : ''}
-      </Text>
     </VStack>
   );
 }
@@ -86,22 +97,24 @@ export interface GalleryItem {
   width?: number;
   /** What the card shows. */
   thumb: ReactNode;
-  /** The image the lightbox shows; items without one (illustrations) don't open. */
-  full?: {src: string; alt: string; caption: string};
-  credit?: ReactNode;
+  /** The image the lightbox shows, with its source; items without one (illustrations) don't open. */
+  full?: {src: string; alt: string; caption: string; source?: ImageSource};
 }
 
 /** A carousel of captioned cards whose images open in the lightbox, stepping through the set. */
 export function GalleryCarousel({label, items}: {label: string; items: GalleryItem[]}) {
   const zoomable = items.filter((it) => it.full);
-  const lightbox = useLightbox({media: zoomable.map((it) => it.full!), hasZoom: true});
+  const lightbox = useLightbox({
+    media: zoomable.map((it) => ({src: it.full!.src, alt: it.full!.alt, caption: sourceCaption(it.full!.caption, it.full!.source)})),
+    hasZoom: true,
+  });
   return (
     <>
       <CardCarousel label={label}>
         {items.map((it) => {
           const index = it.full ? zoomable.indexOf(it) : -1;
           return (
-            <CarouselCard key={it.key} width={it.width} caption={it.caption} credit={it.credit}>
+            <CarouselCard key={it.key} width={it.width} caption={it.caption}>
               <Zoomable trigger={index >= 0 ? lightbox.getTriggerProps(index) : undefined} label={it.full?.alt ?? it.caption}>
                 {it.thumb}
               </Zoomable>
@@ -142,31 +155,15 @@ export function CardCarousel({label, children}: {label: string; children: ReactN
   );
 }
 
-export function CarouselCard({width = 168, caption, credit, children}: {width?: number; caption: ReactNode; credit?: ReactNode; children: ReactNode}) {
+export function CarouselCard({width = 168, caption, children}: {width?: number; caption: ReactNode; children: ReactNode}) {
   return (
-    <Card variant="muted" padding={3} width={width} className="relative shrink-0">
+    <Card variant="muted" padding={3} width={width} className="shrink-0">
       <VStack gap={2} hAlign="center">
         {children}
         <Text size="sm" weight="semibold" hasTabularNumbers justify="center">
           {caption}
         </Text>
       </VStack>
-      {credit && <span className="absolute top-1 right-1">{credit}</span>}
     </Card>
-  );
-}
-
-/** A small link-out in the card's corner to the image's page on SportsLogos.net, its source. */
-export function SportsLogosCredit({page}: {page: string}) {
-  return (
-    <IconButton
-      href={page}
-      target="_blank"
-      size="sm"
-      variant="ghost"
-      label="View source on SportsLogos.net (opens in new tab)"
-      tooltip="Source: SportsLogos.net"
-      icon={<Icon icon={ExternalIcon} />}
-    />
   );
 }

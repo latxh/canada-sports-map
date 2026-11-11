@@ -50,9 +50,8 @@ function LeagueOptionRow({value, label, isCompact}: {value?: string; label: Reac
       {isLeague ? (
         <LeagueLogo league={value as LeagueId} size={isCompact ? 20 : 26} isDecorative />
       ) : (
-        <span role="img" aria-label="Canada" className="flag-emoji" style={{fontSize: isCompact ? 18 : 22}}>
-          🇨🇦
-        </span>
+        // An image rather than the 🇨🇦 emoji, which looks different on every system.
+        <img src={`${import.meta.env.BASE_URL}flag-canada.webp`} alt="" width={isCompact ? 20 : 24} height={isCompact ? 20 : 24} className="shrink-0" />
       )}
       <Text weight={isCompact ? 'medium' : 'normal'}>{label}</Text>
     </HStack>

@@ -1,8 +1,7 @@
 import {Dialog, DialogHeader} from '@astryxdesign/core/Dialog';
-import {Layout, LayoutContent, LayoutFooter, HStack} from '@astryxdesign/core/Layout';
+import {Layout, LayoutContent, HStack} from '@astryxdesign/core/Layout';
 import {Button} from '@astryxdesign/core/Button';
 import {Icon} from '@astryxdesign/core/Icon';
-import {ExternalIcon} from './icons';
 import {VStack} from '@astryxdesign/core/VStack';
 import {Text} from '@astryxdesign/core/Text';
 import {Link} from '@astryxdesign/core/Link';
@@ -11,53 +10,34 @@ import {Collapsible} from '@astryxdesign/core/Collapsible';
 import {DATA_AS_OF, LEAGUES, TEAM_BY_ID, type LeagueId} from '../data';
 import {LOGOS} from '../data/logos';
 import {HISTORICAL_LOGOS, TEAM_PHOTOS, VENUE_PHOTOS} from '../data/media';
+import {ExternalIcon} from './icons';
 import {SectionTitle} from './bits';
 
-const SOURCES = [
-  {
-    name: 'Wikipedia',
-    href: 'https://en.wikipedia.org/',
-    note: 'Team, venue and championship facts are compiled and paraphrased from Wikipedia articles (CC BY-SA 4.0). Every team and venue links to its article.',
-  },
-  {
-    name: 'SportsLogos.net',
-    href: 'https://www.sportslogos.net/',
-    note: 'Logo, uniform and playing-surface history images, used with permission; each links to its page there. Logos and uniforms are trademarks of their teams and leagues.',
-  },
-  {
-    name: 'Wikipedia & Wikimedia Commons logos',
-    href: 'https://commons.wikimedia.org/',
-    note: 'Team and league logos, current and historical, are the files Wikipedia and Wikimedia Commons serve (listed below with their licences). Most are non-free trademarks shown only to identify the team or league.',
-  },
-  {
-    name: 'Wikimedia Commons photos',
-    href: 'https://commons.wikimedia.org/',
-    note: 'Team, venue and moment photos are freely licensed files from Wikimedia Commons, each credited under the photo and listed below.',
-  },
-  {
-    name: 'Statistics Canada',
-    href: 'https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=9810000301',
-    note: 'Population of every census metropolitan area and agglomeration from the 2021 Census, for the Population view (via Wikipedia’s list).',
-  },
-  {
-    name: 'Natural Earth',
-    href: 'https://www.naturalearthdata.com/',
-    note: 'Countries, provinces, coastlines, lakes, rivers, towns and geography names (public domain), simplified for the web.',
-  },
-  {
-    name: 'OpenStreetMap',
-    href: 'https://www.openstreetmap.org/copyright',
-    note: 'Venue footprints, stand layouts and dimensions, used as references for the 3D models. © OpenStreetMap contributors (ODbL).',
-  },
-];
+const REPO = 'https://github.com/latxh/canada-sports-map';
 
 const TOOLS = [
-  {name: 'Astryx design system', href: 'https://github.com/facebook/astryx', note: 'UI components and theme (MIT).'},
-  {name: 'three.js / React Three Fiber', href: 'https://threejs.org/', note: 'Low-poly 3D stadium models (MIT).'},
-  {name: 'd3-geo, d3-zoom & TopoJSON', href: 'https://d3js.org/', note: 'Map projection and pan/zoom (ISC).'},
+  {name: 'Astryx', href: 'https://github.com/facebook/astryx', note: 'UI components and theme'},
+  {name: 'three.js & React Three Fiber', href: 'https://threejs.org/', note: '3D stadium models'},
+  {name: 'd3 & TopoJSON', href: 'https://d3js.org/', note: 'Map projection and pan and zoom'},
 ];
 
-const LOGO_CREDITS = Object.entries(LOGOS)
+const SOURCES = [
+  {name: 'Wikipedia', href: 'https://en.wikipedia.org/', note: 'Team, venue and championship facts (CC BY-SA 4.0)'},
+  {name: 'SportsLogos.net', href: 'https://www.sportslogos.net/', note: 'Logo, uniform and playing-surface history, used with permission'},
+  {name: 'Wikimedia Commons', href: 'https://commons.wikimedia.org/', note: 'Logo files and photos, listed below with their licences'},
+  {name: 'Statistics Canada', href: 'https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=9810000301', note: '2021 Census population'},
+  {name: 'Natural Earth', href: 'https://www.naturalearthdata.com/', note: 'Map data (public domain)'},
+  {name: 'OpenStreetMap', href: 'https://www.openstreetmap.org/copyright', note: 'Venue footprints for the 3D models (ODbL)'},
+];
+
+interface FileCredit {
+  key: string;
+  label: string;
+  page: string;
+  license: string;
+}
+
+const LOGO_CREDITS: FileCredit[] = Object.entries(LOGOS)
   .map(([key, l]) => ({
     key,
     label: key.startsWith('league-') ? LEAGUES[key.slice(7) as LeagueId].name : (TEAM_BY_ID[key]?.name ?? key),
@@ -66,18 +46,48 @@ const LOGO_CREDITS = Object.entries(LOGOS)
   }))
   .sort((a, b) => a.label.localeCompare(b.label));
 
-const HISTORICAL_CREDITS = Object.entries(HISTORICAL_LOGOS)
+const HISTORICAL_CREDITS: FileCredit[] = Object.entries(HISTORICAL_LOGOS)
   .flatMap(([id, list]) => list.map((l) => ({key: l.file, label: `${TEAM_BY_ID[id]?.name ?? id}, ${l.from}${l.to ? `–${l.to}` : '–'}`, page: l.page, license: l.license})))
   .sort((a, b) => a.label.localeCompare(b.label));
 
-const PHOTO_CREDITS = [...Object.values(TEAM_PHOTOS).flat(), ...Object.values(VENUE_PHOTOS)]
+const PHOTO_CREDITS: FileCredit[] = [...Object.values(TEAM_PHOTOS).flat(), ...Object.values(VENUE_PHOTOS)]
   .filter((p, i, all) => all.findIndex((q) => q.page === p.page) === i)
   .map((p) => ({key: p.file, label: p.caption, page: p.page, license: [p.artist, p.license].filter(Boolean).join(' · ')}));
 
-function CreditList({title, items}: {title: string; items: {key: string; label: string; page: string; license: string}[]}) {
+/** Name (linked) and a short note per line. */
+function LinkList({items}: {items: {name: string; href: string; note: string}[]}) {
+  return (
+    <List density="compact" edge="flush">
+      {items.map((s) => (
+        <ListItem
+          key={s.name}
+          label={
+            <Link href={s.href} isExternalLink>
+              {s.name}
+            </Link>
+          }
+          description={s.note}
+        />
+      ))}
+    </List>
+  );
+}
+
+/** One file list, collapsed behind a full-width, rounded header. */
+function FileList({title, items}: {title: string; items: FileCredit[]}) {
   if (items.length === 0) return null;
   return (
-    <Collapsible trigger={<Text weight="semibold">{`${title} (${items.length})`}</Text>} defaultIsOpen={false}>
+    <Collapsible
+      className="credit-files"
+      defaultIsOpen={false}
+      trigger={
+        <HStack gap={2} vAlign="center" hAlign="between" className="w-full">
+          <Text weight="semibold">{title}</Text>
+          <Text type="supporting" hasTabularNumbers>
+            {items.length}
+          </Text>
+        </HStack>
+      }>
       <List density="compact" edge="flush">
         {items.map((c) => (
           <ListItem
@@ -97,83 +107,58 @@ function CreditList({title, items}: {title: string; items: {key: string; label: 
 
 export function CreditsDialog({isOpen, onOpenChange}: {isOpen: boolean; onOpenChange: (open: boolean) => void}) {
   return (
-    <Dialog isOpen={isOpen} onOpenChange={onOpenChange} width={560} maxHeight="85dvh">
-      {/* Header and footer stay put; only the content between them scrolls. */}
+    <Dialog isOpen={isOpen} onOpenChange={onOpenChange} width={520} maxHeight="85dvh">
+      {/* The header stays put; the content scrolls. */}
       <Layout
-        header={<DialogHeader title="Credits & sources" subtitle={`Data reviewed ${DATA_AS_OF}`} onOpenChange={onOpenChange} />}
+        header={<DialogHeader title="Credits" onOpenChange={onOpenChange} />}
         content={
           <LayoutContent>
-      <VStack gap={4}>
-        <Text>
-          Canadian Sports Atlas is an unofficial fan project. It is not affiliated with or endorsed by any league or team shown.
-        </Text>
-        <VStack gap={1}>
-          <SectionTitle>Sources</SectionTitle>
-          <List hasDividers edge="flush">
-            {SOURCES.map((s) => (
-              <ListItem
-                key={s.name}
-                align="start"
-                label={
-                  <Link href={s.href} isExternalLink>
-                    {s.name}
+            <VStack gap={5}>
+              <VStack gap={3}>
+                <Text>An unofficial fan project by Brian Latchman, not affiliated with or endorsed by any league or team.</Text>
+                <HStack gap={2} wrap="wrap">
+                  <Button href="https://latchman.ca" target="_blank" variant="secondary" size="sm" label="latchman.ca" icon={<Icon icon={ExternalIcon} />} />
+                  <Button href={REPO} target="_blank" variant="secondary" size="sm" label="GitHub" icon={<Icon icon={ExternalIcon} />} />
+                </HStack>
+              </VStack>
+
+              <VStack gap={1}>
+                <SectionTitle>Built with</SectionTitle>
+                <LinkList items={TOOLS} />
+              </VStack>
+
+              <VStack gap={1}>
+                <SectionTitle>Sources</SectionTitle>
+                <LinkList items={SOURCES} />
+              </VStack>
+
+              <VStack gap={2}>
+                <SectionTitle>Files</SectionTitle>
+                <FileList title="Logos" items={LOGO_CREDITS} />
+                <FileList title="Historical logos" items={HISTORICAL_CREDITS} />
+                <FileList title="Photos" items={PHOTO_CREDITS} />
+              </VStack>
+
+              <VStack gap={1}>
+                <SectionTitle>About the visuals</SectionTitle>
+                <Text type="supporting">
+                  Trophies, and badges, uniforms and surfaces without a source image, are original illustrations. The 3D venues are hand-built,
+                  low-poly models drawn to scale. Data is current to {DATA_AS_OF}.{' '}
+                  <Link href={`${REPO}/issues`} isExternalLink>
+                    Report a mistake
                   </Link>
-                }
-                description={<Text type="supporting">{s.note}</Text>}
-              />
-            ))}
-          </List>
-        </VStack>
-        <VStack gap={1}>
-          <SectionTitle>Built with</SectionTitle>
-          <List hasDividers edge="flush" density="compact">
-            {TOOLS.map((s) => (
-              <ListItem
-                key={s.name}
-                label={
-                  <Link href={s.href} isExternalLink>
-                    {s.name}
-                  </Link>
-                }
-                description={s.note}
-              />
-            ))}
-          </List>
-        </VStack>
-        <CreditList title="Logo files" items={LOGO_CREDITS} />
-        <CreditList title="Historical logo files" items={HISTORICAL_CREDITS} />
-        <CreditList title="Photos" items={PHOTO_CREDITS} />
-        <VStack gap={1}>
-          <SectionTitle>Privacy</SectionTitle>
-          <Text type="supporting">
-            This site uses Google Analytics to count visits and see which views people use. It uses no advertising features. In the EU, the UK,
-            Switzerland and Quebec, analytics cookies are off.
-          </Text>
-        </VStack>
-        <VStack gap={1}>
-          <SectionTitle>About the visuals</SectionTitle>
-          <Text type="supporting">
-            Logos are the official marks of their teams and leagues. Logo, uniform and playing-surface history comes from
-            SportsLogos.net, used with permission; where it has none, the badges, uniforms and playing surfaces are original
-            illustrations. Trophies are original illustrations drawn from reference photos. The 3D models of the 24 venues current
-            NHL, NBA, MLB, MLS, CFL and CPL teams play in are hand-built, low-poly approximations drawn to scale from OpenStreetMap footprints, with Wikimedia Commons photos
-            used only as visual references. Former venues are not modelled, and venues used only by the newer leagues are not modelled yet.
-          </Text>
-          <Text type="supporting">
-            Capacities are approximate. The 2026 NSL final (November 14), the 113th Grey Cup (November 15) and the 2026 CPL Final had not been played when the
-            data was last reviewed. Spot a mistake? Open an issue on GitHub.
-          </Text>
-        </VStack>
-      </VStack>
+                </Text>
+              </VStack>
+
+              <VStack gap={1}>
+                <SectionTitle>Privacy</SectionTitle>
+                <Text type="supporting">
+                  Google Analytics counts visits and which views people use, with no advertising features. Analytics cookies are off in the EU,
+                  the UK, Switzerland and Quebec.
+                </Text>
+              </VStack>
+            </VStack>
           </LayoutContent>
-        }
-        footer={
-          <LayoutFooter>
-            <HStack gap={2} hAlign="between" vAlign="center">
-              <Text type="supporting">Made by Brian Latchman</Text>
-              <Button href="https://latchman.ca" target="_blank" variant="secondary" size="sm" label="latchman.ca" icon={<Icon icon={ExternalIcon} />} />
-            </HStack>
-          </LayoutFooter>
         }
       />
     </Dialog>

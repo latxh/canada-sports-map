@@ -20,7 +20,7 @@ import {loadSportsLogos} from '../lib/sportslogos';
 import {latestEra, venueEntriesForCity, venueEntriesForTeam} from '../lib/venues';
 import {TitleCabinet, TrophyCabinet} from '../visuals/Trophies';
 import {VenueSection} from './VenueSection';
-import {CardCarousel, CarouselCard, GalleryCarousel, PhotoCarousel, mediaAsset, SportsLogosCredit, type GalleryItem} from './Media';
+import {CardCarousel, CarouselCard, GalleryCarousel, PhotoCarousel, mediaAsset, type GalleryItem, type ImageSource} from './Media';
 import {SectionTitle, StatusBadge} from './bits';
 import {ExternalIcon, PinIcon} from './icons';
 
@@ -296,7 +296,6 @@ export function TeamPanel({
                 key: img.file,
                 width: 260,
                 caption: yearsLabel(img.from, img.to),
-                credit: <SportsLogosCredit page={img.page} />,
                 thumb: <SlnPicture img={img} alt={alt} height={150} maxWidth={228} />,
                 full: slnFull(img, alt),
               };
@@ -336,11 +335,18 @@ function teamPhotos(team: Team): MediaPhoto[] {
 }
 
 const slnAsset = (file: string) => `${import.meta.env.BASE_URL}sportslogos/${file}`;
+/** A logo file's source page, named by its site. */
+const fileSource = (page: string): ImageSource => ({
+  href: page,
+  label: page.includes('sportslogos.net') ? 'SportsLogos.net' : page.includes('commons.wikimedia.org') ? 'Wikimedia Commons' : 'Wikipedia',
+});
+
 /** The larger copy of a SportsLogos.net image, for the lightbox. */
 const slnFull = (img: SlnImage, alt: string) => ({
   src: slnAsset(img.file.replace(/\.webp$/, '-lg.webp')),
   alt,
-  caption: `${yearsLabel(img.from, img.to)} · ${img.label} · Source: SportsLogos.net`,
+  caption: `${yearsLabel(img.from, img.to)} · ${img.label}`,
+  source: {href: img.page, label: 'SportsLogos.net'},
 });
 
 /** An image from SportsLogos.net at a set height, its width following its shape. */
@@ -376,7 +382,6 @@ function UniformCarousel({team, sln, label}: {team: Team; sln: SlnTeam; label: s
           key: img.file,
           width,
           caption: `${side} · ${years}`,
-          credit: <SportsLogosCredit page={img.page} />,
           thumb: <SlnPicture img={img} alt={alt} height={112} maxWidth={width - 24} />,
           full: slnFull(img, alt),
         };
@@ -401,7 +406,6 @@ function LogoCarousel({team, sln}: {team: Team; sln: SlnTeam | null}) {
           return {
             key: img.file,
             caption: years,
-            credit: <SportsLogosCredit page={img.page} />,
             thumb: <LogoImage src={slnAsset(img.file)} alt={`${team.name} logo, ${years}`} size={104} />,
             full: slnFull(img, `${team.name} logo, ${years}`),
           };
@@ -416,13 +420,13 @@ function LogoCarousel({team, sln}: {team: Team; sln: SlnTeam | null}) {
   const items: (GalleryItem & {from: number})[] = files.map((f) => {
     const years = yearsLabel(f.from, f.to);
     const alt = `${team.name} logo, ${years}`;
-    return {key: f.file, from: f.from, caption: years, thumb: <LogoImage src={mediaAsset(f.file)} alt={alt} size={104} />, full: {src: mediaAsset(f.file), alt, caption: `${years} · ${team.name} logo · Wikimedia Commons`}};
+    return {key: f.file, from: f.from, caption: years, thumb: <LogoImage src={mediaAsset(f.file)} alt={alt} size={104} />, full: {src: mediaAsset(f.file), alt, caption: `${years} · ${team.name} logo`, source: {href: f.page, label: 'Wikimedia Commons'}}};
   });
   team.identity.forEach((e, i) => {
     const years = yearsLabel(e.from, e.to);
     if (i === officialEra && official) {
       const alt = `${team.name} logo, ${years}`;
-      items.push({key: `official-${i}`, from: e.from, caption: years, thumb: <TeamLogo team={team} size={104} />, full: {src: logoAsset(official.file), alt, caption: `${years} · ${team.name} logo · Wikipedia`}});
+      items.push({key: `official-${i}`, from: e.from, caption: years, thumb: <TeamLogo team={team} size={104} />, full: {src: logoAsset(official.file), alt, caption: `${years} · ${team.name} logo`, source: fileSource(official.page)}});
     } else if (!files.some((f) => overlaps(e.from, e.to, f))) {
       // An illustrated badge: shown in the carousel, but there's no image to enlarge.
       items.push({key: `era-${i}`, from: e.from, caption: `${years}${e.name ? ` · ${e.name}` : ''}`, thumb: <EraLogo team={team} index={i} size={104} />});

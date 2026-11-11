@@ -12,7 +12,7 @@ An interactive map of Canadian professional sports: every NHL, NBA, MLB, MLS, CF
 
 - **Canada, full screen.** The map opens on the band of sports cities across southern Canada, with the rest of the world filled in around it. Zoom in for a finer coastline, rivers, lakes, nearby towns and the names of seas, lakes, mountain ranges and islands.
 - **City dots.** Each sports city is a solid dot with its name: dark for cities with active teams, light grey for cities whose teams are all gone, blue (with a pulse) when selected. Nearby cities merge into one dot until you zoom in.
-- **League filter.** One dropdown shows all cities (🇨🇦) or a single league. With a league picked, a city that has one team in it opens straight to that team.
+- **League filter.** One dropdown shows all cities or a single league. With a league picked, a city that has one team in it opens straight to that team.
 - **Logo takeover.** When a team is the only current Canadian team in its league (the Raptors, the Blue Jays, the Tempo), its page fills Canada with its logo.
 - **Share links with their own previews.** Every team, city, league and map layer has a share link (for example [`/team/toronto-raptors/`](https://latxh.github.io/canada-sports-map/team/toronto-raptors/)) with its own preview card on X, Reddit, iMessage, Discord and Slack. Share hands out the link for what you're looking at (the native share sheet on phones); the league, layer and pin are also kept in the URL.
 
@@ -165,7 +165,7 @@ npm run og                                          # all cards, or: npm run og 
 - **[Statistics Canada](https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=9810000301)**: 2021 Census population for the Population layer.
 - **[Natural Earth](https://www.naturalearthdata.com/)**: countries, provinces, coastlines, lakes, rivers, towns and geography names (public domain).
 - **[OpenStreetMap](https://www.openstreetmap.org/copyright)**: venue footprints and dimensions used as references for the 3D models (© OpenStreetMap contributors, ODbL).
-- **[SportsLogos.net](https://www.sportslogos.net/)**: logo, uniform and playing-surface history images (`public/sportslogos/`), used with permission. Every image is credited and links to its page there, and each team links to its full history.
+- **[SportsLogos.net](https://www.sportslogos.net/)**: logo, uniform and playing-surface history images (`public/sportslogos/`), used with permission. Opening any image shows its source link, the Credits list SportsLogos.net, and each team links to its full history there.
 - **[Google Analytics](https://marketingplatform.google.com/about/analytics/)**: visit counts (see Analytics above).
 - **[Astryx](https://github.com/facebook/astryx)**, **[three.js](https://threejs.org/)** / **[React Three Fiber](https://r3f.docs.pmnd.rs/)**, **[d3](https://d3js.org/)**, **[TopoJSON](https://github.com/topojson/topojson)**.
 
