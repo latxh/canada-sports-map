@@ -386,7 +386,7 @@
  */
 @layer components {
   .astryx-lightbox::backdrop,
-  dialog:has(.arena-lightbox)::backdrop {
+  dialog:modal:has(.arena-lightbox)::backdrop {
     background: rgb(12 13 16 / 0.5);
     backdrop-filter: blur(10px) saturate(120%);
     -webkit-backdrop-filter: blur(10px) saturate(120%);
@@ -395,7 +395,8 @@
     max-width: min(78vw, 960px) !important;
     max-height: 74dvh !important;
   }
-  dialog:has(.arena-lightbox) {
+  /* Only the open (modal) arena view: on phones the drawer is a non-modal dialog that also contains it. */
+  dialog:modal:has(.arena-lightbox) {
     background: light-dark(rgb(255 255 255 / 0.78), rgb(30 31 36 / 0.78));
     backdrop-filter: blur(24px) saturate(160%);
     -webkit-backdrop-filter: blur(24px) saturate(160%);
