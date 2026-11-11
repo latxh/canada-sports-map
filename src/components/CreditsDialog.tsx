@@ -115,9 +115,14 @@ export function CreditsDialog({isOpen, onOpenChange}: {isOpen: boolean; onOpenCh
           <LayoutContent>
             <VStack gap={5}>
               <VStack gap={3}>
-                <Text>An unofficial fan project by Brian Latchman, not affiliated with or endorsed by any league or team.</Text>
+                <Text>
+                  An unofficial fan project by{' '}
+                  <Link href="https://latchman.ca" isExternalLink>
+                    Brian Latchman
+                  </Link>
+                  , not affiliated with or endorsed by any league or team.
+                </Text>
                 <HStack gap={2} wrap="wrap">
-                  <Button href="https://latchman.ca" target="_blank" variant="secondary" size="sm" label="latchman.ca" icon={<Icon icon={ExternalIcon} />} />
                   <Button href={REPO} target="_blank" variant="secondary" size="sm" label="GitHub" icon={<Icon icon={ExternalIcon} />} />
                 </HStack>
               </VStack>
@@ -143,10 +148,7 @@ export function CreditsDialog({isOpen, onOpenChange}: {isOpen: boolean; onOpenCh
                 <SectionTitle>About the visuals</SectionTitle>
                 <Text type="supporting">
                   Trophies, and badges, uniforms and surfaces without a source image, are original illustrations. The 3D venues are hand-built,
-                  low-poly models drawn to scale. Data is current to {DATA_AS_OF}.{' '}
-                  <Link href={`${REPO}/issues`} isExternalLink>
-                    Report a mistake
-                  </Link>
+                  low-poly models drawn to scale. Data is current to {DATA_AS_OF}.
                 </Text>
               </VStack>
 
@@ -157,6 +159,17 @@ export function CreditsDialog({isOpen, onOpenChange}: {isOpen: boolean; onOpenCh
                   the UK, Switzerland and Quebec.
                 </Text>
               </VStack>
+
+              {/* Same full-width style as the link buttons at the bottom of the panels. */}
+              <Button
+                href={`${REPO}/issues`}
+                target="_blank"
+                width="100%"
+                variant="ghost"
+                className="link-button"
+                label="Report a mistake"
+                icon={<Icon icon={ExternalIcon} />}
+              />
             </VStack>
           </LayoutContent>
         }
