@@ -14,7 +14,7 @@ An interactive map of Canadian professional sports: every NHL, NBA, MLB, MLS, CF
 - **City dots.** Each sports city is a solid dot with its name: dark for cities with active teams, light grey for cities whose teams are all gone, blue (with a pulse) when selected. Nearby cities merge into one dot until you zoom in.
 - **League filter.** One dropdown shows all cities (🇨🇦) or a single league. With a league picked, a city that has one team in it opens straight to that team.
 - **Logo takeover.** When a team is the only current Canadian team in its league (the Raptors, the Blue Jays, the Tempo), its page fills Canada with its logo.
-- **Shareable views.** The league, layer and pin are kept in the URL, and Share opens the native share sheet on phones.
+- **Share links with their own previews.** Every team, city, league and map layer has a share link (for example [`/team/toronto-raptors/`](https://latxh.github.io/canada-sports-map/team/toronto-raptors/)) with its own preview card on X, Reddit, iMessage, Discord and Slack. Share hands out the link for what you're looking at (the native share sheet on phones); the league, layer and pin are also kept in the URL.
 
 | City panel with a 3D venue | Logo takeover |
 | --- | --- |
@@ -50,6 +50,14 @@ Four round toggles sit beside the league filter; one is on at a time. The first 
 Each of the 24 stadiums and arenas that NHL, NBA, MLB, MLS, CFL and CPL teams play in today has its own hand-built, low-poly model, drawn to scale from OpenStreetMap footprints and reference photos. Rogers Centre's roof opens and closes, BC Place's roof gathers under its 36 masts, and fields switch markings for the sport you're looking at. Models open full screen.
 
 ![The 24 current venues as low-poly 3D models](docs/stadium-models.jpg)
+
+### Link-preview cards
+
+Each share link shows a card made for it: a team's logo, league, years and trophies beside its territory on the map; a city's teams around a glow on its spot; a league's Canadian teams and the closest-team map for that league; or a full map for each layer.
+
+| Team | City | League |
+| --- | --- | --- |
+| ![Toronto Maple Leafs card](public/og/team-toronto-maple-leafs.jpg) | ![Toronto card](public/og/city-toronto.jpg) | ![CFL card](public/og/league-cfl.jpg) |
 
 ### Everywhere
 
@@ -98,7 +106,10 @@ src/
   components/      # SportsMap (d3-geo + d3-zoom), DitherLayer, map tools, panels, credits
   visuals/         # original SVG illustrations: trophies, badges, uniforms, playing surfaces
   three/           # 3D: kit/ (low-poly parts), models/ (one per current venue), viewer (lazy-loaded)
+  og/              # share links: manifest (paths, titles, descriptions) and the ?og= preview cards
+  lib/analytics.ts # Google Analytics page views and events
 public/
+  og/              # rendered preview cards, one per share link (scripts/render-og.mjs)
   logos/           # current team and league logos (from Wikipedia)
   media/           # historical logos and photos (from Wikipedia and Wikimedia Commons)
 ```
@@ -116,6 +127,22 @@ Each current venue has a model function in `src/three/models/<city>.ts`, built f
 - `scripts/build-geo.mjs` explains how to download the Natural Earth source files and regenerate the base map and the zoomed-in detail layer.
 - `scripts/fetch-media.py` downloads historical logos and freely licensed photos from Wikipedia and Wikimedia Commons, and `scripts/build-media.py` turns them into `public/media/` and `src/data/media.ts`.
 
+### Share links and preview cards
+
+`src/og/manifest.ts` lists every share link. On each build, a small Vite plugin writes a page for each one (`team/<id>/`, `city/<id>/`, `league/<id>/`, `view/<layer>/`) with its preview tags, which sends visitors on to the app (passing through any `utm_` parameters). Preview bots ignore `?` and `#`, which is why these are real paths.
+
+The cards are rendered from the app: open `?og=list` in the dev server to see them all, or `?og=team:toronto-raptors` for one. After changing a card or adding a team, city or league, re-render them (`npm test` fails when one is missing):
+
+```bash
+npm run dev                                         # in another terminal
+npm i --no-save playwright && npx playwright install chromium
+npm run og                                          # all cards, or: npm run og -- http://localhost:5173/ team:
+```
+
+### Analytics
+
+`index.html` loads Google Analytics (GA4) on the live site only (not on localhost or for `?og=` card renders). The app sends a page view per city, team, league and layer, under the same paths as the share links, plus events for the league filter (`select_league`), layer toggles (`toggle_layer`), pin drops (`drop_pin`) and sharing (`share`). In the GA web stream, "Page changes based on browser history events" is off so views aren't counted twice. Analytics cookies are off by default in the EEA, UK, Switzerland and Quebec, and no advertising features are used.
+
 ### Deploying
 
 Every push to `main` runs CI (type-check, tests, build) and `.github/workflows/pages.yml` publishes the site to GitHub Pages.
@@ -129,6 +156,7 @@ Every push to `main` runs CI (type-check, tests, build) and `.github/workflows/p
 - **[Natural Earth](https://www.naturalearthdata.com/)**: countries, provinces, coastlines, lakes, rivers, towns and geography names (public domain).
 - **[OpenStreetMap](https://www.openstreetmap.org/copyright)**: venue footprints and dimensions used as references for the 3D models (© OpenStreetMap contributors, ODbL).
 - **[SportsLogos.net](https://www.sportslogos.net/)**: linked for full logo histories. SportsLogos.net asks automated tools not to collect its content, so nothing was copied from it.
+- **[Google Analytics](https://marketingplatform.google.com/about/analytics/)**: visit counts (see Analytics above).
 - **[Astryx](https://github.com/facebook/astryx)**, **[three.js](https://threejs.org/)** / **[React Three Fiber](https://r3f.docs.pmnd.rs/)**, **[d3](https://d3js.org/)**, **[TopoJSON](https://github.com/topojson/topojson)**.
 
 Trophies, uniforms, playing surfaces and the badges for eras without a logo file are original illustrations. Team names, logos and uniforms are trademarks of their owners. This is an unofficial fan project, not affiliated with or endorsed by any league or team.

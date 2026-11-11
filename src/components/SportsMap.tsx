@@ -18,7 +18,7 @@ import {POPULATION} from '../data/population';
 import type {MapView} from './HeaderControls';
 
 type GeoProps = {name: string; code?: string};
-interface Geo {
+export interface Geo {
   provinces: FeatureCollection<Geometry, GeoProps>;
   neighbours: FeatureCollection<Geometry, GeoProps>;
   world: FeatureCollection<Geometry, GeoProps>;
@@ -36,7 +36,7 @@ interface Detail {
 
 let geoPromise: Promise<Geo> | null = null;
 /** The boundary data is a separate chunk so it downloads in parallel with the app. */
-function loadGeo(): Promise<Geo> {
+export function loadGeo(): Promise<Geo> {
   geoPromise ??= import('../data/geo/canada.topo.json').then((mod) => {
     const topo = mod.default as unknown as Topology<{
       provinces: GeometryCollection<GeoProps>;

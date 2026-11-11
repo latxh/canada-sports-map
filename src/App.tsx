@@ -15,6 +15,8 @@ import {MapToolToggles, PinCard, distanceColor, distanceKm, type LatLon, type Pi
 import {DESKTOP_QUERY, useMediaQuery} from './hooks/useMediaQuery';
 import {TrophyDefs} from './visuals/Trophies';
 import {useHashRoute} from './hooks/useHashRoute';
+import {SITE_URL, shareEntryFor} from './og/manifest';
+import {trackEvent, trackPageView} from './lib/analytics';
 
 const PANEL_WIDTH = 400;
 const PANEL_GUTTER = 12;
@@ -149,11 +151,28 @@ export function App() {
       return;
     }
     navigator.geolocation.getCurrentPosition(
-      (pos) => setPin({lat: pos.coords.latitude, lon: pos.coords.longitude}),
+      (pos) => {
+        setPin({lat: pos.coords.latitude, lon: pos.coords.longitude});
+        trackEvent('drop_pin', {method: 'location'});
+      },
       () => setLocateError(true),
       {enableHighAccuracy: false, timeout: 8000, maximumAge: 600000},
     );
   }, []);
+
+  // What the app shows, as a share page: drives the Share link and analytics page views.
+  const shareEntry = useMemo(
+    () =>
+      shareEntryFor({
+        teamId: route.kind === 'team' ? route.id : undefined,
+        cityId: route.kind === 'city' ? route.id : undefined,
+        league,
+        view,
+        showClosest,
+      }),
+    [route, league, view, showClosest],
+  );
+  useEffect(() => trackPageView(shareEntry.path, shareEntry.title), [shareEntry]);
 
   const selectedCityId =
     route.kind === 'city' ? route.id : route.kind === 'team' ? (TEAM_BY_ID[route.id]?.cityId ?? null) : null;
@@ -245,7 +264,10 @@ export function App() {
           isPinMode={isPinMode}
           pin={pin}
           pinTargets={pinTargets}
-          onDropPin={setPin}
+          onDropPin={(p) => {
+          setPin(p);
+          trackEvent('drop_pin', {method: 'tap'});
+        }}
           showClosest={showClosest}
         />
 
@@ -266,28 +288,48 @@ export function App() {
         {/* Floating controls, centred at the top: league picker and menu. */}
         <nav aria-label="Site" className="pointer-events-none absolute inset-x-0 top-3 flex justify-center px-3">
           <div className="glass pointer-events-auto flex items-center gap-0.5 rounded-full p-1">
-            <LeagueSelect value={league} onChange={setLeague} isCompact={!isDesktop} />
+            <LeagueSelect
+              value={league}
+              onChange={(l) => {
+                setLeague(l);
+                trackEvent('select_league', {league: l});
+              }}
+              isCompact={!isDesktop}
+            />
             <MapToolToggles
               view={view}
               onViewChange={(v) => {
                 setView(v);
+                trackEvent('toggle_layer', {layer: v === 'teams' ? view : v, on: v !== 'teams'});
                 if (v !== 'teams') {
                   setShowClosest(false);
                   leavePinMode();
                 }
               }}
               isPinMode={isPinMode}
-              onPinModeChange={setPinMode}
+              onPinModeChange={(on) => {
+                setPinMode(on);
+                trackEvent('toggle_layer', {layer: 'pin', on});
+              }}
               showClosest={showClosest}
               onShowClosestChange={(on) => {
                 setShowClosest(on);
+                trackEvent('toggle_layer', {layer: 'closest', on});
                 if (on) {
                   setView('teams');
                   leavePinMode();
                 }
               }}
             />
-            <SiteMenu appearance={appearance} onAppearanceChange={setAppearance} onOpenCredits={() => setIsCreditsOpen(true)} />
+            <SiteMenu
+              appearance={appearance}
+              onAppearanceChange={setAppearance}
+              onOpenCredits={() => setIsCreditsOpen(true)}
+              // A dropped pin isn't a share page, so that view shares its full address.
+              shareUrl={pin ? window.location.href : SITE_URL + shareEntry.path}
+              shareTitle={shareEntry.title}
+              onShared={(method) => trackEvent('share', {method, content_type: shareEntry.kind, item_id: shareEntry.id})}
+            />
           </div>
         </nav>
 

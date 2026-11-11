@@ -144,6 +144,13 @@ export function CreditsDialog({isOpen, onOpenChange}: {isOpen: boolean; onOpenCh
         <CreditList title="Historical logo files" items={HISTORICAL_CREDITS} />
         <CreditList title="Photos" items={PHOTO_CREDITS} />
         <VStack gap={1}>
+          <SectionTitle>Privacy</SectionTitle>
+          <Text type="supporting">
+            This site uses Google Analytics to count visits and see which views people use. It uses no advertising features. In the EU, the UK,
+            Switzerland and Quebec, analytics cookies are off.
+          </Text>
+        </VStack>
+        <VStack gap={1}>
           <SectionTitle>About the visuals</SectionTitle>
           <Text type="supporting">
             Logos are the official marks of their teams and leagues; eras without a logo file show an illustrated badge instead.

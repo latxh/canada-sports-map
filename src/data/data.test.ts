@@ -127,3 +127,19 @@ describe('media', () => {
     }
   });
 });
+
+describe('link-preview cards', () => {
+  it('has a share page and a rendered card for every team, city, league and layer', async () => {
+    const {OG_ENTRIES, sharePageHtml} = await import('../og/manifest');
+    const {existsSync} = await import('node:fs');
+    const paths = OG_ENTRIES.map((e) => e.path);
+    expect(new Set(paths).size).toBe(paths.length);
+    expect(OG_ENTRIES.filter((e) => e.kind === 'team')).toHaveLength(TEAMS.length);
+    const missing = OG_ENTRIES.filter((e) => !existsSync(`public/${e.image}`)).map((e) => e.image);
+    // Run `npm run og` (see scripts/render-og.mjs) to render missing cards.
+    expect(missing).toEqual([]);
+    const html = sharePageHtml(OG_ENTRIES.find((e) => e.key === 'team:toronto-raptors')!);
+    expect(html).toContain('<meta property="og:image" content="https://latxh.github.io/canada-sports-map/og/team-toronto-raptors.jpg" />');
+    expect(html).toContain('"../../#/team/toronto-raptors"');
+  });
+});

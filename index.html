@@ -27,6 +27,32 @@
     <meta name="twitter:image" content="https://latxh.github.io/canada-sports-map/og-image.jpg" />
     <meta name="twitter:image:alt" content="Map of Canada coloured by each area's closest NHL team, with the title Canadian Sports Atlas" />
     <title>Canadian Sports Atlas</title>
+
+    <!--
+      Google Analytics (GA4). Not loaded for local development or link-preview card renders (?og=).
+      Page views are sent by the app (src/lib/analytics.ts), one per city, team, league and layer.
+      Analytics cookies stay off by default in the EEA, UK, Switzerland and Quebec; no ad features.
+    -->
+    <script>
+      (function () {
+        var host = location.hostname;
+        if (host === 'localhost' || host === '127.0.0.1' || /[?&]og=/.test(location.search)) return;
+        var id = 'G-CJ51C8TG95';
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () {
+          dataLayer.push(arguments);
+        };
+        var off = {analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied'};
+        gtag('consent', 'default', Object.assign({region: ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IS', 'IE', 'IT', 'LV', 'LI', 'LT', 'LU', 'MT', 'NL', 'NO', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'GB', 'CH', 'CA-QC']}, off));
+        gtag('consent', 'default', Object.assign({}, off, {analytics_storage: 'granted'}));
+        gtag('js', new Date());
+        gtag('config', id, {send_page_view: false});
+        var tag = document.createElement('script');
+        tag.async = true;
+        tag.src = 'https://www.googletagmanager.com/gtag/js?id=' + id;
+        document.head.appendChild(tag);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

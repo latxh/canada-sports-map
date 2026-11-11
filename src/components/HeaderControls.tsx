@@ -63,20 +63,25 @@ interface SiteMenuProps {
   appearance: Appearance;
   onAppearanceChange: (a: Appearance) => void;
   onOpenCredits: () => void;
+  /** Link to share: the current view's share page, so its preview card comes with it. */
+  shareUrl: string;
+  shareTitle: string;
+  onShared?: (method: 'native' | 'copy') => void;
 }
 
-export function SiteMenu({appearance, onAppearanceChange, onOpenCredits}: SiteMenuProps) {
+export function SiteMenu({appearance, onAppearanceChange, onOpenCredits, shareUrl, shareTitle, onShared}: SiteMenuProps) {
   const showToast = useToast();
 
   const share = async () => {
-    const url = window.location.href;
-    const data = {title: 'Canadian Sports Atlas', text: 'Canadian pro sports, mapped', url};
+    const url = shareUrl;
+    const data = {title: shareTitle, text: 'Canadian pro sports, mapped', url};
     const isTouch = window.matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 0;
     // Phones and tablets get the native share sheet. It can be refused (an embedding page
     // without the web-share permission, an unsupported browser), so fall back to copying.
     if (isTouch && typeof navigator.share === 'function' && (!navigator.canShare || navigator.canShare(data))) {
       try {
         await navigator.share(data);
+        onShared?.('native');
         return;
       } catch (err) {
         if ((err as Error)?.name === 'AbortError') return;
@@ -84,6 +89,7 @@ export function SiteMenu({appearance, onAppearanceChange, onOpenCredits}: SiteMe
     }
     try {
       await navigator.clipboard.writeText(url);
+      onShared?.('copy');
       showToast({body: 'Link copied to clipboard', uniqueID: 'share'});
     } catch {
       showToast({body: `Copy this link: ${url}`, uniqueID: 'share', isAutoHide: false});

@@ -379,3 +379,214 @@
     }
   }
 }
+
+/* Link-preview cards (?og=…): fixed 1200×630 images, so fixed sizes and colours. */
+@layer components {
+  .og-card {
+    position: relative;
+    display: flex;
+    width: 1200px;
+    height: 630px;
+    overflow: hidden;
+    background: #131418;
+    color: #fff;
+    font-family: var(--font-family-body, system-ui);
+  }
+  .og-copy {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 40px 36px 40px 64px;
+  }
+  .og-body {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin: auto 0;
+  }
+  .og-panel {
+    position: relative;
+    flex: none;
+    height: 630px;
+    background: #0d0e11;
+  }
+  .og-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 60px;
+    background: linear-gradient(to right, #131418, transparent);
+    z-index: 1;
+    pointer-events: none;
+  }
+  .og-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+    color: #c9ced6;
+  }
+  .og-brand img {
+    border-radius: 8px;
+  }
+  .og-brand-hero {
+    gap: 20px;
+    font-size: 68px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    color: #fff;
+  }
+  .og-brand-hero img {
+    border-radius: 16px;
+  }
+  .og-name {
+    margin: 0;
+    font-size: 64px;
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -1.5px;
+  }
+  .og-name small {
+    display: block;
+    margin-top: 10px;
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: #aab1bb;
+  }
+  .og-city {
+    font-size: 92px;
+  }
+  .og-league {
+    font-size: 54px;
+  }
+  .og-meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 0;
+    font-size: 27px;
+    font-weight: 600;
+    color: #c9ced6;
+  }
+  .og-tile {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+  }
+  .og-tile .logo-chip > img {
+    filter: none;
+  }
+  .og-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 0;
+  }
+  .og-pills span {
+    padding: 7px 18px;
+    border: 1px solid rgb(255 255 255 / 0.18);
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.1);
+    font-size: 21px;
+    font-weight: 700;
+  }
+  .og-logos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 6px 0 0;
+  }
+  .og-trophies {
+    margin: 0;
+  }
+  .og-trophies > span {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+  }
+  .og-trophies b {
+    margin-left: 8px;
+    font-size: 26px;
+    color: #e3c46a;
+  }
+  .og-trophies figcaption {
+    margin-top: 10px;
+    font-size: 24px;
+    font-weight: 700;
+    color: #e3c46a;
+  }
+  .og-map {
+    display: block;
+  }
+  .og-land {
+    fill: #22242a;
+    stroke: #30333b;
+    stroke-width: 0.8;
+  }
+  .og-lake {
+    fill: #0d0e11;
+  }
+  .og-dot-active {
+    fill: #e9ecf1;
+  }
+  .og-dot-former {
+    fill: #7d838e;
+  }
+  .og-dot-focus {
+    fill: #fff;
+  }
+  .og-focus-ring {
+    fill: rgb(255 255 255 / 0.12);
+    stroke: rgb(255 255 255 / 0.75);
+    stroke-width: 2;
+  }
+  .og-map-label {
+    font-size: 24px;
+    font-weight: 800;
+    fill: #fff;
+    paint-order: stroke;
+    stroke: #0d0e11;
+    stroke-width: 6px;
+    stroke-linejoin: round;
+  }
+  .og-full .og-map {
+    position: absolute;
+    inset: 0;
+  }
+  .og-full::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgb(19 20 24 / 0.97) 0%, rgb(19 20 24 / 0.86) 26%, rgb(19 20 24 / 0.3) 46%, rgb(19 20 24 / 0) 60%);
+    pointer-events: none;
+  }
+  .og-full-copy {
+    position: absolute;
+    left: 64px;
+    right: 64px;
+    bottom: 52px;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .og-pitch {
+    margin: 0;
+    font-size: 29px;
+    font-weight: 500;
+    line-height: 1.3;
+    color: #d5dbe2;
+  }
+  .og-list {
+    padding: 32px;
+    font-family: var(--font-family-body, system-ui);
+  }
+  .og-list li {
+    margin: 4px 0;
+  }
+}

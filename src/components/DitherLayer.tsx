@@ -26,7 +26,7 @@ export interface Blob {
 }
 
 export type DitherMode =
-  | {kind: 'closest'; sites: Site[]}
+  | {kind: 'closest'; sites: Site[]; /** Falloff distance in unzoomed map pixels (default 34). */ reach?: number}
   | {
       kind: 'blobs';
       blobs: Blob[];
@@ -98,7 +98,7 @@ function buildField(
     const {sites} = mode;
     const sx = sites.map((s) => bx(s.x));
     const sy = sites.map((s) => by(s.y));
-    const reach = 34 * t.k;
+    const reach = (mode.reach ?? 34) * t.k;
     for (let j = 0; j < gh; j++) {
       const cy = (j + 0.5) * CELL;
       for (let i = 0; i < gw; i++) {
@@ -365,15 +365,16 @@ function hslToRgb(h: number, sat: number, l: number): [number, number, number] {
 }
 
 /**
- * The team's most colourful colour (so navy-and-orange teams read as orange, not grey),
- * with dark shades lifted in lightness, keeping their hue, so they show on the map.
+ * The team's primary colour, unless it is black, grey or nearly so; then its most colourful
+ * one (so black-and-orange teams read as orange). Dark shades are lifted in lightness,
+ * keeping their hue, so they show on the map.
  */
 export function siteColor(colors: string[]): [number, number, number] {
   const chroma = (hex: string) => {
     const [r, g, b] = hexToRgb(hex);
     return Math.max(r, g, b) - Math.min(r, g, b);
   };
-  const best = colors.reduce((a, b) => (chroma(b) > chroma(a) + 24 ? b : a), colors[0]);
+  const best = chroma(colors[0]) >= 80 ? colors[0] : colors.reduce((a, b) => (chroma(b) > chroma(a) + 24 ? b : a), colors[0]);
   const [h, sat, l] = rgbToHsl(hexToRgb(best));
   if (sat < 0.12) return hslToRgb(h, sat, Math.min(0.62, Math.max(0.38, l)));
   return hslToRgb(h, Math.max(sat, 0.55), Math.min(0.6, Math.max(0.42, l)));

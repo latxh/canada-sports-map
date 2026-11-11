@@ -8,7 +8,8 @@
     "preview": "vite preview",
     "typecheck": "tsc -b",
     "test": "vitest run",
-    "geo": "node scripts/build-geo.mjs"
+    "geo": "node scripts/build-geo.mjs",
+    "og": "node scripts/render-og.mjs"
   },
   "type": "module",
   "dependencies": {
