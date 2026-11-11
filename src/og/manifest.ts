@@ -10,7 +10,10 @@
  *
  * Plain data only (no React, no import.meta): vite.config.ts imports it too.
  */
-import {CITIES, LEAGUES, LEAGUE_ORDER, PROVINCE_NAMES, TEAMS, CITY_BY_ID, yearsLabel, type LeagueId, type Team} from '../data';
+import {CITIES, DATA_YEAR, LEAGUES, LEAGUE_ORDER, PROVINCE_NAMES, TEAMS, CITY_BY_ID, yearsLabel, type LeagueId, type Team} from '../data';
+
+/** Playing now: current, and already past its first season's start (not an announced expansion club). */
+export const isPlayingNow = (t: Team) => t.status === 'current' && t.from <= DATA_YEAR;
 
 export const SITE_URL = 'https://latxh.github.io/canada-sports-map/';
 export const SITE_NAME = 'Canadian Sports Atlas';
@@ -85,8 +88,8 @@ function teamEntry(team: Team): OgEntry {
 function cityEntry(cityId: string): OgEntry {
   const city = CITY_BY_ID[cityId];
   const teams = TEAMS.filter((t) => t.cityId === cityId);
-  const active = teams.filter((t) => t.status === 'current').length;
-  const former = teams.length - active;
+  const active = teams.filter(isPlayingNow).length;
+  const former = teams.filter((t) => t.status !== 'current').length;
   const titles = titleCount(teams);
   const parts = [active > 0 ? plural(active, 'pro team') + ' today' : 'no pro teams today', former > 0 ? `${former} former` : '', titles > 0 ? plural(titles, 'championship') : ''].filter(Boolean);
   return {
@@ -104,8 +107,8 @@ function cityEntry(cityId: string): OgEntry {
 
 function leagueEntry(league: LeagueId): OgEntry {
   const teams = TEAMS.filter((t) => t.league === league);
-  const active = teams.filter((t) => t.status === 'current').length;
-  const former = teams.length - active;
+  const active = teams.filter(isPlayingNow).length;
+  const former = teams.filter((t) => t.status !== 'current').length;
   const titles = titleCount(teams);
   const counts = `${active} today${former > 0 ? ` and ${former} former` : ''}`;
   const won = titles > 0 ? `, with ${plural(titles, 'championship')}` : '';

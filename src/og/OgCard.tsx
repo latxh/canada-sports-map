@@ -6,7 +6,7 @@
  * so they use fixed pixel sizes rather than responsive layout.
  */
 import {useEffect, useMemo, useState, type ReactNode} from 'react';
-import {geoConicConformal, geoPath} from 'd3-geo';
+import {geoMercator, geoPath} from 'd3-geo';
 import {zoomIdentity} from 'd3-zoom';
 import type {GeoPermissibleObjects} from 'd3-geo';
 import {Theme} from '@astryxdesign/core/theme';
@@ -18,7 +18,7 @@ import {DitherLayer, siteColor, type DitherMode, type Site} from '../components/
 import {LeagueLogo, TeamLogo} from '../visuals/Logos';
 import {TrophyArt, TrophyDefs} from '../visuals/Trophies';
 import {latestEra} from '../lib/venues';
-import {OG_BY_KEY, OG_ENTRIES, SITE_NAME, titlesLabel, type OgEntry} from './manifest';
+import {OG_BY_KEY, OG_ENTRIES, SITE_NAME, isPlayingNow, titlesLabel, type OgEntry} from './manifest';
 
 const W = 1200;
 const H = 630;
@@ -53,7 +53,7 @@ type MapSpec =
 /** Canada with a living-dither layer, sized for a card. `frame` crops to the band of cities. */
 function OgMap({geo, width, height, spec, dots, frame = 'canada'}: {geo: Geo; width: number; height: number; spec: MapSpec; dots: Dot[]; frame?: 'canada' | 'band'}) {
   const projection = useMemo(() => {
-    const p = geoConicConformal().parallels([49, 77]).rotate([96, 0]);
+    const p = geoMercator();
     if (frame === 'band') {
       // Southern Canada fills the top of a full-bleed card; the Arctic runs off the top edge.
       const band: GeoPermissibleObjects = {
@@ -263,8 +263,8 @@ function TeamCard({geo, team}: {geo: Geo; team: Team}) {
 function CityCard({geo, cityId}: {geo: Geo; cityId: string}) {
   const city = CITY_BY_ID[cityId];
   const teams = TEAMS.filter((t) => t.cityId === cityId).sort(compareTeams);
-  const active = teams.filter((t) => t.status === 'current');
-  const former = teams.length - active.length;
+  const active = teams.filter(isPlayingNow);
+  const former = teams.filter((t) => t.status !== 'current').length;
   const titles = titleCount(teams);
   const others = citySites().filter((s) => s.cityId !== cityId);
   const own = active[0] ?? teams[0];
@@ -303,7 +303,7 @@ function CityCard({geo, cityId}: {geo: Geo; cityId: string}) {
 function LeagueCard({geo, league}: {geo: Geo; league: LeagueId}) {
   const info = LEAGUES[league];
   const teams = TEAMS.filter((t) => t.league === league).sort(compareTeams);
-  const active = teams.filter((t) => t.status === 'current');
+  const active = teams.filter(isPlayingNow);
   const formerCities = [...new Set(teams.filter((t) => t.status !== 'current').map((t) => t.cityId))].filter((c) => !active.some((t) => t.cityId === c));
   const titles = titleCount(teams);
   const sites = active.map((t) => ({cityId: t.cityId, rgb: teamRgb(t)}));
@@ -323,7 +323,7 @@ function LeagueCard({geo, league}: {geo: Geo; league: LeagueId}) {
           <Pills
             items={[
               `${active.length} ${active.length === 1 ? 'team' : 'teams'} today`,
-              ...(teams.length > active.length ? [`${teams.length - active.length} former`] : []),
+              ...(teams.some((t) => t.status !== 'current') ? [`${teams.filter((t) => t.status !== 'current').length} former`] : []),
               ...(titles > 0 ? [`${titles} ${titles === 1 ? 'title' : 'titles'}`] : []),
             ]}
           />

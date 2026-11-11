@@ -69,7 +69,7 @@ Light and dark mode, a draggable bottom sheet on phones, keyboard-accessible map
 
 ## Coverage
 
-The data was reviewed in November 2026 and covers 82 teams in 20 cities:
+The data was reviewed in November 2026 and covers 83 teams in 20 cities:
 
 | League | Active | Former |
 | --- | --- | --- |
@@ -83,7 +83,7 @@ The data was reviewed in November 2026 and covers 82 teams in 20 cities:
 | CEBL | Sea Bears, River Lions, Stingers, Mamba, Shooting Stars, Honey Badgers, Surge, Bandits, BlackJacks, Alliance | Hamilton Honey Badgers, Nighthawks, Growlers |
 | PWHL | Victoire, Sceptres, Charge, Goldeneyes, PWHL Hamilton | none |
 | WNBA | Tempo | none |
-| NSL | Rise, AFC Toronto, Roses, Rapid, Wild, Tides | none |
+| NSL | Rise, AFC Toronto, Roses, Rapid, Wild, Tides, Ember (from 2027) | none |
 | CDL | Toronto KOI (formerly Ultra), Vancouver Surge | none |
 
 ## Getting started

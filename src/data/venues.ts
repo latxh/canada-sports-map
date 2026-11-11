@@ -490,7 +490,24 @@ export const VENUES: Venue[] = [
     surface: 'turf',
     facts: ['On the University of Manitoba campus. A large canopy covers most of the seats.', 'Hosted the 112th Grey Cup in 2025.'],
     wikipedia: wiki('Princess_Auto_Stadium'),
+  },  {
+    id: 'ralph-cantafio-soccer-complex',
+    name: 'Ralph Cantafio Soccer Complex',
+    formerNames: ['Winnipeg Soccer Complex'],
+    cityId: 'winnipeg',
+    opened: null,
+    capacity: 2000,
+    kind: 'soccer',
+    roof: 'open',
+    surface: 'turf',
+    facts: [
+      'Two artificial-turf fields; the main pitch, John Scouras Field, seats about 2,000.',
+      'A soccer-specific stadium is being built on the site by April 2027, raising capacity to about 4,500, for Winnipeg Ember FC’s first NSL season.',
+      'Hosted soccer at the 1999 Pan American Games and the 2017 Canada Summer Games.',
+    ],
+    wikipedia: wiki('Ralph_Cantafio_Soccer_Complex'),
   },
+
   {
     id: 'winnipeg-stadium',
     name: 'Winnipeg Stadium',

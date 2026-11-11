@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState} from 'react';
-import {geoConicConformal, geoPath} from 'd3-geo';
+import {geoMercator, geoPath} from 'd3-geo';
 import {select} from 'd3-selection';
 import 'd3-transition';
 import {zoom as d3zoom, zoomIdentity, type ZoomBehavior, type ZoomTransform} from 'd3-zoom';
@@ -204,18 +204,12 @@ export function SportsMap({
 
   const projection = useMemo(() => {
     if (!size || !geo) return null;
+    // Web Mercator, the familiar web-map view of the world. Scaled so Canada spans the width
+    // at k = 1 (the far north runs off the top), which keeps zoom thresholds in the same range.
     const padX = Math.max(12, size.w * 0.03);
-    const padY = Math.max(12, size.h * 0.04);
-    return geoConicConformal()
-      .parallels([49, 77])
-      .rotate([96, 0])
-      .fitExtent(
-        [
-          [padX, padY],
-          [size.w - padX, size.h - padY],
-        ],
-        geo.provinces,
-      );
+    const p = geoMercator().fitWidth(size.w - padX * 2, geo.provinces);
+    const [tx, ty] = p.translate();
+    return p.translate([tx + padX, ty + Math.max(12, size.h * 0.04)]);
   }, [size, geo]);
 
   const paths = useMemo(() => {
@@ -290,14 +284,15 @@ export function SportsMap({
     return zoomIdentity.translate(padL + (w2 - padL - padR) / 2 - k * cx, topInset + h2 / 2 - k * cy).scale(k);
   }, [size, cityBand, rightInset, bottomInset, topInset]);
 
-  /** The whole country, shrunk to fit the part of the map not covered by panels (used for logo takeovers). */
+  /** The whole country, fitted to the part of the map not covered by panels (used for logo takeovers). */
   const countryTransform = useCallback(() => {
-    if (!size) return zoomIdentity;
+    if (!size || !paths) return zoomIdentity;
     const w2 = size.w - rightInset;
     const h2 = size.h - bottomInset - topInset;
-    const s = Math.min(1, w2 / size.w, h2 / size.h);
-    return zoomIdentity.translate((w2 - size.w * s) / 2, topInset + (h2 - size.h * s) / 2).scale(s);
-  }, [size, rightInset, bottomInset, topInset]);
+    const [[x0, y0], [x1, y1]] = paths.bounds;
+    const k = Math.min((w2 * 0.94) / (x1 - x0), (h2 * 0.94) / (y1 - y0));
+    return zoomIdentity.translate(w2 / 2 - k * ((x0 + x1) / 2), topInset + h2 / 2 - k * ((y0 + y1) / 2)).scale(k);
+  }, [size, paths, rightInset, bottomInset, topInset]);
 
   // Attach d3-zoom once the svg exists.
   const didInit = useRef(false);
@@ -678,7 +673,9 @@ export function SportsMap({
                 <title>{p.name}</title>
               </path>
             ))}
-            {takeover && <TakeoverLayer key={takeover.id} takeover={takeover} bounds={paths.bounds} clipId={clipId} />}
+            {takeover && projection && (
+              <TakeoverLayer key={takeover.id} takeover={takeover} bounds={paths.bounds} anchor={projection([-104, 61]) ?? [0, 0]} width={(projection([-123, 56])?.[0] ?? 0) - (projection([-80, 56])?.[0] ?? 0)} clipId={clipId} />
+            )}
             {takeover &&
               paths.provinces.map((p) => (
                 <path
@@ -978,15 +975,26 @@ function MarkerLabel({label, x, y, isFormer = false}: {label: PlacedLabel; x: nu
 }
 
 /** A team's logo filling the shape of Canada, on its colour, clipped to the provinces. */
-function TakeoverLayer({takeover, bounds, clipId}: {takeover: MapTakeover; bounds: [[number, number], [number, number]]; clipId: string}) {
+function TakeoverLayer({
+  takeover,
+  bounds,
+  anchor,
+  width,
+  clipId,
+}: {
+  takeover: MapTakeover;
+  bounds: [[number, number], [number, number]];
+  /** Where the logo centres: over the Prairies and the territories, clear of Hudson Bay. */
+  anchor: [number, number];
+  /** The mainland's width at that latitude (BC coast to Hudson Bay), which sizes the logo. */
+  width: number;
+  clipId: string;
+}) {
   const [[x0, y0], [x1, y1]] = bounds;
   const w = x1 - x0;
   const h = y1 - y0;
-  // Sit the logo over the western and central land mass (the Prairies and the territories), clear of
-  // Hudson Bay, and a little low because the Arctic islands thin out towards the top.
-  const size = Math.min(w * 0.56, h * 0.98);
-  const cx = x0 + w * 0.36;
-  const cy = y0 + h * 0.57;
+  const size = Math.abs(width) * 0.86;
+  const [cx, cy] = anchor;
   return (
     <g clipPath={`url(#${clipId})`} className="takeover" aria-hidden="true" pointerEvents="none">
       <rect x={x0} y={y0} width={w} height={h} fill={takeover.background} />

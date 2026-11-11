@@ -1,7 +1,8 @@
 /**
  * Official team and league logos, downloaded from the files each Wikipedia
- * article uses (see `page` for the file page and its licence). Generated;
- * the files live in public/logos/.
+ * article uses (see `page` for the file page and its licence); for the two teams
+ * whose articles have none, the logo comes from SportsLogos.net (used with
+ * permission). The files live in public/logos/.
  */
 export interface LogoInfo {
   file: string;
@@ -71,6 +72,9 @@ export const LOGOS: Record<string, LogoInfo> = {
   "guelph-nighthawks": {"file": "guelph-nighthawks.png", "page": "https://en.wikipedia.org/wiki/File:Guelph_Nighthawks.png", "license": "Fair use"},
   "halifax-thunderbirds": {"file": "halifax-thunderbirds.png", "page": "https://en.wikipedia.org/wiki/File:Halifax_Thunderbirds_logo.png", "license": "Fair use"},
   "halifax-tides-fc": {"file": "halifax-tides-fc.svg", "page": "https://en.wikipedia.org/wiki/File:Halifax_Tides_FC.svg", "license": "Fair use"},
+  "winnipeg-ember-fc": {"file": "winnipeg-ember-fc.png", "page": "https://en.wikipedia.org/wiki/File:Winnipeg_Ember_FC.jpg", "license": "Fair use"},
+  "vancouver-bandits": {"file": "vancouver-bandits.webp", "page": "https://www.sportslogos.net/logos/view/697126172019/Vancouver-Bandits-Logo/2019/Primary-Logo", "license": "SportsLogos.net, used with permission"},
+  "montreal-concordes": {"file": "montreal-concordes.webp", "page": "https://www.sportslogos.net/logos/view/6099/Montr\u00e9al-Concordes-Logo/1982/Primary-Logo", "license": "SportsLogos.net, used with permission"},
   "league-CEBL": {"file": "league-CEBL.png", "page": "https://en.wikipedia.org/wiki/File:Canadian_Elite_Basketball_League_logo.png", "license": "Fair use"},
   "league-NLL": {"file": "league-NLL.svg", "page": "https://en.wikipedia.org/wiki/File:National_Lacrosse_League_Logo.svg", "license": "Fair use"},
   "league-NSL": {"file": "league-NSL.svg", "page": "https://commons.wikimedia.org/wiki/File:Northern_Super_League.svg", "license": "Public domain"},

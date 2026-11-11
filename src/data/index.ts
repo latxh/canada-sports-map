@@ -58,7 +58,11 @@ export function citiesWithTeams(league: LeagueFilter): {city: City; teams: Team[
   return CITIES.map((city) => ({city, teams: teamsForCity(city.id, league)})).filter((c) => c.teams.length > 0);
 }
 
+/** The latest season the data covers; a team starting after it hasn't played yet. */
+export const DATA_YEAR = 2026;
+
 export function yearsLabel(from: number, to?: number): string {
   if (to === from) return String(from);
+  if (!to && from > DATA_YEAR) return `From ${from}`;
   return to ? `${from}–${to}` : `${from}–present`;
 }
