@@ -286,6 +286,28 @@ export function SportsMap({
     return zoomIdentity.translate(padL + (w2 - padL - padR) / 2 - k * cx, topInset + h2 / 2 - k * cy).scale(k);
   }, [size, cityBand, rightInset, bottomInset, topInset]);
 
+  /**
+   * Mainland Canada for logo takeovers: BC to Newfoundland, from southern Ontario up to about 71°N,
+   * so the high Arctic islands fall off the top. Fitted to the part of the map not under panels.
+   */
+  const mainlandTransform = useCallback(() => {
+    if (!size || !projection) return homeTransform();
+    const nw = projection([-139, 71]);
+    const se = projection([-53, 42]);
+    if (!nw || !se) return homeTransform();
+    const w2 = size.w - rightInset;
+    const h2 = size.h - bottomInset - topInset;
+    const padX = Math.min(48, w2 * 0.04);
+    const padTop = 64; // clear of the controls pill
+    const padBottom = Math.min(32, h2 * 0.04);
+    const bw = se[0] - nw[0];
+    const bh = se[1] - nw[1];
+    const k = Math.min((w2 - padX * 2) / bw, (h2 - padTop - padBottom) / bh);
+    const cx = (nw[0] + se[0]) / 2;
+    const cy = (nw[1] + se[1]) / 2;
+    return zoomIdentity.translate(w2 / 2 - k * cx, topInset + padTop + (h2 - padTop - padBottom) / 2 - k * cy).scale(k);
+  }, [size, projection, homeTransform, rightInset, bottomInset, topInset]);
+
 
   // Attach d3-zoom once the svg exists.
   const didInit = useRef(false);
@@ -314,7 +336,7 @@ export function SportsMap({
     sel.call(behavior).on('dblclick.zoom', null);
     if (!didInit.current) {
       didInit.current = true;
-      sel.call(behavior.transform, homeTransform());
+      sel.call(behavior.transform, takeover ? mainlandTransform() : homeTransform());
     }
     return () => {
       sel.on('.zoom', null);
@@ -338,29 +360,20 @@ export function SportsMap({
   const takeoverId = takeover?.id ?? null;
 
   /**
-   * Where a takeover logo sits, in map pixels: over the Prairies with its bottom just above the
-   * US border, as large as half the visible map (460px at most) without running under the top
-   * controls or out over Hudson Bay and the Arctic islands, measured at the home zoom.
+   * Where a takeover logo sits, in map pixels: big, centred over the Prairies and the
+   * territories (clear of Hudson Bay), sized from the mainland's width so it scales with the map.
    */
   const takeoverPlacement = useMemo(() => {
-    if (!takeover || !projection || !size) return null;
-    const t = homeTransform();
-    const border = projection([-102, 49]);
-    const north = projection([-102, 59.5]);
-    const west = projection([-112, 52]);
-    const east = projection([-92, 52]);
-    if (!border || !north || !west || !east) return null;
-    const margin = 8 / t.k;
-    const visibleTop = (topInset + 64 - t.y) / t.k;
-    const wanted = Math.min((size.w - rightInset) * 0.5, (size.h - bottomInset - topInset) * 0.5, 460) / t.k;
-    // Keep to solid mainland: below Hudson Bay and the Arctic islands, west of the bay.
-    const land = Math.min(border[1] - north[1], east[0] - west[0]);
-    const logoSize = Math.max(40 / t.k, Math.min(wanted, land, border[1] - margin - visibleTop));
-    return {anchor: [border[0], border[1] - margin - logoSize / 2] as [number, number], size: logoSize};
-  }, [takeover, projection, size, homeTransform, rightInset, bottomInset, topInset]);
+    if (!takeover || !projection) return null;
+    const anchor = projection([-104, 60.5]);
+    const west = projection([-123, 56]);
+    const east = projection([-80, 56]);
+    if (!anchor || !west || !east) return null;
+    return {anchor: anchor as [number, number], size: Math.abs(east[0] - west[0]) * 0.86};
+  }, [takeover, projection]);
   const resetZoom = useCallback(() => {
-    animateTo(homeTransform(), 450);
-  }, [animateTo, homeTransform]);
+    animateTo(takeoverId ? mainlandTransform() : homeTransform(), 450);
+  }, [animateTo, takeoverId, mainlandTransform, homeTransform]);
 
   /** Fly to a city, close enough to separate it from its neighbours. */
   const flyToCity = useCallback(
@@ -388,8 +401,8 @@ export function SportsMap({
   );
 
   // Where the map should be. Opening a city remembers the view you jumped from, and closing the
-  // panel goes back to it (a cluster you had zoomed into stays zoomed). A logo takeover keeps
-  // the usual framing of southern Canada, with the logo over the Prairies.
+  // panel goes back to it (a cluster you had zoomed into stays zoomed). A logo takeover frames
+  // mainland Canada, with the high Arctic islands cropped off the top.
   const jumpPoint = useRef<ZoomTransform | null>(null);
   const prevSelected = useRef<string | null>(null);
   const prevTakeover = useRef<string | null>(null);
@@ -402,7 +415,7 @@ export function SportsMap({
     prevTakeover.current = takeoverId;
     if (selectionChanged && !wasSelected && selectedCityId) jumpPoint.current = transformRef.current;
     if (takeoverId) {
-      animateTo(homeTransform(), 450);
+      animateTo(mainlandTransform(), 450);
       return;
     }
     if (selectedCityId) {
