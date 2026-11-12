@@ -10,24 +10,24 @@ An interactive map of Canadian professional sports: every NHL, NBA, MLB, MLS, CF
 
 ### The map
 
-- **Canada, full screen.** The map opens on the band of sports cities across southern Canada, with the rest of the world filled in around it. Zoom in for a finer coastline, rivers, lakes, nearby towns and the names of seas, lakes, mountain ranges and islands.
-- **City dots.** Each sports city is a solid dot with its name: dark for cities with active teams, light grey for cities whose teams are all gone, blue (with a pulse) when selected. Nearby cities merge into one dot until you zoom in.
-- **League filter.** One dropdown shows all cities or a single league. With a league picked, a city that has one team in it opens straight to that team.
-- **Logo takeover.** When a team is the only current Canadian team in its league (the Raptors, the Blue Jays, the Tempo), its page fills Canada with its logo.
-- **Share links with their own previews.** Every team, city, league and map layer has a share link (for example [`/team/toronto-raptors/`](https://latxh.github.io/canada-sports-map/team/toronto-raptors/)) with its own preview card on X, Reddit, iMessage, Discord and Slack. Share hands out the link for what you're looking at (the native share sheet on phones); the league, layer and pin are also kept in the URL.
+- **Canada on a familiar web map.** The map opens on the band of sports cities across southern Canada, with the rest of the world around it. Zoom in for a finer coastline, rivers, lakes, nearby towns and the names of seas, lakes, mountain ranges and islands; zoom out to see the whole world.
+- **City dots.** Each sports city is a dot with its name: dark for cities with active teams, light grey for cities whose teams are all gone, blue with a pulse when selected. Nearby cities merge into one dot until you zoom in.
+- **League filter.** One dropdown shows all cities or a single league. With a league picked, a city with one team in it opens straight to that team.
+- **Logo takeover.** When a team is the only current Canadian team in its league, filtering to that league or opening its page fills mainland Canada with its logo (the Raptors get their original 1995 logo).
+- **Share links with their own previews.** Every team, city, league and map layer has its own link (for example [`/team/toronto-raptors/`](https://latxh.github.io/canada-sports-map/team/toronto-raptors/)) with a preview card made for it on X, Reddit, iMessage, Discord and Slack. Share hands out the link for what you're looking at, using the native share sheet on phones.
 
-| City panel with a 3D venue | Logo takeover |
+| City panel | Logo takeover |
 | --- | --- |
-| ![Toronto: teams, trophy cabinet and venues](docs/desktop-city.png) | ![The Raptors logo filling Canada](docs/takeover.png) |
+| ![Toronto: its teams and trophy cabinet](docs/desktop-city.png) | ![The 1995 Raptors logo filling Canada](docs/takeover.png) |
 
 ### Map layers
 
-Four round toggles sit beside the league filter; one is on at a time. The first three are living, ordered-dither patterns that ripple out from each city and twinkle (they hold still if you prefer reduced motion), drawn as part of the map so they move with it as you pan and zoom.
+Four round toggles sit beside the league filter, one on at a time. The first three are animated dot patterns that ripple out from each city and twinkle, drawn as part of the map so they move with it, with the dots staying the same small size at every zoom. They hold still if you prefer reduced motion.
 
-- **Population**: every one of Canada's 152 metro areas and agglomerations, sized by its 2021 Census population.
-- **Championships**: gold around each city, sized by the titles its teams have won, with the count.
+- **Population**: all 152 of Canada's metro areas and agglomerations, sized by 2021 Census population.
+- **Championships**: gold around each city, sized by the titles its teams have won.
 - **Closest team**: every spot in Canada coloured by its nearest team. Hover or tap for the team and the distance.
-- **Drop a pin**: tap anywhere (or use your location) and arcs fly to every city on the map, coloured by distance (green nearby, through yellow, to red from about 4,500 km away, so a pin far from Canada turns them all orange and red), with the nearest cities and the farthest one listed in kilometres.
+- **Drop a pin**: tap anywhere, or use your location, and arcs fly to every city on the map. They're coloured by real distance: green nearby, through yellow, to red from about 4,500 km, so a pin far from Canada turns them all red. A card lists the nearest cities and the farthest one.
 
 | Closest team (NHL) | Population |
 | --- | --- |
@@ -37,23 +37,26 @@ Four round toggles sit beside the league filter; one is on at a time. The first 
 
 ### City and team panels
 
-- **City**: its teams as logo tiles (league and years underneath), a trophy cabinet with one trophy per title, and its active venues in a dropdown, each with a 3D model (or a photo) and cards for year opened, capacity, surface and roof.
-- **Team**: a hero card, the trophy cabinet, every venue the team has called home, carousels of logos, uniforms and playing surfaces through the years (from SportsLogos.net, used with permission), a photo carousel, and links to Wikipedia and logo archives. Opened from a city, it has a back button to that city.
+- **City**: its teams as logo tiles with league and years, a trophy cabinet with one trophy per title, and its active venues, each with a 3D model (or a photo) and its year opened, capacity, surface and roof.
+- **Team**: a hero card, the trophy cabinet, every venue the team has called home, and carousels of its logos, uniforms and playing surfaces through the years (from SportsLogos.net, used with permission), plus photos and links to Wikipedia and its full logo history. Opened from a city, it has a back button to that city.
+- **Lightbox**: tap any logo, uniform, court, rink or photo to see it large over the app, step through the rest of that carousel, and follow its source link.
 - **Trophies**: original illustrations of all twelve championship trophies, drawn from photos of the real ones.
 
-| Team page | Uniforms, rinks and photos |
+| Team page | Logos, uniforms, rinks and photos |
 | --- | --- |
 | ![The Montréal Canadiens' page](docs/desktop-team.png) | ![Carousels on the Canadiens' page](docs/desktop-team-carousels.png) |
 
+![A Raptors uniform open in the lightbox, with the app behind it](docs/lightbox.png)
+
 ### 3D venues
 
-Each of the 24 stadiums and arenas that NHL, NBA, MLB, MLS, CFL and CPL teams play in today has its own hand-built, low-poly model, drawn to scale from OpenStreetMap footprints and reference photos. Rogers Centre's roof opens and closes, BC Place's roof gathers under its 36 masts, and fields switch markings for the sport you're looking at. Models open full screen. On phones, a pre-rendered still shows first and the 3D model loads when you tap **View in 3D**; desktops load it as soon as the card scrolls into view, and it only animates while it's on screen.
+Each of the 24 stadiums and arenas that NHL, NBA, MLB, MLS, CFL and CPL teams play in today has its own hand-built, low-poly model, drawn to scale from OpenStreetMap footprints and reference photos. Rogers Centre's roof opens and closes, BC Place's roof gathers under its 36 masts, and fields switch markings for the sport you're looking at. Desktops load the model when its card scrolls into view; phones show a pre-rendered still until you tap **View in 3D**. Models open full screen, and only animate while they're on screen.
 
 ![The 24 current venues as low-poly 3D models](docs/stadium-models.jpg)
 
 ### Link-preview cards
 
-Each share link shows a card made for it: a team's logo, league, years and trophies beside its territory on the map; a city's teams around a glow on its spot; a league's Canadian teams and the closest-team map for that league; or a full map for each layer.
+Each share link has a card made for it: a team's logo, league, years and trophies beside its territory on the map; a city's teams around a glow on its spot; a league's Canadian teams on its closest-team map; or a full map for each layer.
 
 | Team | City | League |
 | --- | --- | --- |
@@ -61,11 +64,11 @@ Each share link shows a card made for it: a team's logo, league, years and troph
 
 ### Everywhere
 
-Light and dark mode, a draggable bottom sheet on phones, keyboard-accessible map markers, and no axe-core violations.
+Light and dark mode, a draggable bottom sheet on phones with swipeable, full-width carousels, keyboard-accessible map markers, and no axe-core violations. Built to be light on phones: 3D, panels and the detailed map load only when they're needed.
 
-| Dark mode | Phone | Phone, closest team |
-| --- | --- | --- |
-| ![Vancouver in dark mode](docs/desktop-dark.png) | ![Montréal on a phone](docs/mobile-city.png) | ![Closest team on a phone](docs/mobile-closest.png) |
+| Dark mode | Phone | Phone, closest team | Phone, venue |
+| --- | --- | --- | --- |
+| ![Vancouver in dark mode](docs/desktop-dark.png) | ![Montréal on a phone](docs/mobile-city.png) | ![Closest team on a phone](docs/mobile-closest.png) | ![A venue still with View in 3D](docs/mobile-venue.png) |
 
 ## Coverage
 
@@ -91,7 +94,7 @@ The data was reviewed in November 2026 and covers 83 teams in 20 cities:
 ```bash
 npm install
 npm run dev        # http://localhost:5173
-npm test           # dataset integrity tests
+npm test           # data, asset and 3D model tests
 npm run build      # type-check + production build into dist/
 ```
 
@@ -101,18 +104,21 @@ Requires Node 22.13 or later.
 
 ```
 src/
-  data/            # typed dataset: leagues, cities, venues, teams/*.ts, population, media (+ integrity tests)
+  data/            # typed dataset: leagues, cities, venues, teams/*.ts, population, media, sportslogos (+ tests)
   data/geo/        # simplified Natural Earth TopoJSON (built by scripts/build-geo.mjs)
   components/      # SportsMap (d3-geo + d3-zoom), DitherLayer, map tools, panels, credits
   visuals/         # original SVG illustrations: trophies, badges, uniforms, playing surfaces
-  three/           # 3D: kit/ (low-poly parts), models/ (one per current venue), viewer (lazy-loaded)
+  three/           # 3D: kit/ (low-poly parts), models/ (one per current venue), viewer and stills (lazy-loaded)
   og/              # share links: manifest (paths, titles, descriptions) and the ?og= preview cards
-  lib/analytics.ts # Google Analytics page views and events
+  lib/             # helpers: analytics (Google Analytics), venues, colour, SportsLogos.net loader
+research/
+  notes.json       # written research behind the data (not bundled)
 public/
   stills/          # pre-rendered stills of the 3D venue models (scripts/render-stills.mjs)
   og/              # rendered preview cards, one per share link (scripts/render-og.mjs)
-  logos/           # current team and league logos (from Wikipedia)
+  logos/           # current team and league logos (from Wikipedia; two from SportsLogos.net)
   media/           # historical logos and photos (from Wikipedia and Wikimedia Commons)
+  sportslogos/     # logo, uniform and playing-surface history (SportsLogos.net, with permission)
 ```
 
 ### Editing data
@@ -161,11 +167,11 @@ npm run og                                          # all cards, or: npm run og 
 
 - **[Wikipedia](https://en.wikipedia.org/)**: team, venue and championship facts, paraphrased (CC BY-SA 4.0). Every team and venue links to its article.
 - **Logos**: the files each team's and league's Wikipedia article uses. `src/data/logos.ts` and `src/data/media.ts` record each file's page and licence. Most are non-free trademarks, used on Wikipedia under fair use.
-- **[Wikimedia Commons](https://commons.wikimedia.org/)**: team and venue photos, all freely licensed and credited under each photo and in the app's Credits.
+- **[Wikimedia Commons](https://commons.wikimedia.org/)**: team and venue photos, all freely licensed, credited with author and licence in the lightbox and in the app's Credits.
 - **[Statistics Canada](https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=9810000301)**: 2021 Census population for the Population layer.
 - **[Natural Earth](https://www.naturalearthdata.com/)**: countries, provinces, coastlines, lakes, rivers, towns and geography names (public domain).
 - **[OpenStreetMap](https://www.openstreetmap.org/copyright)**: venue footprints and dimensions used as references for the 3D models (© OpenStreetMap contributors, ODbL).
-- **[SportsLogos.net](https://www.sportslogos.net/)**: logo, uniform and playing-surface history images (`public/sportslogos/`), used with permission. Opening any image shows its source link, the Credits list SportsLogos.net, and each team links to its full history there.
+- **[SportsLogos.net](https://www.sportslogos.net/)**: logo, uniform and playing-surface history images (`public/sportslogos/`), used with permission. Each image links to its page there from the lightbox, and each team links to its full history.
 - **[Google Analytics](https://marketingplatform.google.com/about/analytics/)**: visit counts (see Analytics above).
 - **[Astryx](https://github.com/facebook/astryx)**, **[three.js](https://threejs.org/)** / **[React Three Fiber](https://r3f.docs.pmnd.rs/)**, **[d3](https://d3js.org/)**, **[TopoJSON](https://github.com/topojson/topojson)**.
 
