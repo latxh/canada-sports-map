@@ -12,8 +12,7 @@ import {VENUE_PHOTOS} from '../data/media';
 import {ISOMETRIC_VENUES, isometricUrl, type IsometricArt} from '../data/isometric';
 import {ExpandIcon} from './icons';
 import {SectionTitle} from './bits';
-import {ZoomablePhoto} from './Media';
-import {venueArtCaption} from './VenueLightbox';
+import {sourceCaption, ZoomablePhoto} from './Media';
 
 export interface VenueEntry {
   venue: Venue;
@@ -71,7 +70,7 @@ function Stat({label, value}: {label: string; value: string}) {
 function IsometricFigure({venue, art}: {venue: Venue; art: IsometricArt}) {
   const src = isometricUrl(art);
   const alt = `${venue.name}, isometric illustration`;
-  const caption = venueArtCaption(venue.name, art);
+  const caption = sourceCaption(venue.name, {href: art.earth, label: 'Google Earth'});
   const lightbox = useLightbox({media: {src, alt, caption}, hasZoom: true});
   return (
     <section className="card-radius venue-art relative overflow-hidden border border-border">

@@ -437,67 +437,60 @@
   }
 }
 
-/* Venue illustrations on the map when zoomed in close: a small card at each stadium, joined to its site. */
+/* Each city's venue illustrations on the map when zoomed in: a little fanned stack with a count. */
 @layer components {
-  .venue-thumb {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: 3px;
-    border-radius: 10px;
-    background: var(--color-background-surface);
-    border: 1px solid var(--color-border);
-    box-shadow: 0 4px 14px rgb(0 0 0 / 0.18);
-    cursor: zoom-in;
-    animation: venue-thumb-in 220ms ease-out;
-    transition: transform 120ms ease, box-shadow 120ms ease;
+  .venue-stack {
+    cursor: pointer;
+    animation: venue-stack-in 220ms ease-out;
   }
-  .venue-thumb:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgb(0 0 0 / 0.24);
-  }
-  .venue-thumb:focus-visible {
-    outline: 2px solid var(--color-border-focus, var(--map-selected));
-    outline-offset: 2px;
-  }
-  .venue-thumb-image {
-    display: block;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 16 / 10;
+  .venue-stack-card {
+    position: absolute;
     object-fit: cover;
     border-radius: 7px;
+    border: 2px solid var(--color-background-surface);
+    box-shadow: 0 3px 10px rgb(0 0 0 / 0.22);
+    transform-origin: bottom left;
+    transition: rotate 160ms ease, translate 160ms ease;
   }
-  .venue-thumb-label {
-    display: block;
-    padding: 0 2px;
-    overflow: hidden;
+  .venue-stack:hover .venue-stack-card,
+  .venue-stack:focus-visible .venue-stack-card {
+    translate: 0 -2px;
+  }
+  .venue-stack:focus-visible {
+    outline: 2px solid var(--color-border-focus, var(--map-selected));
+    outline-offset: 3px;
+    border-radius: 8px;
+  }
+  .venue-stack-count {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--color-text-primary);
+    color: var(--color-background-surface);
     font-size: 11px;
-    line-height: 14px;
-    font-weight: 600;
-    color: var(--color-text-primary);
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    font-weight: 700;
+    line-height: 20px;
     text-align: center;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.25);
   }
   .venue-leader {
     stroke: var(--color-text-secondary);
     stroke-width: 1.25;
-    opacity: 0.7;
+    opacity: 0.6;
   }
-  .venue-site {
-    fill: var(--color-background-surface);
-    stroke: var(--color-text-primary);
-    stroke-width: 1.5;
-  }
-  @keyframes venue-thumb-in {
+  @keyframes venue-stack-in {
     from {
       opacity: 0;
-      transform: translateY(4px) scale(0.96);
+      transform: translateY(4px) scale(0.95);
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .venue-thumb {
+    .venue-stack,
+    .venue-stack-card {
       animation: none;
       transition: none;
     }
