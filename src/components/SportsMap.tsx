@@ -1,4 +1,4 @@
-import {Suspense, lazy, useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState} from 'react';
+import {useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState} from 'react';
 import {geoMercator, geoPath} from 'd3-geo';
 import {DESKTOP_QUERY, TOUCH_QUERY, useMediaQuery} from '../hooks/useMediaQuery';
 import {select} from 'd3-selection';
@@ -19,7 +19,6 @@ import {FitIcon, MinusIcon, PlusIcon} from './icons';
 import {POPULATION} from '../data/population';
 import type {MapView} from './HeaderControls';
 
-const VenueLightbox = lazy(() => import('./VenueLightbox'));
 
 type GeoProps = {name: string; code?: string};
 export interface Geo {
@@ -150,8 +149,8 @@ const MAX_ZOOM = 40;
 const LABEL_FONT = 13;
 /** Zoom (1 = all of Canada) from which the detailed coastline, rivers, towns and geography labels show. */
 const DETAIL_K = 1.9;
-/** Map scale (screen pixels per km) from which venue illustrations show at their stadiums. */
-const VENUE_PX_PER_KM = 5;
+/** Map scale (screen pixels per km) from which each city shows a stack of its venue illustrations. */
+const VENUE_PX_PER_KM = 2;
 /** The most a "show all cities" view zooms in, so the country never feels cropped. */
 const HOME_MAX_K = 1.3;
 
@@ -623,19 +622,20 @@ export function SportsMap({
 
   const labelById = useMemo(() => new Map(placed.labels.map((l) => [l.id, l])), [placed.labels]);
 
-  // Venue illustrations at their stadiums, once you've zoomed in to about a city's scale.
-  // Thumbnails fan out around their sites (with a leader line) so neighbours never overlap.
-  const venueSites = useMemo(() => {
-    if (!projection) return [];
-    const files = new Set<string>();
-    // One thumbnail per illustration: a venue sharing another's (TD Place Arena) is left to its host.
-    return Object.entries(ISOMETRIC_VENUES).flatMap(([venueId, art]) => {
-      if (art.file !== `${venueId}.webp` || files.has(art.file)) return [];
-      files.add(art.file);
-      const p = projection([art.lon, art.lat]);
-      return p ? [{venueId, art, px: p[0], py: p[1]}] : [];
-    });
-  }, [projection]);
+  // Once you've zoomed in to about a region's scale, each city shows a small stack of its venue
+  // illustrations (current venues first) beside its marker; tapping it opens the city.
+  const venuesByCity = useMemo(() => {
+    const byCity = new Map<string, {venueId: string; art: IsometricArt}[]>();
+    for (const [venueId, art] of Object.entries(ISOMETRIC_VENUES)) {
+      // A venue sharing another's illustration (TD Place Arena) is left to its host.
+      const venue = VENUE_BY_ID[venueId];
+      if (!venue || art.file !== `${venueId}.webp`) continue;
+      byCity.set(venue.cityId, [...(byCity.get(venue.cityId) ?? []), {venueId, art}]);
+    }
+    for (const list of byCity.values())
+      list.sort((a, b) => Number(!!VENUE_BY_ID[a.venueId].closed) - Number(!!VENUE_BY_ID[b.venueId].closed) || (VENUE_BY_ID[b.venueId].capacity ?? 0) - (VENUE_BY_ID[a.venueId].capacity ?? 0));
+    return byCity;
+  }, []);
   // Screen pixels per km at zoom 1.
   const pxPerKm = useMemo(() => {
     if (!projection) return 0;
@@ -644,13 +644,15 @@ export function SportsMap({
     return a && b ? Math.hypot(b[0] - a[0], b[1] - a[1]) / (0.1 * 111.32 * Math.cos((43.7 * Math.PI) / 180)) : 0;
   }, [projection]);
   // Phones fit Canada into fewer pixels, so they never reach a desktop's scale: there the
-  // thumbnails start at half of the deepest zoom instead.
-  const showVenues = pxPerKm > 0 && transform.k * pxPerKm >= Math.min(VENUE_PX_PER_KM, pxPerKm * MAX_ZOOM * 0.5);
-  const venueThumbs = useMemo(
-    () => (size && !takeover && showVenues ? placeVenueThumbs(venueSites, transform, size, placed.boxes, topInset, bottomInset, rightInset, !isTouch) : []),
-    [size, takeover, showVenues, venueSites, transform, placed.boxes, topInset, bottomInset, rightInset, isTouch],
-  );
-  const [openVenue, setOpenVenue] = useState<{items: {venueId: string; art: IsometricArt}[]; index: number} | null>(null);
+  // stacks start at about a third of the deepest zoom instead.
+  const showVenues = pxPerKm > 0 && transform.k * pxPerKm >= Math.min(VENUE_PX_PER_KM, pxPerKm * MAX_ZOOM * 0.35);
+  const venueStacks = useMemo(() => {
+    if (!size || takeover || !showVenues) return [];
+    const anchors = placed.clusters
+      .filter((c) => c.members.length === 1 && c.head.city.id !== selectedCityId && venuesByCity.has(c.head.city.id))
+      .map((c) => ({cityId: c.head.city.id, x: c.x, y: c.y, r: c.r, venues: venuesByCity.get(c.head.city.id)!}));
+    return placeVenueStacks(anchors, size, placed.boxes, topInset, bottomInset, rightInset, !isTouch);
+  }, [size, takeover, showVenues, placed.clusters, placed.boxes, selectedCityId, venuesByCity, topInset, bottomInset, rightInset, isTouch]);
 
   // What the dither layer shows: territories, people, or titles (one at a time).
   const ditherMode = useMemo<DitherMode | null>(() => {
@@ -876,13 +878,10 @@ export function SportsMap({
             ))}
           </g>
 
-          {venueThumbs.length > 0 && (
+          {venueStacks.length > 0 && (
             <g aria-hidden="true" pointerEvents="none" className="venue-leaders">
-              {venueThumbs.map((t) => (
-                <g key={t.venueId}>
-                  <line x1={t.ax} y1={t.ay} x2={t.cx} y2={t.cy} className="venue-leader" />
-                  <circle cx={t.ax} cy={t.ay} r={3.2} className="venue-site" />
-                </g>
+              {venueStacks.map((t) => (
+                <line key={t.cityId} x1={t.ax} y1={t.ay} x2={t.cx} y2={t.cy} className="venue-leader" />
               ))}
             </g>
           )}
@@ -935,30 +934,40 @@ export function SportsMap({
         </svg>
       )}
 
-      {venueThumbs.length > 0 && (
-        <div className="pointer-events-none absolute inset-0" aria-label="Venues in view" role="group">
-          {venueThumbs.map((t, i) => {
-            const name = VENUE_BY_ID[t.venueId]?.name ?? t.venueId;
+      {venueStacks.length > 0 && (
+        <div className="pointer-events-none absolute inset-0">
+          {venueStacks.map((t) => {
+            const city = CITY_BY_ID[t.cityId]?.name ?? t.cityId;
+            const n = t.venues.length;
             return (
               <button
-                key={t.venueId}
+                key={t.cityId}
                 type="button"
-                className="venue-thumb pointer-events-auto absolute"
-                style={{left: t.x, top: t.y, width: t.w}}
-                aria-label={`View ${name}`}
-                title={name}
-                onClick={() => setOpenVenue({items: venueThumbs.map(({venueId, art}) => ({venueId, art})), index: i})}>
-                <img src={isometricThumbUrl(t.art)} alt="" width={t.w} height={t.h} decoding="async" className="venue-thumb-image" />
-                <span className="venue-thumb-label">{name}</span>
+                className="venue-stack pointer-events-auto absolute"
+                style={{left: t.x, top: t.y, width: t.w, height: t.h}}
+                aria-label={`Open ${city}: ${n} ${n === 1 ? 'venue' : 'venues'}`}
+                title={t.venues.map((v) => VENUE_BY_ID[v.venueId]?.name).join(' · ')}
+                onClick={() => onSelectCity(t.cityId)}>
+                {t.venues
+                  .slice(0, 3)
+                  .reverse()
+                  .map((v, i, shown) => {
+                    const depth = shown.length - 1 - i;
+                    return (
+                      <img
+                        key={v.venueId}
+                        src={isometricThumbUrl(v.art)}
+                        alt=""
+                        decoding="async"
+                        className="venue-stack-card"
+                        style={{width: t.cardW, height: t.cardH, left: depth * STACK_STEP, top: (STACK_DEPTH - depth) * STACK_STEP, rotate: `${depth * 4}deg`}}
+                      />
+                    );
+                  })}
               </button>
             );
           })}
         </div>
-      )}
-      {openVenue && (
-        <Suspense fallback={null}>
-          <VenueLightbox items={openVenue.items} index={openVenue.index} onIndexChange={(index) => setOpenVenue((o) => (o ? {...o, index} : o))} onClose={() => setOpenVenue(null)} />
-        </Suspense>
       )}
 
       {probe && (
@@ -1317,58 +1326,59 @@ function overlaps(a: Box, b: Box) {
   return a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;
 }
 
-interface VenueThumb {
-  venueId: string;
-  art: IsometricArt;
-  /** The stadium's site on screen. */
+/** How far each card in a venue stack is offset from the one in front, and how many sit behind. */
+const STACK_STEP = 5;
+const STACK_DEPTH = 2;
+
+interface VenueStack {
+  cityId: string;
+  venues: {venueId: string; art: IsometricArt}[];
+  /** The city marker on screen. */
   ax: number;
   ay: number;
-  /** Top-left of the thumbnail, its size, and its centre (where the leader line ends). */
+  /** Top-left of the stack, its size, its front card's size, and its centre (where the leader line ends). */
   x: number;
   y: number;
   w: number;
   h: number;
+  cardW: number;
+  cardH: number;
   cx: number;
   cy: number;
 }
 
 /**
- * Places a thumbnail for each venue in view: right above its site if there's room, otherwise in
- * the nearest free spot on rings around it, clear of other thumbnails, city markers and labels.
+ * Places each city's venue stack: right above its marker if there's room, otherwise in the nearest
+ * free spot on rings around it, clear of other stacks, city markers, labels and the zoom buttons.
  */
-function placeVenueThumbs(
-  sites: {venueId: string; art: IsometricArt; px: number; py: number}[],
-  t: ZoomTransform,
+function placeVenueStacks(
+  anchors: {cityId: string; x: number; y: number; r: number; venues: {venueId: string; art: IsometricArt}[]}[],
   size: Size,
   obstacles: Box[],
   topInset: number,
   bottomInset: number,
   rightInset: number,
   hasZoomButtons: boolean,
-): VenueThumb[] {
-  const w = size.w < 640 ? 72 : 92;
-  const h = Math.round((w * 10) / 16);
-  const labelH = 18;
-  const bh = h + labelH;
+): VenueStack[] {
+  const cardW = size.w < 640 ? 46 : 64;
+  const cardH = Math.round((cardW * 10) / 16);
+  const w = cardW + STACK_DEPTH * STACK_STEP + 4;
+  const h = cardH + STACK_DEPTH * STACK_STEP + 4;
   const bounds = {x0: 4, y0: topInset + 4, x1: size.w - rightInset - 4, y1: size.h - bottomInset - 4};
-  const inView = sites
-    .map((s) => ({...s, ax: t.applyX(s.px), ay: t.applyY(s.py)}))
-    .filter((s) => s.ax > bounds.x0 && s.ax < bounds.x1 && s.ay > bounds.y0 && s.ay < bounds.y1)
-    .sort((a, b) => a.ay - b.ay || a.ax - b.ax);
-  // Keep clear of the zoom buttons in the bottom-left corner too.
+  const inView = anchors.filter((a) => a.x > bounds.x0 && a.x < bounds.x1 && a.y > bounds.y0 && a.y < bounds.y1).sort((a, b) => a.y - b.y || a.x - b.x);
   const zoomButtons = hasZoomButtons ? [{x0: 0, y0: size.h - bottomInset - 140, x1: 64, y1: size.h - bottomInset}] : [];
-  const taken: Box[] = [...obstacles, ...zoomButtons, ...inView.map((s) => ({x0: s.ax - 5, y0: s.ay - 5, x1: s.ax + 5, y1: s.ay + 5}))];
-  const angles = [-90, -45, -135, 0, 180, 45, 135, 90, -67.5, -112.5, -22.5, -157.5, 22.5, 157.5, 67.5, 112.5];
-  const out: VenueThumb[] = [];
-  for (const s of inView) {
+  const taken: Box[] = [...obstacles, ...zoomButtons];
+  const angles = [-90, -45, -135, 0, 180, 45, 135, 90];
+  const out: VenueStack[] = [];
+  for (const a of inView) {
     let fit: Box | null = null;
-    for (let ring = 0; ring < 4 && !fit; ring++) {
-      const d = bh / 2 + 10 + ring * (bh * 0.75);
-      for (const deg of ring === 0 ? [-90] : angles) {
+    for (let ring = 0; ring < 3 && !fit; ring++) {
+      const d = h / 2 + a.r + 8 + ring * (h * 0.6);
+      for (const deg of angles) {
         const rad = (deg * Math.PI) / 180;
-        const cx = s.ax + Math.cos(rad) * (d + (Math.abs(Math.cos(rad)) * (w - bh)) / 2);
-        const cy = s.ay + Math.sin(rad) * d;
-        const box = {x0: cx - w / 2, y0: cy - bh / 2, x1: cx + w / 2, y1: cy + bh / 2};
+        const cx = a.x + Math.cos(rad) * (d + (Math.abs(Math.cos(rad)) * (w - h)) / 2);
+        const cy = a.y + Math.sin(rad) * d;
+        const box = {x0: cx - w / 2, y0: cy - h / 2, x1: cx + w / 2, y1: cy + h / 2};
         if (box.x0 < bounds.x0 || box.y0 < bounds.y0 || box.x1 > bounds.x1 || box.y1 > bounds.y1) continue;
         if (taken.some((b) => overlaps(b, box))) continue;
         fit = box;
@@ -1377,7 +1387,7 @@ function placeVenueThumbs(
     }
     if (!fit) continue;
     taken.push({x0: fit.x0 - 4, y0: fit.y0 - 4, x1: fit.x1 + 4, y1: fit.y1 + 4});
-    out.push({venueId: s.venueId, art: s.art, ax: s.ax, ay: s.ay, x: fit.x0, y: fit.y0, w, h, cx: (fit.x0 + fit.x1) / 2, cy: fit.y0 + h / 2});
+    out.push({cityId: a.cityId, venues: a.venues, ax: a.x, ay: a.y, x: fit.x0, y: fit.y0, w, h, cardW, cardH, cx: (fit.x0 + fit.x1) / 2, cy: (fit.y0 + fit.y1) / 2});
   }
   return out;
 }
