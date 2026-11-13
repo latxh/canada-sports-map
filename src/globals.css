@@ -188,8 +188,9 @@
     fill: var(--color-text-secondary);
   }
 
+  /* The grey "& Guelph" / "+5" line: halfway between the label colour and the halo, in light and dark. */
   .city-label.city-label-suffix {
-    fill: var(--color-text-secondary);
+    fill: color-mix(in srgb, var(--color-text-primary) 50%, var(--map-halo));
   }
   .city-label {
     paint-order: stroke;
