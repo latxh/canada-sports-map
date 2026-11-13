@@ -30,7 +30,7 @@ export interface ImageSource {
 }
 
 /** A lightbox caption: the text, then a link to the image's source page. */
-function sourceCaption(text: string, source?: ImageSource): ReactNode {
+export function sourceCaption(text: string, source?: ImageSource): ReactNode {
   if (!source) return text;
   return (
     <>
@@ -63,7 +63,7 @@ export function PhotoFigure({photo, height = 180, width, trigger}: {photo: Media
   );
 }
 
-/** A single photo that opens in the lightbox (e.g. a venue without a 3D model). */
+/** A single photo that opens in the lightbox (e.g. a venue that no longer stands). */
 export function ZoomablePhoto({photo, height}: {photo: MediaPhoto; height?: number}) {
   const lightbox = useLightbox({media: {src: mediaAsset(photo.file), alt: photo.caption, caption: photoCaption(photo)}, hasZoom: true});
   return (

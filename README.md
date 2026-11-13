@@ -37,7 +37,7 @@ Four round toggles sit beside the league filter, one on at a time. The first thr
 
 ### City and team panels
 
-- **City**: its teams as logo tiles with league and years, a trophy cabinet with one trophy per title, and its active venues, each with a 3D model (or a photo) and its year opened, capacity, surface and roof.
+- **City**: its teams as logo tiles with league and years, a trophy cabinet with one trophy per title, and its active venues, each with an isometric illustration and its year opened, capacity, surface and roof.
 - **Team**: a hero card, the trophy cabinet, every venue the team has called home, and carousels of its logos, uniforms and playing surfaces through the years (from SportsLogos.net, used with permission), plus photos and links to Wikipedia and its full logo history. Opened from a city, it has a back button to that city.
 - **Lightbox**: tap any logo, uniform, court, rink or photo to see it large over the app, step through the rest of that carousel, and follow its source link.
 - **Trophies**: original illustrations of all twelve championship trophies, drawn from photos of the real ones.
@@ -48,11 +48,11 @@ Four round toggles sit beside the league filter, one on at a time. The first thr
 
 ![A Raptors uniform open in the lightbox, with the app behind it](docs/lightbox.png)
 
-### 3D venues
+### Isometric venues
 
-Each of the 24 stadiums and arenas that NHL, NBA, MLB, MLS, CFL and CPL teams play in today has its own hand-built, low-poly model, drawn to scale from OpenStreetMap footprints and reference photos. Rogers Centre's roof opens and closes, BC Place's roof gathers under its 36 masts, and fields switch markings for the sport you're looking at. Desktops load the model when its card scrolls into view; phones show a pre-rendered still until you tap **View in 3D**. Models open full screen, and only animate while they're on screen.
+Every venue that still stands, past or present, 49 in all, has an isometric pixel-art illustration of it and its neighbourhood. Each one starts as a 3D block model of the OpenStreetMap buildings, streets and parks around the venue, framed on it, with buildings directly in front of it left out. [isometric-cities](https://github.com/Statecraft-Labs/isometric-cities) then repaints that render locally with FLUX.2 [klein] 9B and the Pixel Art Redmond style. Shapes and layout come from the map; details like seats, windows and cars are the model's. Tap an illustration to see it large, with a link to the venue on OpenStreetMap. Venues that have been demolished show a photo instead.
 
-![The 24 current venues as low-poly 3D models](docs/stadium-models.jpg)
+![The isometric venue illustrations](docs/isometric-venues.jpg)
 
 ### Link-preview cards
 
@@ -64,11 +64,11 @@ Each share link has a card made for it: a team's logo, league, years and trophie
 
 ### Everywhere
 
-Light and dark mode, a draggable bottom sheet on phones with swipeable, full-width carousels, keyboard-accessible map markers, and no axe-core violations. Built to be light on phones: 3D, panels and the detailed map load only when they're needed.
+Light and dark mode, a draggable bottom sheet on phones with swipeable, full-width carousels, keyboard-accessible map markers, and no axe-core violations. Built to be light on phones: panels, venue illustrations and the detailed map load only when they're needed.
 
 | Dark mode | Phone | Phone, closest team | Phone, venue |
 | --- | --- | --- | --- |
-| ![Vancouver in dark mode](docs/desktop-dark.png) | ![Montréal on a phone](docs/mobile-city.png) | ![Closest team on a phone](docs/mobile-closest.png) | ![A venue still with View in 3D](docs/mobile-venue.png) |
+| ![Vancouver in dark mode](docs/desktop-dark.png) | ![Montréal on a phone](docs/mobile-city.png) | ![Closest team on a phone](docs/mobile-closest.png) | ![A venue illustration on a phone](docs/mobile-venue.png) |
 
 ## Coverage
 
@@ -94,7 +94,7 @@ The data was reviewed in November 2026 and covers 83 teams in 20 cities:
 ```bash
 npm install
 npm run dev        # http://localhost:5173
-npm test           # data, asset and 3D model tests
+npm test           # data and asset tests
 npm run build      # type-check + production build into dist/
 ```
 
@@ -108,13 +108,12 @@ src/
   data/geo/        # simplified Natural Earth TopoJSON (built by scripts/build-geo.mjs)
   components/      # SportsMap (d3-geo + d3-zoom), DitherLayer, map tools, panels, credits
   visuals/         # original SVG illustrations: trophies, badges, uniforms, playing surfaces
-  three/           # 3D: kit/ (low-poly parts), models/ (one per current venue), viewer and stills (lazy-loaded)
   og/              # share links: manifest (paths, titles, descriptions) and the ?og= preview cards
   lib/             # helpers: analytics (Google Analytics), venues, colour, SportsLogos.net loader
 research/
   notes.json       # written research behind the data (not bundled)
 public/
-  stills/          # pre-rendered stills of the 3D venue models (scripts/render-stills.mjs)
+  isometric/       # isometric venue illustrations (scripts/isometric/)
   og/              # rendered preview cards, one per share link (scripts/render-og.mjs)
   logos/           # current team and league logos (from Wikipedia; two from SportsLogos.net)
   media/           # historical logos and photos (from Wikipedia and Wikimedia Commons)
@@ -123,19 +122,13 @@ public/
 
 ### Editing data
 
-Each team is one object in `src/data/teams/*.ts`, typed by `src/data/types.ts`. Add a venue to `src/data/venues.ts` and a city to `src/data/cities.ts`, then run `npm test`: it checks that every reference resolves, that years and statuses agree, that well-known title counts are right, and that every logo, photo, preview card and venue still exists.
+Each team is one object in `src/data/teams/*.ts`, typed by `src/data/types.ts`. Add a venue to `src/data/venues.ts` and a city to `src/data/cities.ts`, then run `npm test`: it checks that every reference resolves, that years and statuses agree, that well-known title counts are right, and that every logo, photo, preview card and venue illustration exists.
 
 The app's data holds only what it shows. The written research behind it (team summaries, milestones, honours and fates, venue facts, city blurbs, colour names and notes on each era's logo, jersey and playing surface) lives in `research/notes.json`, which isn't bundled; the tests check it still has a fate for every former team and a name for every colour.
 
-### Editing 3D models
+### Venue illustrations
 
-Each current venue has a model function in `src/three/models/<city>.ts`, built from the parts in `src/three/kit/`. Sizes are in metres. When a team moves into a new home, add its model there and its id to `src/three/modelIds.ts`; `npm test` checks that exactly the venues of current teams in those six leagues have a model, and that each builds within the triangle and draw-call budget. Then re-render the stills (one per venue and colour scheme), which `npm test` also checks:
-
-```bash
-npm run dev                                         # in another terminal
-npm i --no-save playwright && npx playwright install chromium
-npm run stills                                      # needs ImageMagick for the WebP conversion
-```
+`scripts/isometric/` rebuilds them on an Apple Silicon Mac (about 18 GB of GPU memory and 1.5 minutes per venue) with a clone of [isometric-cities](https://github.com/Statecraft-Labs/isometric-cities) set up with `./setup.sh --models`. Its README lists each step. When a team moves into a new venue, add the venue to `scripts/isometric/venues.json` and render it; `npm test` checks that every venue has an illustration or a reason in `NO_ISOMETRIC` (`src/data/isometric.ts`).
 
 ### Rebuilding the map and media
 
@@ -170,9 +163,10 @@ npm run og                                          # all cards, or: npm run og 
 - **[Wikimedia Commons](https://commons.wikimedia.org/)**: team and venue photos, all freely licensed, credited with author and licence in the lightbox and in the app's Credits.
 - **[Statistics Canada](https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=9810000301)**: 2021 Census population for the Population layer.
 - **[Natural Earth](https://www.naturalearthdata.com/)**: countries, provinces, coastlines, lakes, rivers, towns and geography names (public domain).
-- **[OpenStreetMap](https://www.openstreetmap.org/copyright)**: venue footprints and dimensions used as references for the 3D models (© OpenStreetMap contributors, ODbL).
+- **[OpenStreetMap](https://www.openstreetmap.org/copyright)**: the buildings, streets and parks behind the isometric venue illustrations (© OpenStreetMap contributors, ODbL), with ground elevation from [Mapzen Terrain Tiles](https://github.com/tilezen/joerd/blob/master/docs/attribution.md).
+- **[isometric-cities](https://github.com/Statecraft-Labs/isometric-cities)** (MIT) painted the illustrations with **[FLUX.2 [klein] 9B](https://huggingface.co/black-forest-labs/FLUX.2-klein-9B)** (FLUX Non-Commercial licence) and **[Pixel Art Redmond](https://huggingface.co/artificialguybr/PIXELART-REDMOND-FLUXKLEIN9B)** (Apache 2.0).
 - **[SportsLogos.net](https://www.sportslogos.net/)**: logo, uniform and playing-surface history images (`public/sportslogos/`), used with permission. Each image links to its page there from the lightbox, and each team links to its full history.
 - **[Google Analytics](https://marketingplatform.google.com/about/analytics/)**: visit counts (see Analytics above).
-- **[Astryx](https://github.com/facebook/astryx)**, **[three.js](https://threejs.org/)** / **[React Three Fiber](https://r3f.docs.pmnd.rs/)**, **[d3](https://d3js.org/)**, **[TopoJSON](https://github.com/topojson/topojson)**.
+- **[Astryx](https://github.com/facebook/astryx)**, **[d3](https://d3js.org/)**, **[TopoJSON](https://github.com/topojson/topojson)**.
 
 Trophies are original illustrations, and so are the badges, uniforms and playing surfaces for teams SportsLogos.net doesn't cover. Team names, logos and uniforms are trademarks of their owners. This is an unofficial fan project, not affiliated with or endorsed by any league or team.
