@@ -351,7 +351,7 @@ function MapCard({geo, entry}: {geo: Geo; entry: OgEntry}) {
   let spec: MapSpec;
   let title = SITE_NAME;
   let pitch = 'Every pro team in Canada, past and present, on one living map.';
-  let pills = [`${LEAGUE_ORDER.length} leagues`, `${TEAMS.length} teams`, `${cities.length} cities`, '3D stadiums'];
+  let pills = [`${LEAGUE_ORDER.length} leagues`, `${TEAMS.length} teams`, `${cities.length} cities`, 'Isometric venues'];
   if (entry.key === 'home') {
     spec = {kind: 'closest', sites: currentTeams('NHL').map((t) => ({cityId: t.cityId, rgb: teamRgb(t)})), reach: 70};
   } else if (entry.id === 'closest') {

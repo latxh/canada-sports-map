@@ -17,7 +17,8 @@ const REPO = 'https://github.com/latxh/canada-sports-map';
 
 const TOOLS = [
   {name: 'Astryx', href: 'https://github.com/facebook/astryx', note: 'UI components and theme'},
-  {name: 'three.js & React Three Fiber', href: 'https://threejs.org/', note: '3D stadium models'},
+  {name: 'isometric-cities', href: 'https://github.com/Statecraft-Labs/isometric-cities', note: 'Pixel-art venue illustrations, painted locally (MIT)'},
+  {name: 'FLUX.2 [klein] 9B & Pixel Art Redmond', href: 'https://huggingface.co/artificialguybr/PIXELART-REDMOND-FLUXKLEIN9B', note: 'Image model (FLUX Non-Commercial licence) and pixel-art style (Apache 2.0)'},
   {name: 'd3 & TopoJSON', href: 'https://d3js.org/', note: 'Map projection and pan and zoom'},
 ];
 
@@ -27,7 +28,8 @@ const SOURCES = [
   {name: 'Wikimedia Commons', href: 'https://commons.wikimedia.org/', note: 'Logo files and photos, listed below with their licences'},
   {name: 'Statistics Canada', href: 'https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=9810000301', note: '2021 Census population'},
   {name: 'Natural Earth', href: 'https://www.naturalearthdata.com/', note: 'Map data (public domain)'},
-  {name: 'OpenStreetMap', href: 'https://www.openstreetmap.org/copyright', note: 'Venue footprints for the 3D models (ODbL)'},
+  {name: 'Google Earth', href: 'https://earth.google.com/', note: '3D views the venue illustrations are repainted from (imagery © Google and its data providers, credited on each image)'},
+  {name: 'OpenStreetMap', href: 'https://www.openstreetmap.org/copyright', note: 'Venue locations and outlines used to frame each view (© OpenStreetMap contributors, ODbL)'},
 ];
 
 interface FileCredit {
@@ -153,8 +155,8 @@ export function CreditsDialog({isOpen, onOpenChange}: {isOpen: boolean; onOpenCh
               <VStack gap={1}>
                 <SectionTitle>About the visuals</SectionTitle>
                 <Text type="supporting">
-                  Trophies, and badges, uniforms and surfaces without a source image, are original illustrations. The 3D venues are hand-built,
-                  low-poly models drawn to scale. Data is current to {DATA_AS_OF}.
+                  Trophies, and badges, uniforms and surfaces without a source image, are original illustrations. Venues are pixel-art
+                  illustrations: an image model repaints a Google Earth 3D view of each one, so small details are illustrative. Data is current to {DATA_AS_OF}.
                 </Text>
               </VStack>
 

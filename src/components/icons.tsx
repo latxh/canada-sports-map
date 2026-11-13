@@ -45,13 +45,6 @@ export const FitIcon = (p: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-export const CubeIcon = (p: SVGProps<SVGSVGElement>) => (
-  <svg {...base(p)}>
-    <path d="M12 2 3 7v10l9 5 9-5V7z" />
-    <path d="m3 7 9 5 9-5M12 12v10" />
-  </svg>
-);
-
 export const ExpandIcon = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}>
     <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />

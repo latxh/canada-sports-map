@@ -128,7 +128,7 @@ export const OG_HOME: OgEntry = {
   path: '',
   target: '',
   title: SITE_NAME,
-  description: `Every pro team in Canada, past and present, on one living map: ${LEAGUE_ORDER.length} leagues, ${TEAMS.length} teams, ${new Set(TEAMS.map((t) => t.cityId)).size} cities, 3D stadiums, trophies and logo history.`,
+  description: `Every pro team in Canada, past and present, on one living map: ${LEAGUE_ORDER.length} leagues, ${TEAMS.length} teams, ${new Set(TEAMS.map((t) => t.cityId)).size} cities, isometric venues, trophies and logo history.`,
   image: 'og-image.jpg',
   imageAlt: "Map of Canada coloured by each area's closest NHL team, with the title Canadian Sports Atlas",
 };

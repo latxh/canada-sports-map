@@ -1,0 +1,146 @@
+{
+ "rogers-centre": {
+  "osm": "w7969701"
+ },
+ "scotiabank-arena": {
+  "osm": "w19882585"
+ },
+ "bmo-field": {
+  "osm": "w663457707"
+ },
+ "york-lions-stadium": {
+  "osm": "w236026523"
+ },
+ "bell-centre": {
+  "osm": "w19911284"
+ },
+ "stade-saputo": {
+  "osm": "w95436479"
+ },
+ "stade-boreale": {
+  "osm": "w1526431423"
+ },
+ "canadian-tire-centre": {
+  "osm": "w449048777"
+ },
+ "td-place-stadium": {
+  "osm": "w163034504"
+ },
+ "hamilton-stadium": {
+  "nearest": "stadium"
+ },
+ "bc-place": {
+  "osm": "w24705904"
+ },
+ "rogers-arena": {
+  "osm": "w24705911"
+ },
+ "starlight-stadium": {
+  "osm": "w766569268"
+ },
+ "willoughby-stadium": {
+  "osm": "w1082774184"
+ },
+ "saddledome": {
+  "osm": "w4397328"
+ },
+ "mcmahon-stadium": {
+  "osm": "w427304042"
+ },
+ "atco-field": {
+  "osm": "w1321608883"
+ },
+ "rogers-place": {
+  "osm": "w448626254"
+ },
+ "commonwealth-stadium": {
+  "osm": "w1351822252"
+ },
+ "mosaic-stadium": {
+  "osm": "r7185210"
+ },
+ "canada-life-centre": {
+  "osm": "w14869890"
+ },
+ "princess-auto-stadium": {
+  "osm": "w310551169"
+ },
+ "wanderers-grounds": {
+  "osm": "w704070046"
+ },
+ "maple-leaf-gardens": {
+  "osm": "w20060888"
+ },
+ "coca-cola-coliseum": {
+  "osm": "w227711310"
+ },
+ "toronto-pan-am-sports-centre": {
+  "osm": "w185369754"
+ },
+ "montreal-forum": {
+  "osm": "w20177664"
+ },
+ "olympic-stadium": {
+  "osm": "w108505523"
+ },
+ "jarry-park": {
+  "osm": "r2676968"
+ },
+ "verdun-auditorium": {
+  "osm": "w47175662"
+ },
+ "place-bell": {
+  "osm": "w484506152"
+ },
+ "le-colisee": {
+  "osm": "w41167716"
+ },
+ "td-coliseum": {
+  "osm": "w166293307"
+ },
+ "ralph-cantafio-soccer-complex": {
+  "osm": "w106287944"
+ },
+ "northlands-coliseum": {
+  "osm": "w25508530"
+ },
+ "clarke-stadium": {
+  "osm": "w25508981"
+ },
+ "pacific-coliseum": {
+  "osm": "w49796369"
+ },
+ "sasktel-centre": {
+  "osm": "w615967460"
+ },
+ "scotiabank-centre": {
+  "osm": "w553574575"
+ },
+ "caa-centre": {
+  "osm": "w225955971"
+ },
+ "meridian-centre": {
+  "osm": "w466960620"
+ },
+ "sleeman-centre": {
+  "osm": "w123261020"
+ },
+ "tribute-communities-centre": {
+  "osm": "w178905495"
+ },
+ "edmonton-expo-centre": {
+  "nearest": "building"
+ },
+ "langley-events-centre": {
+  "osm": "w144683497"
+ },
+ "swangard-stadium": {
+  "osm": "w426857458"
+ },
+ "molson-stadium": {
+  "osm": "w165265805"
+ },
+ "winsport-event-centre": {
+  "osm": "w157300252"
+ }
+}

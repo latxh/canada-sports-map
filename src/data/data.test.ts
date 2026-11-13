@@ -163,14 +163,15 @@ describe('SportsLogos.net images', () => {
   });
 });
 
-describe('3D venue stills', () => {
-  it('has a pre-rendered still for every venue model a panel can show', async () => {
-    const {allStillEntries, stillKey} = await import('../three/stills');
+describe('isometric venues', () => {
+  it('has an illustration for every standing venue, and a reason for each one without', async () => {
+    const {ISOMETRIC_VENUES, NO_ISOMETRIC} = await import('./isometric');
     const {existsSync} = await import('node:fs');
-    const missing = allStillEntries()
-      .map(stillKey)
-      .filter((key) => !existsSync(`public/stills/${key}.webp`));
-    // Run `npm run stills` (see scripts/render-stills.mjs) to render missing stills.
-    expect(missing).toEqual([]);
+    for (const v of VENUES) {
+      const art = ISOMETRIC_VENUES[v.id];
+      expect(!!art !== !!NO_ISOMETRIC[v.id], v.id).toBe(true);
+      if (art) expect(existsSync(`public/isometric/${art.file}`), art.file).toBe(true);
+    }
+    for (const id of [...Object.keys(ISOMETRIC_VENUES), ...Object.keys(NO_ISOMETRIC)]) expect(VENUES.some((v) => v.id === id), id).toBe(true);
   });
 });
