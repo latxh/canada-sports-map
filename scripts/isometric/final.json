@@ -1,9 +1,13 @@
 {
- "york-lions-stadium": "results/a3/york-lions-stadium.png",
- "jarry-park": "results/a3/jarry-park.png",
- "ralph-cantafio-soccer-complex": "results/a3/ralph-cantafio-soccer-complex.png",
- "stade-boreale": "results/a3/stade-boreale.png",
- "bc-place": "results/a3/bc-place.png",
- "olympic-stadium": "results/a3/olympic-stadium.png",
- "edmonton-expo-centre": "results/a3/edmonton-expo-centre.png"
+ "olympic-stadium": "results/e3/olympic-stadium.png",
+ "scotiabank-arena": "results/e3/scotiabank-arena.png",
+ "bell-centre": "results/e3/bell-centre.png",
+ "bc-place": "results/e3/bc-place.png",
+ "rogers-arena": "results/e3/rogers-arena.png",
+ "saddledome": "results/e3/saddledome.png",
+ "rogers-place": "results/e3/rogers-place.png",
+ "maple-leaf-gardens": "results/e3/maple-leaf-gardens.png",
+ "coca-cola-coliseum": "results/e3/coca-cola-coliseum.png",
+ "toronto-pan-am-sports-centre": "results/e3/toronto-pan-am-sports-centre.png",
+ "montreal-forum": "results/e3/montreal-forum.png"
 }

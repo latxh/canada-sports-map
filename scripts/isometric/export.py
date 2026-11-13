@@ -4,7 +4,7 @@ import os,pathlib
 HERE=pathlib.Path(__file__).resolve().parent
 ISO=pathlib.Path(os.environ.get("ISOMETRIC_CITIES",pathlib.Path.home()/"isometric-cities"))
 (ISO/"outputs/csm").mkdir(parents=True,exist_ok=True);os.chdir(ISO/"outputs/csm")
-import json,pathlib,sys
+import json,pathlib,sys,re
 from PIL import Image
 APP=HERE.parents[1]
 seeds=json.load(open(HERE/'seeds.json'));targets=json.load(open(HERE/'targets.json'))
@@ -18,27 +18,34 @@ GONE={
  'stampede-corral':'Demolished','empire-stadium':'Demolished in 1993',
 }
 ALIAS={'td-place-arena':'td-place-stadium'}  # the arena sits under TD Place Stadium's south stands
-osm={}
+osm={};earth={}
 for vid in seeds:
     osm[vid]=json.load(open(f'venues/{vid}/prep.json')).get('target')
-    src=pathlib.Path(final.get(vid,f'results/a2/{vid}.png'))
+    e=pathlib.Path(f'venues/{vid}/earth')
+    credit=(e/'credit.txt').read_text().strip() if (e/'credit.txt').exists() else 'Google'
+    earth[vid]={'url':(e/'url.txt').read_text().strip(),'credit':re.sub(r'^Google\s+','Google, ',credit) if credit!='Google' else credit}
+    src=pathlib.Path(final.get(vid,f'results/e2/{vid}.png'))
     if not src.exists(): print('MISSING',vid);continue
     Image.open(src).convert('RGB').save(out/f'{vid}.webp','WEBP',quality=88,method=6)
-for a,b in ALIAS.items(): osm[a]=osm[b]
+for a,b in ALIAS.items(): osm[a]=osm[b];earth[a]=earth[b]
 def entry(vid):
     f=ALIAS.get(vid,vid)
-    q=f", osm: '{osm[vid]}'" if osm.get(vid) else ''
-    return f"  '{vid}': {{file: '{f}.webp'{q}}},"
+    e=earth[vid]
+    return f"  '{vid}': {{file: '{f}.webp', earth: '{e['url']}', credit: {json.dumps(e['credit'])}, year: YEAR}},"
 lines=['/**',
-' * Isometric pixel-art illustrations of every venue that still stands, in public/isometric/.',
-' * Painted on a Mac with isometric-cities (github.com/Statecraft-Labs/isometric-cities): a block',
-' * model of OpenStreetMap buildings around the venue, repainted by FLUX.2 [klein] 9B with the Pixel',
+' * Pixel-art illustrations of every venue that still stands, in public/isometric/. Each is a',
+' * Google Earth 3D view of the venue, framed from OpenStreetMap, repainted on a Mac with',
+' * isometric-cities (github.com/Statecraft-Labs/isometric-cities): FLUX.2 [klein] 9B with the Pixel',
 ' * Art Redmond style. scripts/isometric/ rebuilds them; data.test.ts checks every venue is covered.',
 ' */',
+'const YEAR = 2026;','',
 'export interface IsometricArt {',
 '  file: string;',
-"  /** The venue's OpenStreetMap element, e.g. 'way/123', linked from the lightbox. */",
-'  osm?: string;',
+'  /** The Google Earth view it was painted from, linked from the lightbox. */',
+'  earth: string;',
+"  /** Google Earth's imagery attribution for that view. */",
+'  credit: string;',
+'  year: number;',
 '}','',
 'export const ISOMETRIC_VENUES: Record<string, IsometricArt> = {',
 *[entry(v) for v in sorted(list(seeds)+list(ALIAS))],
@@ -47,6 +54,5 @@ lines=['/**',
 'export const NO_ISOMETRIC: Record<string, string> = {',
 *[f"  '{k}': '{v}'," for k,v in sorted(GONE.items())],
 '};','',
-'export const isometricUrl = (art: IsometricArt) => `${import.meta.env.BASE_URL}isometric/${art.file}`;','',
-"export const osmUrl = (art: IsometricArt) => (art.osm ? `https://www.openstreetmap.org/${art.osm}` : 'https://www.openstreetmap.org/copyright');",'']
+'export const isometricUrl = (art: IsometricArt) => `${import.meta.env.BASE_URL}isometric/${art.file}`;','']
 (APP/'src/data/isometric.ts').write_text('\n'.join(lines));print('wrote',len(osm))

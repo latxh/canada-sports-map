@@ -48,9 +48,9 @@ Four round toggles sit beside the league filter, one on at a time. The first thr
 
 ![A Raptors uniform open in the lightbox, with the app behind it](docs/lightbox.png)
 
-### Isometric venues
+### Venue illustrations
 
-Every venue that still stands, past or present, 49 in all, has an isometric pixel-art illustration of it and its neighbourhood. Each one starts as a 3D block model of the OpenStreetMap buildings, streets and parks around the venue, framed on it, with buildings directly in front of it left out. [isometric-cities](https://github.com/Statecraft-Labs/isometric-cities) then repaints that render locally with FLUX.2 [klein] 9B and the Pixel Art Redmond style. Shapes and layout come from the map; details like seats, windows and cars are the model's. Tap an illustration to see it large, with a link to the venue on OpenStreetMap. Venues that have been demolished show a photo instead.
+Every venue that still stands, past or present (49 in all), has a pixel-art illustration of it and its neighbourhood. Each one starts from a Google Earth 3D view of the venue, framed from its OpenStreetMap outline and shot from high up with a narrow lens so it reads as isometric. [isometric-cities](https://github.com/Statecraft-Labs/isometric-cities) then repaints that view on a Mac with FLUX.2 [klein] 9B and the Pixel Art Redmond style. Shapes, roofs, seats and surroundings come from the imagery; the pixel-art detail comes from the model. Tap an illustration to see it large, with its imagery credit and a link to the same view in Google Earth. Demolished venues show a photo instead.
 
 ![The isometric venue illustrations](docs/isometric-venues.jpg)
 
@@ -128,7 +128,7 @@ The app's data holds only what it shows. The written research behind it (team su
 
 ### Venue illustrations
 
-`scripts/isometric/` rebuilds them on an Apple Silicon Mac (about 18 GB of GPU memory and 1.5 minutes per venue) with a clone of [isometric-cities](https://github.com/Statecraft-Labs/isometric-cities) set up with `./setup.sh --models`. Its README lists each step. When a team moves into a new venue, add the venue to `scripts/isometric/venues.json` and render it; `npm test` checks that every venue has an illustration or a reason in `NO_ISOMETRIC` (`src/data/isometric.ts`).
+`scripts/isometric/` rebuilds them on an Apple Silicon Mac (about 18 GB of GPU memory and 2 minutes per venue): it captures each venue in Google Earth with headless Chromium, then repaints it with a clone of [isometric-cities](https://github.com/Statecraft-Labs/isometric-cities) set up with `./setup.sh --models`. Its README lists each step. When a team moves into a new venue, add the venue to `scripts/isometric/` (`seeds.json`, `targets.json`, `names.json`) and render it; `npm test` checks that every venue has an illustration or a reason in `NO_ISOMETRIC` (`src/data/isometric.ts`).
 
 ### Rebuilding the map and media
 
@@ -163,7 +163,8 @@ npm run og                                          # all cards, or: npm run og 
 - **[Wikimedia Commons](https://commons.wikimedia.org/)**: team and venue photos, all freely licensed, credited with author and licence in the lightbox and in the app's Credits.
 - **[Statistics Canada](https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=9810000301)**: 2021 Census population for the Population layer.
 - **[Natural Earth](https://www.naturalearthdata.com/)**: countries, provinces, coastlines, lakes, rivers, towns and geography names (public domain).
-- **[OpenStreetMap](https://www.openstreetmap.org/copyright)**: the buildings, streets and parks behind the isometric venue illustrations (© OpenStreetMap contributors, ODbL), with ground elevation from [Mapzen Terrain Tiles](https://github.com/tilezen/joerd/blob/master/docs/attribution.md).
+- **[Google Earth](https://earth.google.com/)**: the 3D views the venue illustrations are repainted from. Imagery © Google and its data providers, credited per image in the lightbox.
+- **[OpenStreetMap](https://www.openstreetmap.org/copyright)**: venue locations and outlines used to frame each view (© OpenStreetMap contributors, ODbL).
 - **[isometric-cities](https://github.com/Statecraft-Labs/isometric-cities)** (MIT) painted the illustrations with **[FLUX.2 [klein] 9B](https://huggingface.co/black-forest-labs/FLUX.2-klein-9B)** (FLUX Non-Commercial licence) and **[Pixel Art Redmond](https://huggingface.co/artificialguybr/PIXELART-REDMOND-FLUXKLEIN9B)** (Apache 2.0).
 - **[SportsLogos.net](https://www.sportslogos.net/)**: logo, uniform and playing-surface history images (`public/sportslogos/`), used with permission. Each image links to its page there from the lightbox, and each team links to its full history.
 - **[Google Analytics](https://marketingplatform.google.com/about/analytics/)**: visit counts (see Analytics above).

@@ -84,6 +84,7 @@ def run(vid):
          'camera':{'view_quadrant':q,'pixels_per_metre':round(scale,2),'pixel_upscale':1,'terrain_cell_metres':4,'patch_terrain_cell_metres':4},
          'landmarks':[{'id':vid,'name':name,'lat':clat,'lon':clon}]}
     (d/'recipe2.json').write_text(json.dumps(rec,indent=1))
-    info={'venue':vid,'target':tkey,'view':q,'scale':round(scale,2),'occlusion_before_cut':round(frac,3),'cut':sorted(cut),'venue_area_m2':round(venue.area),'height_m':top,'centre':[clat,clon]}
+    tc=target.centroid;tlon,tlat=scene.lonlat(tc.x,tc.y)
+    info={'venue':vid,'target':tkey,'target_centre':[float(tlat),float(tlon)],'view':q,'scale':round(scale,2),'occlusion_before_cut':round(frac,3),'cut':sorted(cut),'venue_area_m2':round(venue.area),'height_m':top,'centre':[clat,clon]}
     (d/'prep.json').write_text(json.dumps(info,indent=1));print(json.dumps(info))
 for vid in (sys.argv[1].split(',') if len(sys.argv)>1 and sys.argv[1]!='all' else seeds): run(vid)
