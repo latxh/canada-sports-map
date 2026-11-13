@@ -468,7 +468,7 @@ export function TrophyArt({league, height = 64, isMuted = false, title}: {league
 }
 
 /**
- * Every championship a team has won, one trophy per title with its year,
+ * Every championship a team has won, newest first, one trophy per title with its year,
  * plus an empty silhouette when a team has never won.
  */
 export function TrophyCabinet({team}: {team: Team}) {
@@ -493,7 +493,7 @@ export function TrophyCabinet({team}: {team: Team}) {
         className="grid justify-items-center gap-x-1 gap-y-2"
         style={{gridTemplateColumns: `repeat(auto-fill, minmax(${Math.round(size * 0.78)}px, 1fr))`}}
         aria-label={`${titles.length} ${name}${titles.length === 1 ? '' : 's'}`}>
-        {titles.map((year) => (
+        {[...titles].sort((a, b) => b - a).map((year) => (
           <li key={year} className="flex flex-col items-center gap-0.5">
             <TrophyArt league={league} height={size} />
             <span className="text-xs font-semibold tabular-nums text-secondary">{year}</span>
@@ -505,13 +505,13 @@ export function TrophyCabinet({team}: {team: Team}) {
 }
 
 /**
- * Every title won by a set of teams (a city's), one trophy each, grouped by league and
- * in date order. The year sits under each trophy; the team is in its label.
+ * Every title won by a set of teams (a city's), one trophy each, newest first across all
+ * leagues. The year sits under each trophy; the team is in its label.
  */
 export function TitleCabinet({teams}: {teams: Team[]}) {
   const items = teams
     .flatMap((t) => t.championships.map((year) => ({team: t, year})))
-    .sort((a, b) => LEAGUE_ORDER.indexOf(a.team.league) - LEAGUE_ORDER.indexOf(b.team.league) || a.year - b.year);
+    .sort((a, b) => b.year - a.year || LEAGUE_ORDER.indexOf(a.team.league) - LEAGUE_ORDER.indexOf(b.team.league));
   if (items.length === 0) return null;
   const size = items.length > 24 ? 40 : items.length > 10 ? 48 : 60;
   return (

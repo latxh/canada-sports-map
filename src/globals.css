@@ -493,18 +493,30 @@
   .credit-files .astryx-list {
     padding-inline: 14px;
   }
-  /* A source link at the end of a lightbox caption, in the caption's colour over the dark scrim. */
-  .lightbox-source {
-    white-space: nowrap;
+  /*
+   * Our lightbox (useViewer) puts its own source link and close button, with tooltips, in the
+   * top-right corner, so the built-in close button (and its backing) is hidden.
+   */
+  .viewer :is(span:has(> button[aria-label='Close']), button[aria-label='Close']):not(.viewer-actions *) {
+    display: none !important;
   }
-  .astryx-lightbox .lightbox-source,
-  .astryx-lightbox .lightbox-source * {
-    color: inherit !important;
-    text-decoration-color: currentColor;
+  .viewer-actions {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 2;
+    display: flex;
+    gap: 6px;
   }
-  .astryx-lightbox .lightbox-source {
-    text-decoration: underline !important;
-    text-underline-offset: 3px;
+  .viewer-action {
+    border-radius: 999px !important;
+    color: #fff !important;
+    background: rgb(18 19 22 / 0.55) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .viewer-action:hover {
+    background: rgb(18 19 22 / 0.75) !important;
   }
 }
 

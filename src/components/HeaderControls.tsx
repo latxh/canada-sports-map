@@ -6,6 +6,7 @@ import {Icon} from '@astryxdesign/core/Icon';
 import {HStack} from '@astryxdesign/core/HStack';
 import {Text} from '@astryxdesign/core/Text';
 import {SegmentedControl, SegmentedControlItem} from '@astryxdesign/core/SegmentedControl';
+import {Tooltip} from '@astryxdesign/core/Tooltip';
 import {useToast} from '@astryxdesign/core/Toast';
 import {LEAGUES, LEAGUE_ORDER, type LeagueFilter, type LeagueId} from '../data';
 import {InfoIcon, MonitorIcon, MoonIcon, ShareIcon, SunIcon} from './icons';
@@ -107,9 +108,15 @@ export function SiteMenu({appearance, onAppearanceChange, onOpenCredits, shareUr
         <HStack hAlign="between" vAlign="center" gap={3} paddingInline={3} paddingBlock={2} className="border-b border-border">
           <Text>Appearance</Text>
           <SegmentedControl label="Appearance" size="sm" value={appearance} onChange={(v) => onAppearanceChange(v as Appearance)}>
-            <SegmentedControlItem value="light" label="Light" isLabelHidden icon={<Icon icon={SunIcon} size="sm" />} />
-            <SegmentedControlItem value="dark" label="Dark" isLabelHidden icon={<Icon icon={MoonIcon} size="sm" />} />
-            <SegmentedControlItem value="system" label="System" isLabelHidden icon={<Icon icon={MonitorIcon} size="sm" />} />
+            <Tooltip content="Light">
+              <SegmentedControlItem value="light" label="Light" isLabelHidden icon={<Icon icon={SunIcon} size="sm" />} />
+            </Tooltip>
+            <Tooltip content="Dark">
+              <SegmentedControlItem value="dark" label="Dark" isLabelHidden icon={<Icon icon={MoonIcon} size="sm" />} />
+            </Tooltip>
+            <Tooltip content="Match system">
+              <SegmentedControlItem value="system" label="System" isLabelHidden icon={<Icon icon={MonitorIcon} size="sm" />} />
+            </Tooltip>
           </SegmentedControl>
         </HStack>
       }
