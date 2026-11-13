@@ -10,6 +10,9 @@ export const G = {
   goldDark: 'url(#tr-gold-dark)',
   wood: 'url(#tr-wood)',
   crystal: 'url(#tr-crystal)',
+  sand: 'url(#tr-sand)',
+  chrome: 'url(#tr-chrome)',
+  maple: 'url(#tr-maple)',
 };
 
 export function TrophyDefs() {
@@ -47,6 +50,24 @@ export function TrophyDefs() {
           <stop offset="0.35" stopColor="#5a3820" />
           <stop offset="0.7" stopColor="#3e2616" />
           <stop offset="1" stopColor="#21140c" />
+        </linearGradient>
+        <linearGradient id="tr-sand" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stopColor="#8a7350" />
+          <stop offset="0.3" stopColor="#d8c39c" />
+          <stop offset="0.6" stopColor="#b59b72" />
+          <stop offset="1" stopColor="#7c6646" />
+        </linearGradient>
+        <radialGradient id="tr-chrome" cx="0.38" cy="0.32" r="0.75">
+          <stop offset="0" stopColor="#ffffff" />
+          <stop offset="0.18" stopColor="#c9ced3" />
+          <stop offset="0.55" stopColor="#6c737a" />
+          <stop offset="0.85" stopColor="#3c4146" />
+          <stop offset="1" stopColor="#8c939a" />
+        </radialGradient>
+        <linearGradient id="tr-maple" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stopColor="#e9d8b6" />
+          <stop offset="0.5" stopColor="#d9c29a" />
+          <stop offset="1" stopColor="#b99b6c" />
         </linearGradient>
         <linearGradient id="tr-crystal" x1="0" x2="1" y1="0" y2="1">
           <stop offset="0" stopColor="#ffffff" stopOpacity="0.95" />
