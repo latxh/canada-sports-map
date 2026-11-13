@@ -6,3 +6,4 @@ dist
 .vite
 *.tsbuildinfo
 dist-preview
+.harness/

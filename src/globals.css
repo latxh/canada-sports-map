@@ -188,6 +188,9 @@
     fill: var(--color-text-secondary);
   }
 
+  .city-label.city-label-suffix {
+    fill: var(--color-text-secondary);
+  }
   .city-label {
     paint-order: stroke;
     stroke: var(--map-halo);
@@ -461,6 +464,86 @@
     .venue-stack,
     .venue-stack-card {
       animation: none;
+      transition: none;
+    }
+  }
+}
+
+/*
+ * Trophy cabinets: trophies overlap on glass shelves, every other one set back for depth, with
+ * the years engraved on the shelf. Each row is exactly --row-h tall so the shelves (a repeating
+ * background) line up with the rows however the trophies wrap.
+ */
+@layer components {
+  .trophy-cabinet {
+    padding: 12px 12px 4px;
+    background:
+      radial-gradient(120% 70% at 50% 0%, color-mix(in srgb, var(--color-background-surface) 70%, transparent), transparent 70%),
+      var(--color-background-muted);
+  }
+  .trophy-shelves {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    list-style: none;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0 calc(var(--row-h) - var(--shelf-h) - 1px),
+      color-mix(in srgb, var(--color-background-surface) 85%, white) calc(var(--row-h) - var(--shelf-h) - 1px) calc(var(--row-h) - var(--shelf-h)),
+      color-mix(in srgb, var(--color-text-primary) 7%, transparent) calc(var(--row-h) - var(--shelf-h)) calc(var(--row-h) - 2px),
+      color-mix(in srgb, var(--color-text-primary) 16%, transparent) calc(var(--row-h) - 2px) var(--row-h)
+    );
+  }
+  .trophy-slot {
+    position: relative;
+    flex: none;
+    z-index: 2;
+  }
+  .trophy-slot-back {
+    z-index: 1;
+  }
+  .trophy-figure {
+    position: absolute;
+    left: 50%;
+    bottom: calc(var(--shelf-h) - 1px);
+    translate: -50% 0;
+    display: block;
+    transform-origin: 50% 100%;
+    transition: scale 160ms ease, translate 160ms ease, filter 160ms ease;
+  }
+  .trophy-figure svg {
+    display: block;
+    overflow: visible;
+  }
+  .trophy-slot-back .trophy-figure {
+    scale: 0.86;
+    translate: -50% -4px;
+    filter: brightness(0.93) saturate(0.9);
+  }
+  .trophy-slot:hover {
+    z-index: 3;
+  }
+  .trophy-slot:hover .trophy-figure {
+    scale: 1.06;
+    translate: -50% -3px;
+    filter: none;
+  }
+  .trophy-year {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    translate: -50% 0;
+    height: var(--shelf-h);
+    font-size: 10px;
+    line-height: var(--shelf-h);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .trophy-figure {
       transition: none;
     }
   }
