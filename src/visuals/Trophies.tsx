@@ -360,47 +360,6 @@ export function TrophyArt({league, height = 64, isMuted = false, title}: {league
   );
 }
 
-interface ShelfItem {
-  key: string;
-  league: LeagueId;
-  year: number;
-  /** Tooltip and accessible name, e.g. "Stanley Cup 1993, Montréal Canadiens". */
-  label: string;
-}
-
-/**
- * A trophy cabinet: trophies stand shoulder to shoulder on glass shelves, overlapping a little,
- * every other one set back a step (smaller, a touch dimmer) for depth. Each year is engraved on
- * the shelf under its trophy; hovering a trophy brings it forward.
- */
-function Shelves({items, size, label}: {items: ShelfItem[]; size: number; label: string}) {
-  const width = (size * 60) / 98;
-  // Few trophies spread out; many crowd together so a long dynasty still fits in a few rows.
-  // At least room for its year on the shelf.
-  const step = Math.max(30, Math.round(width * (items.length <= 4 ? 0.9 : items.length <= 12 ? 0.66 : 0.58)));
-  const rowH = Math.round(size + SHELF_H + 6);
-  return (
-    <ul
-      className="trophy-shelves"
-      style={{['--row-h' as string]: `${rowH}px`, ['--shelf-h' as string]: `${SHELF_H}px`, paddingInline: Math.max(0, (width - step) / 2)}}
-      aria-label={label}>
-      {items.map((it, i) => (
-        <li key={it.key} className={i % 2 ? 'trophy-slot trophy-slot-back' : 'trophy-slot'} style={{width: step, height: rowH}} title={it.label}>
-          <span className="trophy-figure" style={{width, height: size}}>
-            <TrophyArt league={it.league} height={size} title={it.label} />
-          </span>
-          <span className="trophy-year" aria-hidden>
-            {it.year}
-          </span>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-/** Height of the shelf band the years are engraved on. */
-const SHELF_H = 16;
-
 /**
  * Every championship a team has won, one trophy per title with its year,
  * plus an empty silhouette when a team has never won.
@@ -420,14 +379,20 @@ export function TrophyCabinet({team}: {team: Team}) {
       </div>
     );
   }
-  const size = titles.length > 12 ? 84 : titles.length > 4 ? 96 : 120;
+  const size = titles.length > 12 ? 52 : titles.length > 4 ? 60 : 76;
   return (
-    <div className="card-radius trophy-cabinet">
-      <Shelves
-        size={size}
-        label={`${titles.length} ${name}${titles.length === 1 ? '' : 's'}`}
-        items={titles.map((year) => ({key: String(year), league, year, label: `${name} ${year}`}))}
-      />
+    <div className="card-radius bg-[var(--color-background-muted)] p-3">
+      <ul
+        className="grid justify-items-center gap-x-1 gap-y-2"
+        style={{gridTemplateColumns: `repeat(auto-fill, minmax(${Math.round(size * 0.78)}px, 1fr))`}}
+        aria-label={`${titles.length} ${name}${titles.length === 1 ? '' : 's'}`}>
+        {titles.map((year) => (
+          <li key={year} className="flex flex-col items-center gap-0.5">
+            <TrophyArt league={league} height={size} />
+            <span className="text-xs font-semibold tabular-nums text-secondary">{year}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -441,14 +406,22 @@ export function TitleCabinet({teams}: {teams: Team[]}) {
     .flatMap((t) => t.championships.map((year) => ({team: t, year})))
     .sort((a, b) => LEAGUE_ORDER.indexOf(a.team.league) - LEAGUE_ORDER.indexOf(b.team.league) || a.year - b.year);
   if (items.length === 0) return null;
-  const size = items.length > 24 ? 72 : items.length > 10 ? 84 : 100;
+  const size = items.length > 24 ? 40 : items.length > 10 ? 48 : 60;
   return (
-    <div className="card-radius trophy-cabinet">
-      <Shelves
-        size={size}
-        label={`${items.length} championship${items.length === 1 ? '' : 's'}`}
-        items={items.map(({team, year}) => ({key: `${team.id}-${year}`, league: team.league, year, label: `${TROPHY_NAME[team.league]} ${year}, ${team.name}`}))}
-      />
+    <div className="card-radius bg-[var(--color-background-muted)] p-3">
+      <ul
+        className="grid justify-items-center gap-x-1 gap-y-2"
+        style={{gridTemplateColumns: `repeat(auto-fill, minmax(${Math.round(size * 0.8)}px, 1fr))`}}
+        aria-label={`${items.length} championship${items.length === 1 ? '' : 's'}`}>
+        {items.map(({team, year}) => (
+          <li key={`${team.id}-${year}`} className="flex flex-col items-center gap-0.5" title={`${TROPHY_NAME[team.league]} ${year} · ${team.name}`}>
+            <TrophyArt league={team.league} height={size} title={`${TROPHY_NAME[team.league]} ${year}, ${team.name}`} />
+            <span className="text-[10px] font-semibold tabular-nums text-secondary" aria-hidden>
+              {year}
+            </span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
