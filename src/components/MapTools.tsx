@@ -108,7 +108,7 @@ export interface PinDistance {
   color: string;
 }
 
-/** The pin card: a hint before the first pin, then the nearest cities and the farthest one (phones: just the 3 nearest). */
+/** The pin card: a hint before the first pin, then the nearest cities (5, or 3 on phones) and the farthest one. */
 export function PinCard({
   distances,
   hasPin,
@@ -118,7 +118,7 @@ export function PinCard({
   onOpenCity,
   isCompact = false,
 }: {
-  /** Phones: the card fills the width along the bottom instead of a fixed width, and lists only the 3 nearest cities. */
+  /** Phones: the card fills the width along the bottom instead of a fixed width, and lists 3 nearest cities instead of 5. */
   isCompact?: boolean;
   distances: PinDistance[];
   hasPin: boolean;
@@ -147,7 +147,7 @@ export function PinCard({
   }
   const nearCount = isCompact ? 3 : 5;
   const near = distances.slice(0, nearCount);
-  const far = !isCompact && distances.length > nearCount ? distances[distances.length - 1] : null;
+  const far = distances.length > nearCount ? distances[distances.length - 1] : null;
   return (
     <div className={`glass glass-strong card-radius pointer-events-auto py-2 ps-3 pe-2 ${isCompact ? 'w-full' : 'w-64'}`}>
       <HStack hAlign="between" vAlign="center">
