@@ -559,16 +559,19 @@ export function SportsMap({
       const r = markerRadius(m.teams.length);
       return {...m, x, y, r};
     });
-    const clusters = clusterMarkers(items, selectedCityId);
+    const clusters = makeRoomForNames(clusterMarkers(items, selectedCityId), selectedCityId, size, labelSides.current);
     // A city's dot becomes its venue stack only where the stack fits clear of every other marker
-    // (most important cities first), so crowded areas keep their dots and nothing re-clusters.
+    // and name (most important cities first), so crowded areas keep their dots and nothing re-clusters.
     if (stack) {
+      // Nor may a stack cover another city's name (placed for plain dots, as a dry run).
+      const names = placeLabels(clusters, selectedCityId, size, new Map(labelSides.current)).labels;
       const taken: Box[] = [];
       for (const c of clusters) {
         if (c.members.length !== 1 || !stacks(c.head.city.id)) continue;
         const box = {x0: c.x - stack.r - 3, y0: c.y - stack.r - 3, x1: c.x + stack.r + 3, y1: c.y + stack.r + 3};
         const clear =
           !taken.some((b) => overlaps(b, box)) &&
+          !names.some((l) => l.id !== c.head.city.id && overlaps(l.box, box)) &&
           !clusters.some((o) => o !== c && !o.isStacked && overlaps(box, {x0: o.x - o.r - 3, y0: o.y - o.r - 3, x1: o.x + o.r + 3, y1: o.y + o.r + 3}));
         if (!clear) continue;
         c.r = stack.r;
@@ -1209,15 +1212,65 @@ function clusterMarkers(items: PlacedMarker[], selectedId: string | null): Clust
       clusters.push({head: m, members: [m], x: m.x, y: m.y, r: m.r, teamCount: 0, currentCount: 0, leagues: [], containsSelected: false});
     }
   }
-  for (const c of clusters) {
-    const teams = c.members.flatMap((m) => m.teams);
-    c.teamCount = teams.length;
-    c.currentCount = teams.filter((t) => t.status === 'current').length;
-    c.leagues = LEAGUE_ORDER.filter((l) => teams.some((t) => t.league === l));
-    c.r = markerRadius(teams.length);
-    c.containsSelected = c.members.some((m) => m.city.id === selectedId);
-  }
+  for (const c of clusters) summarize(c, selectedId);
   return clusters;
+}
+
+/** A cluster's totals, size and selection, from its members. */
+function summarize(c: Cluster, selectedId: string | null) {
+  const teams = c.members.flatMap((m) => m.teams);
+  c.teamCount = teams.length;
+  c.currentCount = teams.filter((t) => t.status === 'current').length;
+  c.leagues = LEAGUE_ORDER.filter((l) => teams.some((t) => t.league === l));
+  c.r = markerRadius(teams.length);
+  c.containsSelected = c.members.some((m) => m.city.id === selectedId);
+}
+
+/**
+ * A big city's name must not lose out to the small cities around it. When a cluster's name fits
+ * on neither side only because smaller cities' dots are in the way, those cities fold into its
+ * cluster ("Toronto +2") until you zoom in further; repeated until every such name fits.
+ */
+function makeRoomForNames(clusters: Cluster[], selectedId: string | null, size: Size | null, sides: Map<string, 'start' | 'end'>): Cluster[] {
+  let out = clusters;
+  for (let pass = 0; pass < 4; pass++) {
+    const labelled = new Set(placeLabels(out, selectedId, size, new Map(sides)).labels.map((l) => l.id));
+    const ordered = out.slice().sort((a, b) => (a.containsSelected ? -1 : b.containsSelected ? 1 : importance(a.head, b.head, selectedId)));
+    let merged = false;
+    for (const c of ordered) {
+      if (labelled.has(c.head.city.id) || (size && (c.x < 0 || c.x > size.w || c.y < 0 || c.y > size.h))) continue;
+      const preferEnd = sides.get(c.head.city.id) === 'end';
+      for (const side of preferEnd ? (['end', 'start'] as const) : (['start', 'end'] as const)) {
+        const box = labelBox(c, side);
+        if (size && (box.x0 < 2 || box.x1 > size.w - 2 || box.y0 < 2 || box.y1 > size.h - 2)) continue;
+        const blockers = out.filter((o) => o !== c && overlaps(box, {x0: o.x - o.r - 4, y0: o.y - o.r - 4, x1: o.x + o.r + 4, y1: o.y + o.r + 4}));
+        if (!blockers.length || blockers.some((o) => o.containsSelected || importance(o.head, c.head, selectedId) < 0)) continue;
+        c.members.push(...blockers.flatMap((o) => o.members));
+        summarize(c, selectedId);
+        out = out.filter((o) => !blockers.includes(o));
+        merged = true;
+        break;
+      }
+      if (merged) break;
+    }
+    if (!merged) break;
+  }
+  return out;
+}
+
+/** The box a cluster's name (and its grey second line) takes up on one side of its dot. */
+function labelBox(c: Cluster, side: 'start' | 'end', dy = 0): Box {
+  const text = c.head.city.name;
+  const extra = c.members.length - 1;
+  const second = c.members[1]?.city.name ?? '';
+  const suffix = extra === 1 ? `& ${second}` : extra > 1 ? `+${extra}` : '';
+  const w = Math.max(text.length * LABEL_FONT * 0.58, suffix.length * SUFFIX_FONT * 0.58) + 6;
+  const h = LABEL_FONT + 4;
+  const below = suffix ? SUFFIX_DY : 0;
+  const gap = c.r + 6;
+  const y0 = c.y + dy - h / 2;
+  const y1 = c.y + dy + h / 2 + below;
+  return side === 'start' ? {x0: c.x + gap, y0, x1: c.x + gap + w, y1} : {x0: c.x - gap - w, y0, x1: c.x - gap, y1};
 }
 
 function ClusterMarker({
@@ -1308,14 +1361,11 @@ function placeLabels(clusters: Cluster[], selectedId: string | null, size: Size 
     const text = c.head.city.name;
     const extra = c.members.length - 1;
     const second = c.members[1]?.city.name ?? '';
-    const suffix = extra === 1 ? `& ${second}` : extra > 1 ? `+${extra}` : '';
-    const w = Math.max(text.length * LABEL_FONT * 0.58, suffix.length * SUFFIX_FONT * 0.58) + 6;
-    const h = LABEL_FONT + 4;
-    const below = suffix ? SUFFIX_DY : 0;
-    const gap = c.r + 6;
-    const right = {x: c.x + gap, anchor: 'start' as const, box: {x0: c.x + gap, y0: c.y - h / 2, x1: c.x + gap + w, y1: c.y + h / 2 + below}};
-    const left = {x: c.x - gap, anchor: 'end' as const, box: {x0: c.x - gap - w, y0: c.y - h / 2, x1: c.x - gap, y1: c.y + h / 2 + below}};
-    const candidates = sides.get(id) === 'end' ? [left, right] : [right, left];
+    // Its usual side first; a name may slide a few pixels up or down, but stays beside its dot.
+    const order: ('start' | 'end')[] = sides.get(id) === 'end' ? ['end', 'start'] : ['start', 'end'];
+    const candidates = order.flatMap((side) =>
+      [0, -6, 6].map((dy) => ({x: side === 'start' ? c.x + c.r + 6 : c.x - c.r - 6, y: c.y + dy, anchor: side, box: labelBox(c, side, dy)})),
+    );
     const fit = candidates.find(
       (cand) =>
         (!size || (cand.box.x0 >= 2 && cand.box.x1 <= size.w - 2 && cand.box.y0 >= 2 && cand.box.y1 <= size.h - 2)) &&
@@ -1325,7 +1375,7 @@ function placeLabels(clusters: Cluster[], selectedId: string | null, size: Size 
     if (fit) {
       sides.set(id, fit.anchor);
       labelBoxes.push(fit.box);
-      out.push({id, text, extra, second, x: fit.x, y: c.y, anchor: fit.anchor, isSelected: c.containsSelected, box: fit.box});
+      out.push({id, text, extra, second, x: fit.x, y: fit.y, anchor: fit.anchor, isSelected: c.containsSelected, box: fit.box});
     }
   }
   return {labels: out, boxes: [...markerBoxes, ...labelBoxes]};
