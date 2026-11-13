@@ -1,6 +1,4 @@
 import {useEffect, useMemo, useState} from 'react';
-import {Icon} from '@astryxdesign/core/Icon';
-import {IconButton} from '@astryxdesign/core/IconButton';
 import {Text} from '@astryxdesign/core/Text';
 import {Card} from '@astryxdesign/core/Card';
 import {Grid} from '@astryxdesign/core/Grid';
@@ -9,7 +7,6 @@ import {VStack} from '@astryxdesign/core/VStack';
 import type {Sport, Venue} from '../data';
 import {VENUE_PHOTOS} from '../data/media';
 import {ISOMETRIC_VENUES, isometricUrl, type IsometricArt} from '../data/isometric';
-import {ExpandIcon} from './icons';
 import {SectionTitle} from './bits';
 import {useViewer, ZoomablePhoto} from './Media';
 
@@ -74,9 +71,6 @@ function IsometricFigure({venue, art}: {venue: Venue; art: IsometricArt}) {
     <section className="card-radius venue-art relative overflow-hidden border border-border">
       <span {...lightbox.triggerProps} aria-label={`View larger: ${alt}`} className="lightbox-trigger block h-full w-full">
         <img src={src} alt={alt} className="venue-art-image" decoding="async" loading="lazy" width={1024} height={640} />
-      </span>
-      <span className="glass absolute right-2 bottom-2 flex items-center gap-1 rounded-full p-1">
-        <IconButton size="sm" variant="ghost" className="rounded-full" label={`Open ${venue.name} full screen`} tooltip="Full screen" icon={<Icon icon={ExpandIcon} />} onClick={lightbox.triggerProps.onClick} />
       </span>
       {lightbox.isOpen && lightbox.element}
     </section>
