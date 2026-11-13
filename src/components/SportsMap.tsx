@@ -1082,9 +1082,13 @@ function labelText(label: PlacedLabel): string {
 /** The city name, inside the marker's group so the ring and the name hover and click as one. */
 function MarkerLabel({label, x, y, isFormer = false}: {label: PlacedLabel; x: number; y: number; isFormer?: boolean}) {
   const {box} = label;
+  // The hit area runs from the dot's centre to the far end of the name, so the gap between
+  // them (wider beside a venue stack) is part of the same target.
+  const x0 = Math.min(box.x0 - x, 0);
+  const x1 = Math.max(box.x1 - x, 0);
   return (
     <>
-      <rect className="city-hit" x={box.x0 - x} y={box.y0 - y} width={box.x1 - box.x0} height={box.y1 - box.y0} />
+      <rect className="city-hit" x={x0} y={box.y0 - y} width={x1 - x0} height={box.y1 - box.y0} />
       <text
         x={label.x - x}
         y={label.y - y}
