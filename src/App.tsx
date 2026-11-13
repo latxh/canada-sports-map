@@ -13,7 +13,7 @@ import {VStack} from '@astryxdesign/core/VStack';
 import {loadSportsLogos} from './lib/sportslogos';
 import {LeagueSelect, MAP_VIEWS, SiteMenu, type Appearance, type MapView} from './components/HeaderControls';
 import {MapToolToggles, PinCard, distanceColor, distanceKm, type LatLon, type PinDistance} from './components/MapTools';
-import {DESKTOP_QUERY, useMediaQuery} from './hooks/useMediaQuery';
+import {DESKTOP_QUERY, TOUCH_QUERY, useMediaQuery} from './hooks/useMediaQuery';
 import {TrophyDefs} from './visuals/TrophyDefs';
 import {useHashRoute} from './hooks/useHashRoute';
 import {SITE_URL, shareEntryFor} from './og/manifest';
@@ -130,6 +130,7 @@ export function App() {
     if (isCreditsOpen) setHasOpenedCredits(true);
   }, [isCreditsOpen]);
   const isDesktop = useMediaQuery(DESKTOP_QUERY);
+  const isTouch = useMediaQuery(TOUCH_QUERY);
   const [route, navigate] = useHashRoute();
 
   useEffect(() => {
@@ -314,10 +315,10 @@ export function App() {
         />
 
         {isPinMode && (
-          // Desktop: top-left corner. Phones: along the bottom, beside the map controls.
+          // Desktop: top-left corner. Phones: along the bottom (beside the zoom buttons, where they show).
           <div
             className="pointer-events-none absolute"
-            style={isDesktop ? {left: 12, top: PANEL_GUTTER} : {left: 64, right: 12, bottom: bottomInset + 12, transition: 'bottom 200ms ease'}}>
+            style={isDesktop ? {left: 12, top: PANEL_GUTTER} : {left: isTouch ? 12 : 64, right: 12, bottom: bottomInset + 12, transition: 'bottom 200ms ease'}}>
             <PinCard
               distances={pinTargets}
               hasPin={pin !== null}

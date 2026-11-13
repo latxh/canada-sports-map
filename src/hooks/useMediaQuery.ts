@@ -13,3 +13,6 @@ export function useMediaQuery(query: string): boolean {
 }
 
 export const DESKTOP_QUERY = '(min-width: 900px)';
+
+/** Touch screens (phones, tablets): people pinch to zoom there, so the map's zoom buttons hide. */
+export const TOUCH_QUERY = '(hover: none) and (pointer: coarse)';
