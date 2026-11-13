@@ -1,7 +1,6 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import {Icon} from '@astryxdesign/core/Icon';
 import {IconButton} from '@astryxdesign/core/IconButton';
-import {useLightbox} from '@astryxdesign/core/Lightbox';
 import {Text} from '@astryxdesign/core/Text';
 import {Card} from '@astryxdesign/core/Card';
 import {Grid} from '@astryxdesign/core/Grid';
@@ -12,7 +11,7 @@ import {VENUE_PHOTOS} from '../data/media';
 import {ISOMETRIC_VENUES, isometricUrl, type IsometricArt} from '../data/isometric';
 import {ExpandIcon} from './icons';
 import {SectionTitle} from './bits';
-import {sourceCaption, ZoomablePhoto} from './Media';
+import {useViewer, ZoomablePhoto} from './Media';
 
 export interface VenueEntry {
   venue: Venue;
@@ -70,8 +69,7 @@ function Stat({label, value}: {label: string; value: string}) {
 function IsometricFigure({venue, art}: {venue: Venue; art: IsometricArt}) {
   const src = isometricUrl(art);
   const alt = `${venue.name}, isometric illustration`;
-  const caption = sourceCaption(venue.name, {href: art.earth, label: 'Google Earth'});
-  const lightbox = useLightbox({media: {src, alt, caption}, hasZoom: true});
+  const lightbox = useViewer(useMemo(() => ({src, alt, caption: venue.name, source: {href: art.earth, label: 'Google Earth'}}), [src, alt, venue.name, art.earth]));
   return (
     <section className="card-radius venue-art relative overflow-hidden border border-border">
       <span {...lightbox.triggerProps} aria-label={`View larger: ${alt}`} className="lightbox-trigger block h-full w-full">
