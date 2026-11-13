@@ -343,8 +343,18 @@ export const TROPHY_NAME: Record<LeagueId, string> = {
   CDL: 'CDL Championship',
 };
 
+/**
+ * Trophies whose drawings are shorter than the rest, scaled up from the middle of their base so
+ * every trophy stands about the same height (most reach from y≈4 to the base at y≈93).
+ */
+const FIT: Partial<Record<LeagueId, {scale: number; baseY: number}>> = {
+  NBA: {scale: 1.16, baseY: 93},
+  MLB: {scale: 1.13, baseY: 95},
+};
+
 export function TrophyArt({league, height = 64, isMuted = false, title}: {league: LeagueId; height?: number; isMuted?: boolean; title?: string}) {
   const Art = ART[league];
+  const fit = FIT[league];
   return (
     <svg
       viewBox="0 0 60 98"
@@ -355,7 +365,13 @@ export function TrophyArt({league, height = 64, isMuted = false, title}: {league
       aria-hidden={title ? undefined : true}
       style={isMuted ? {filter: 'grayscale(1)', opacity: 0.28} : undefined}>
       <ellipse cx="30" cy="96" rx="20" ry="1.8" fill="rgb(0 0 0 / 0.14)" />
-      <Art />
+      {fit ? (
+        <g transform={`translate(30 ${fit.baseY}) scale(${fit.scale}) translate(-30 ${-fit.baseY})`}>
+          <Art />
+        </g>
+      ) : (
+        <Art />
+      )}
     </svg>
   );
 }
