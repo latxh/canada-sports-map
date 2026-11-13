@@ -18,20 +18,22 @@ GONE={
  'stampede-corral':'Demolished','empire-stadium':'Demolished in 1993',
 }
 ALIAS={'td-place-arena':'td-place-stadium'}  # the arena sits under TD Place Stadium's south stands
-osm={};earth={}
+osm={};earth={};where={}
 for vid in seeds:
-    osm[vid]=json.load(open(f'venues/{vid}/prep.json')).get('target')
+    prep=json.load(open(f'venues/{vid}/prep.json'));osm[vid]=prep.get('target');where[vid]=prep.get('target_centre') or prep['centre']
     e=pathlib.Path(f'venues/{vid}/earth')
     credit=(e/'credit.txt').read_text().strip() if (e/'credit.txt').exists() else 'Google'
     earth[vid]={'url':(e/'url.txt').read_text().strip(),'credit':re.sub(r'^Google\s+','Google, ',credit) if credit!='Google' else credit}
     src=pathlib.Path(final.get(vid,f'results/e2/{vid}.png'))
     if not src.exists(): print('MISSING',vid);continue
-    Image.open(src).convert('RGB').save(out/f'{vid}.webp','WEBP',quality=88,method=6)
-for a,b in ALIAS.items(): osm[a]=osm[b];earth[a]=earth[b]
+    im=Image.open(src).convert('RGB');im.save(out/f'{vid}.webp','WEBP',quality=88,method=6)
+    (out/'thumbs').mkdir(exist_ok=True);im.resize((240,150),Image.LANCZOS).save(out/'thumbs'/f'{vid}.webp','WEBP',quality=82,method=6)
+for a,b in ALIAS.items(): osm[a]=osm[b];earth[a]=earth[b];where[a]=where[b]
 def entry(vid):
     f=ALIAS.get(vid,vid)
     e=earth[vid]
-    return f"  '{vid}': {{file: '{f}.webp', earth: '{e['url']}', credit: {json.dumps(e['credit'])}, year: YEAR}},"
+    la,lo=where[vid]
+    return f"  '{vid}': {{file: '{f}.webp', lat: {la:.5f}, lon: {lo:.5f}, earth: '{e['url']}', credit: {json.dumps(e['credit'])}, year: YEAR}},"
 lines=['/**',
 ' * Pixel-art illustrations of every venue that still stands, in public/isometric/. Each is a',
 ' * Google Earth 3D view of the venue, framed from OpenStreetMap, repainted on a Mac with',
@@ -40,7 +42,11 @@ lines=['/**',
 ' */',
 'const YEAR = 2026;','',
 'export interface IsometricArt {',
+'  /** In public/isometric/, with a 240×150 copy of the same name in public/isometric/thumbs/. */',
 '  file: string;',
+"  /** Where the venue is: the map shows its thumbnail here when zoomed in close. */",
+'  lat: number;',
+'  lon: number;',
 '  /** The Google Earth view it was painted from, linked from the lightbox. */',
 '  earth: string;',
 "  /** Google Earth's imagery attribution for that view. */",
@@ -54,5 +60,6 @@ lines=['/**',
 'export const NO_ISOMETRIC: Record<string, string> = {',
 *[f"  '{k}': '{v}'," for k,v in sorted(GONE.items())],
 '};','',
-'export const isometricUrl = (art: IsometricArt) => `${import.meta.env.BASE_URL}isometric/${art.file}`;','']
+'export const isometricUrl = (art: IsometricArt) => `${import.meta.env.BASE_URL}isometric/${art.file}`;','',
+'export const isometricThumbUrl = (art: IsometricArt) => `${import.meta.env.BASE_URL}isometric/thumbs/${art.file}`;','']
 (APP/'src/data/isometric.ts').write_text('\n'.join(lines));print('wrote',len(osm))
