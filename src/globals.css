@@ -437,6 +437,73 @@
   }
 }
 
+/* Venue illustrations on the map when zoomed in close: a small card at each stadium, joined to its site. */
+@layer components {
+  .venue-thumb {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 10px;
+    background: var(--color-background-surface);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 4px 14px rgb(0 0 0 / 0.18);
+    cursor: zoom-in;
+    animation: venue-thumb-in 220ms ease-out;
+    transition: transform 120ms ease, box-shadow 120ms ease;
+  }
+  .venue-thumb:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgb(0 0 0 / 0.24);
+  }
+  .venue-thumb:focus-visible {
+    outline: 2px solid var(--color-border-focus, var(--map-selected));
+    outline-offset: 2px;
+  }
+  .venue-thumb-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border-radius: 7px;
+  }
+  .venue-thumb-label {
+    display: block;
+    padding: 0 2px;
+    overflow: hidden;
+    font-size: 11px;
+    line-height: 14px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: center;
+  }
+  .venue-leader {
+    stroke: var(--color-text-secondary);
+    stroke-width: 1.25;
+    opacity: 0.7;
+  }
+  .venue-site {
+    fill: var(--color-background-surface);
+    stroke: var(--color-text-primary);
+    stroke-width: 1.5;
+  }
+  @keyframes venue-thumb-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px) scale(0.96);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .venue-thumb {
+      animation: none;
+      transition: none;
+    }
+  }
+}
+
 /* Credits header: sticks to the very top of the scroll area (past its top padding), frosted. */
 @layer components {
   .credits-header {

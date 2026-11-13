@@ -170,7 +170,7 @@ describe('isometric venues', () => {
     for (const v of VENUES) {
       const art = ISOMETRIC_VENUES[v.id];
       expect(!!art !== !!NO_ISOMETRIC[v.id], v.id).toBe(true);
-      if (art) expect(existsSync(`public/isometric/${art.file}`), art.file).toBe(true);
+      if (art) expect(existsSync(`public/isometric/${art.file}`) && existsSync(`public/isometric/thumbs/${art.file}`), art.file).toBe(true);
     }
     for (const id of [...Object.keys(ISOMETRIC_VENUES), ...Object.keys(NO_ISOMETRIC)]) expect(VENUES.some((v) => v.id === id), id).toBe(true);
   });

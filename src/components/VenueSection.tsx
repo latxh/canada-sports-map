@@ -12,7 +12,8 @@ import {VENUE_PHOTOS} from '../data/media';
 import {ISOMETRIC_VENUES, isometricUrl, type IsometricArt} from '../data/isometric';
 import {ExpandIcon} from './icons';
 import {SectionTitle} from './bits';
-import {sourceCaption, ZoomablePhoto} from './Media';
+import {ZoomablePhoto} from './Media';
+import {venueArtCaption} from './VenueLightbox';
 
 export interface VenueEntry {
   venue: Venue;
@@ -65,12 +66,12 @@ function Stat({label, value}: {label: string; value: string}) {
 
 /**
  * A venue's pixel-art illustration, repainted from a Google Earth 3D view; it opens in the
- * lightbox, which credits the imagery and links that view in Google Earth.
+ * lightbox, which links that view in Google Earth.
  */
 function IsometricFigure({venue, art}: {venue: Venue; art: IsometricArt}) {
   const src = isometricUrl(art);
   const alt = `${venue.name}, isometric illustration`;
-  const caption = sourceCaption(`${venue.name} · Pixel art from Google Earth 3D imagery · Imagery ©${art.year} ${art.credit}`, {href: art.earth, label: 'Google Earth'});
+  const caption = venueArtCaption(venue.name, art);
   const lightbox = useLightbox({media: {src, alt, caption}, hasZoom: true});
   return (
     <section className="card-radius venue-art relative overflow-hidden border border-border">
