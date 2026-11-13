@@ -149,8 +149,8 @@ const MAX_ZOOM = 40;
 const LABEL_FONT = 13;
 /** Zoom (1 = all of Canada) from which the detailed coastline, rivers, towns and geography labels show. */
 const DETAIL_K = 1.9;
-/** Map scale (screen pixels per km) from which each city shows a stack of its venue illustrations. */
-const VENUE_PX_PER_KM = 2;
+/** Zoom from which a city's dot can become a stack of its venue illustrations. */
+const STACK_MIN_K = 2.5;
 /** The most a "show all cities" view zooms in, so the country never feels cropped. */
 const HOME_MAX_K = 1.3;
 
@@ -532,7 +532,25 @@ export function SportsMap({
   const pinPoint = useMemo(() => (pin && projection ? projection([pin.lon, pin.lat]) : null), [pin, projection]);
   const pinScreen = pinPoint ? ([transform.applyX(pinPoint[0]), transform.applyY(pinPoint[1])] as const) : null;
 
+  // Once you've zoomed in to about a region's scale, a city's dot becomes a small stack of its
+  // venue illustrations (current venues first), wherever there's room for it.
+  const venuesByCity = useMemo(() => {
+    const byCity = new Map<string, {venueId: string; art: IsometricArt}[]>();
+    for (const [venueId, art] of Object.entries(ISOMETRIC_VENUES)) {
+      // A venue sharing another's illustration (TD Place Arena) is left to its host.
+      const venue = VENUE_BY_ID[venueId];
+      if (!venue || art.file !== `${venueId}.webp`) continue;
+      byCity.set(venue.cityId, [...(byCity.get(venue.cityId) ?? []), {venueId, art}]);
+    }
+    for (const list of byCity.values())
+      list.sort((a, b) => Number(!!VENUE_BY_ID[a.venueId].closed) - Number(!!VENUE_BY_ID[b.venueId].closed) || (VENUE_BY_ID[b.venueId].capacity ?? 0) - (VENUE_BY_ID[a.venueId].capacity ?? 0));
+    return byCity;
+  }, []);
+  // Stacks need a little zoom (k = 1 frames all of Canada); crowded cities keep their dots.
+  const showVenues = transform.k >= STACK_MIN_K;
   const placed = useMemo(() => {
+    const stack = size ? stackGeometry(size) : null;
+    const stacks = (id: string) => !!stack && showVenues && !takeover && id !== selectedCityId && venuesByCity.has(id);
     const items = markers.map((m) => {
       const x = transform.applyX(m.px);
       const y = transform.applyY(m.py);
@@ -540,6 +558,22 @@ export function SportsMap({
       return {...m, x, y, r};
     });
     const clusters = clusterMarkers(items, selectedCityId);
+    // A city's dot becomes its venue stack only where the stack fits clear of every other marker
+    // (most important cities first), so crowded areas keep their dots and nothing re-clusters.
+    if (stack) {
+      const taken: Box[] = [];
+      for (const c of clusters) {
+        if (c.members.length !== 1 || !stacks(c.head.city.id)) continue;
+        const box = {x0: c.x - stack.r - 3, y0: c.y - stack.r - 3, x1: c.x + stack.r + 3, y1: c.y + stack.r + 3};
+        const clear =
+          !taken.some((b) => overlaps(b, box)) &&
+          !clusters.some((o) => o !== c && !o.isStacked && overlaps(box, {x0: o.x - o.r - 3, y0: o.y - o.r - 3, x1: o.x + o.r + 3, y1: o.y + o.r + 3}));
+        if (!clear) continue;
+        c.r = stack.r;
+        c.isStacked = true;
+        taken.push(box);
+      }
+    }
     const visibleClusters = takeover && selectedCityId ? clusters.filter((c) => c.containsSelected) : clusters;
     const {labels, boxes} = placeLabels(visibleClusters, selectedCityId, size);
     const provinceLabels = (takeover ? [] : (paths?.provinces ?? []))
@@ -618,41 +652,9 @@ export function SportsMap({
             .map((b) => ({...b, showValue: b.r >= 13 && fitsValue(b.x, b.y + b.r * 0.5, String(b.titles), valueFont(b.r))}))
         : [];
     return {clusters: visibleClusters, labels, boxes, provinceLabels, geoLabels, towns, popBubbles, titleBubbles};
-  }, [markers, transform, selectedCityId, size, paths, detailPaths, takeover, showDetail, view, popPoints]);
+  }, [markers, transform, selectedCityId, size, paths, detailPaths, takeover, showDetail, view, popPoints, showVenues, venuesByCity]);
 
   const labelById = useMemo(() => new Map(placed.labels.map((l) => [l.id, l])), [placed.labels]);
-
-  // Once you've zoomed in to about a region's scale, each city shows a small stack of its venue
-  // illustrations (current venues first) beside its marker; tapping it opens the city.
-  const venuesByCity = useMemo(() => {
-    const byCity = new Map<string, {venueId: string; art: IsometricArt}[]>();
-    for (const [venueId, art] of Object.entries(ISOMETRIC_VENUES)) {
-      // A venue sharing another's illustration (TD Place Arena) is left to its host.
-      const venue = VENUE_BY_ID[venueId];
-      if (!venue || art.file !== `${venueId}.webp`) continue;
-      byCity.set(venue.cityId, [...(byCity.get(venue.cityId) ?? []), {venueId, art}]);
-    }
-    for (const list of byCity.values())
-      list.sort((a, b) => Number(!!VENUE_BY_ID[a.venueId].closed) - Number(!!VENUE_BY_ID[b.venueId].closed) || (VENUE_BY_ID[b.venueId].capacity ?? 0) - (VENUE_BY_ID[a.venueId].capacity ?? 0));
-    return byCity;
-  }, []);
-  // Screen pixels per km at zoom 1.
-  const pxPerKm = useMemo(() => {
-    if (!projection) return 0;
-    const a = projection([-79.4, 43.7]);
-    const b = projection([-79.3, 43.7]);
-    return a && b ? Math.hypot(b[0] - a[0], b[1] - a[1]) / (0.1 * 111.32 * Math.cos((43.7 * Math.PI) / 180)) : 0;
-  }, [projection]);
-  // Phones fit Canada into fewer pixels, so they never reach a desktop's scale: there the
-  // stacks start at about a third of the deepest zoom instead.
-  const showVenues = pxPerKm > 0 && transform.k * pxPerKm >= Math.min(VENUE_PX_PER_KM, pxPerKm * MAX_ZOOM * 0.35);
-  const venueStacks = useMemo(() => {
-    if (!size || takeover || !showVenues) return [];
-    const anchors = placed.clusters
-      .filter((c) => c.members.length === 1 && c.head.city.id !== selectedCityId && venuesByCity.has(c.head.city.id))
-      .map((c) => ({cityId: c.head.city.id, x: c.x, y: c.y, r: c.r, venues: venuesByCity.get(c.head.city.id)!}));
-    return placeVenueStacks(anchors, size, placed.boxes, topInset, bottomInset, rightInset, !isTouch);
-  }, [size, takeover, showVenues, placed.clusters, placed.boxes, selectedCityId, venuesByCity, topInset, bottomInset, rightInset, isTouch]);
 
   // What the dither layer shows: territories, people, or titles (one at a time).
   const ditherMode = useMemo<DitherMode | null>(() => {
@@ -878,14 +880,6 @@ export function SportsMap({
             ))}
           </g>
 
-          {venueStacks.length > 0 && (
-            <g aria-hidden="true" pointerEvents="none" className="venue-leaders">
-              {venueStacks.map((t) => (
-                <line key={t.cityId} x1={t.ax} y1={t.ay} x2={t.cx} y2={t.cy} className="venue-leader" />
-              ))}
-            </g>
-          )}
-
           {/* City markers (nearby cities merge into a cluster until you zoom in) */}
           <g>
             {placed.clusters
@@ -905,6 +899,7 @@ export function SportsMap({
                     isSelected={c.head.city.id === selectedCityId}
                     onSelect={() => onSelectCity(c.head.city.id)}
                     label={labelById.get(c.head.city.id)}
+                    isStacked={c.isStacked}
                   />
                 ) : (
                   <ClusterMarker
@@ -934,39 +929,35 @@ export function SportsMap({
         </svg>
       )}
 
-      {venueStacks.length > 0 && (
-        <div className="pointer-events-none absolute inset-0">
-          {venueStacks.map((t) => {
-            const city = CITY_BY_ID[t.cityId]?.name ?? t.cityId;
-            const n = t.venues.length;
-            return (
-              <button
-                key={t.cityId}
-                type="button"
-                className="venue-stack pointer-events-auto absolute"
-                style={{left: t.x, top: t.y, width: t.w, height: t.h}}
-                aria-label={`Open ${city}: ${n} ${n === 1 ? 'venue' : 'venues'}`}
-                title={t.venues.map((v) => VENUE_BY_ID[v.venueId]?.name).join(' · ')}
-                onClick={() => onSelectCity(t.cityId)}>
-                {t.venues
-                  .slice(0, 3)
-                  .reverse()
-                  .map((v, i, shown) => {
-                    const depth = shown.length - 1 - i;
-                    return (
-                      <img
-                        key={v.venueId}
-                        src={isometricThumbUrl(v.art)}
-                        alt=""
-                        decoding="async"
-                        className="venue-stack-card"
-                        style={{width: t.cardW, height: t.cardH, left: depth * STACK_STEP, top: (STACK_DEPTH - depth) * STACK_STEP, rotate: `${depth * 4}deg`}}
-                      />
-                    );
-                  })}
-              </button>
-            );
-          })}
+      {/* The stacks are pictures only: the city marker underneath takes the tap. */}
+      {size && placed.clusters.some((c) => c.isStacked) && (
+        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+          {placed.clusters
+            .filter((c) => c.isStacked)
+            .map((c) => {
+              const g = stackGeometry(size);
+              const venues = venuesByCity.get(c.head.city.id) ?? [];
+              return (
+                <span key={c.head.city.id} className="venue-stack absolute" style={{left: c.x - g.w / 2, top: c.y - g.h / 2, width: g.w, height: g.h}}>
+                  {venues
+                    .slice(0, 3)
+                    .reverse()
+                    .map((v, i, shown) => {
+                      const depth = shown.length - 1 - i;
+                      return (
+                        <img
+                          key={v.venueId}
+                          src={isometricThumbUrl(v.art)}
+                          alt=""
+                          decoding="async"
+                          className="venue-stack-card"
+                          style={{width: g.cardW, height: g.cardH, left: depth * STACK_STEP, top: (STACK_DEPTH - depth) * STACK_STEP, rotate: `${depth * 4}deg`}}
+                        />
+                      );
+                    })}
+                </span>
+              );
+            })}
         </div>
       )}
 
@@ -1042,9 +1033,11 @@ interface MarkerProps {
   leagues: LeagueId[];
   isSelected: boolean;
   onSelect: () => void;
+  /** Zoomed in: the city's venue stack (drawn over the map) stands in for its dot. */
+  isStacked?: boolean;
 }
 
-function CityMarker({x, y, r, city, teamCount, currentCount, isSelected, onSelect, label}: MarkerProps) {
+function CityMarker({x, y, r, city, teamCount, currentCount, isSelected, onSelect, label, isStacked = false}: MarkerProps) {
   const ringR = r + 3.5;
   const defunctOnly = currentCount === 0;
   const name = `${city.name}: ${teamCount} team${teamCount === 1 ? '' : 's'}${defunctOnly ? ', all former' : ''}. Open city overview.`;
@@ -1066,11 +1059,12 @@ function CityMarker({x, y, r, city, teamCount, currentCount, isSelected, onSelec
           onSelect();
         }
       }}>
-      <circle className="city-hit" r={Math.max(14, ringR + 6)} />
+      <circle className="city-hit" r={isStacked ? r : Math.max(14, ringR + 6)} />
       {isSelected && <circle className="city-pulse" r={r + 1.5} fill="none" stroke="var(--map-selected)" strokeWidth={2} />}
       <g className="city-core">
-        <CityDot r={r + 0.4} isFormer={defunctOnly} isSelected={isSelected} />
-        <circle className="city-focus" r={ringR + 4} fill="none" stroke="transparent" />
+        {/* A stacked city's venue illustrations (drawn over the map) stand in for its dot. */}
+        {!isStacked && <CityDot r={r + 0.4} isFormer={defunctOnly} isSelected={isSelected} />}
+        <circle className="city-focus" r={isStacked ? r + 2 : ringR + 4} fill="none" stroke="transparent" />
       </g>
       {label && <MarkerLabel label={label} x={x} y={y} isFormer={defunctOnly} />}
     </g>
@@ -1180,6 +1174,8 @@ interface Cluster {
   currentCount: number;
   leagues: LeagueId[];
   containsSelected: boolean;
+  /** Drawn as a stack of the city's venue illustrations instead of a dot. */
+  isStacked?: boolean;
 }
 
 function importance(a: PlacedMarker, b: PlacedMarker, selectedId: string | null) {
@@ -1330,64 +1326,11 @@ function overlaps(a: Box, b: Box) {
 const STACK_STEP = 5;
 const STACK_DEPTH = 2;
 
-interface VenueStack {
-  cityId: string;
-  venues: {venueId: string; art: IsometricArt}[];
-  /** The city marker on screen. */
-  ax: number;
-  ay: number;
-  /** Top-left of the stack, its size, its front card's size, and its centre (where the leader line ends). */
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  cardW: number;
-  cardH: number;
-  cx: number;
-  cy: number;
-}
-
-/**
- * Places each city's venue stack: right above its marker if there's room, otherwise in the nearest
- * free spot on rings around it, clear of other stacks, city markers, labels and the zoom buttons.
- */
-function placeVenueStacks(
-  anchors: {cityId: string; x: number; y: number; r: number; venues: {venueId: string; art: IsometricArt}[]}[],
-  size: Size,
-  obstacles: Box[],
-  topInset: number,
-  bottomInset: number,
-  rightInset: number,
-  hasZoomButtons: boolean,
-): VenueStack[] {
-  const cardW = size.w < 640 ? 46 : 64;
+/** The size of a city's venue stack on screen, and the radius it takes up as a marker. */
+function stackGeometry(size: Size) {
+  const cardW = size.w < 640 ? 40 : 50;
   const cardH = Math.round((cardW * 10) / 16);
-  const w = cardW + STACK_DEPTH * STACK_STEP + 4;
-  const h = cardH + STACK_DEPTH * STACK_STEP + 4;
-  const bounds = {x0: 4, y0: topInset + 4, x1: size.w - rightInset - 4, y1: size.h - bottomInset - 4};
-  const inView = anchors.filter((a) => a.x > bounds.x0 && a.x < bounds.x1 && a.y > bounds.y0 && a.y < bounds.y1).sort((a, b) => a.y - b.y || a.x - b.x);
-  const zoomButtons = hasZoomButtons ? [{x0: 0, y0: size.h - bottomInset - 140, x1: 64, y1: size.h - bottomInset}] : [];
-  const taken: Box[] = [...obstacles, ...zoomButtons];
-  const angles = [-90, -45, -135, 0, 180, 45, 135, 90];
-  const out: VenueStack[] = [];
-  for (const a of inView) {
-    let fit: Box | null = null;
-    for (let ring = 0; ring < 3 && !fit; ring++) {
-      const d = h / 2 + a.r + 8 + ring * (h * 0.6);
-      for (const deg of angles) {
-        const rad = (deg * Math.PI) / 180;
-        const cx = a.x + Math.cos(rad) * (d + (Math.abs(Math.cos(rad)) * (w - h)) / 2);
-        const cy = a.y + Math.sin(rad) * d;
-        const box = {x0: cx - w / 2, y0: cy - h / 2, x1: cx + w / 2, y1: cy + h / 2};
-        if (box.x0 < bounds.x0 || box.y0 < bounds.y0 || box.x1 > bounds.x1 || box.y1 > bounds.y1) continue;
-        if (taken.some((b) => overlaps(b, box))) continue;
-        fit = box;
-        break;
-      }
-    }
-    if (!fit) continue;
-    taken.push({x0: fit.x0 - 4, y0: fit.y0 - 4, x1: fit.x1 + 4, y1: fit.y1 + 4});
-    out.push({cityId: a.cityId, venues: a.venues, ax: a.x, ay: a.y, x: fit.x0, y: fit.y0, w, h, cardW, cardH, cx: (fit.x0 + fit.x1) / 2, cy: (fit.y0 + fit.y1) / 2});
-  }
-  return out;
+  const w = cardW + STACK_DEPTH * STACK_STEP + 2;
+  const h = cardH + STACK_DEPTH * STACK_STEP + 2;
+  return {cardW, cardH, w, h, r: Math.ceil(Math.max(w, h) / 2)};
 }
