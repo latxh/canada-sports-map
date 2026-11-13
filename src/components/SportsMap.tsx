@@ -964,7 +964,6 @@ export function SportsMap({
                       />
                     );
                   })}
-                {n > 1 && <span className="venue-stack-count">{n}</span>}
               </button>
             );
           })}

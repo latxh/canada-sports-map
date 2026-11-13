@@ -437,7 +437,7 @@
   }
 }
 
-/* Each city's venue illustrations on the map when zoomed in: a little fanned stack with a count. */
+/* Each city's venue illustrations on the map when zoomed in: a little fanned stack. */
 @layer components {
   .venue-stack {
     cursor: pointer;
@@ -460,22 +460,6 @@
     outline: 2px solid var(--color-border-focus, var(--map-selected));
     outline-offset: 3px;
     border-radius: 8px;
-  }
-  .venue-stack-count {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    min-width: 20px;
-    height: 20px;
-    padding: 0 5px;
-    border-radius: 999px;
-    background: var(--color-text-primary);
-    color: var(--color-background-surface);
-    font-size: 11px;
-    font-weight: 700;
-    line-height: 20px;
-    text-align: center;
-    box-shadow: 0 1px 4px rgb(0 0 0 / 0.25);
   }
   .venue-leader {
     stroke: var(--color-text-secondary);
