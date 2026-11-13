@@ -548,6 +548,8 @@ export function SportsMap({
   }, []);
   // Stacks need a little zoom (k = 1 frames all of Canada); crowded cities keep their dots.
   const showVenues = transform.k >= STACK_MIN_K;
+  // Which side of its dot each city's name sat on last time, so names don't flip while zooming.
+  const labelSides = useRef(new Map<string, 'start' | 'end'>());
   const placed = useMemo(() => {
     const stack = size ? stackGeometry(size) : null;
     const stacks = (id: string) => !!stack && showVenues && !takeover && id !== selectedCityId && venuesByCity.has(id);
@@ -575,7 +577,7 @@ export function SportsMap({
       }
     }
     const visibleClusters = takeover && selectedCityId ? clusters.filter((c) => c.containsSelected) : clusters;
-    const {labels, boxes} = placeLabels(visibleClusters, selectedCityId, size);
+    const {labels, boxes} = placeLabels(visibleClusters, selectedCityId, size, labelSides.current);
     const provinceLabels = (takeover ? [] : (paths?.provinces ?? []))
       .filter((p) => p.area * transform.k * transform.k > 9000)
       .map((p) => {
@@ -1092,12 +1094,19 @@ function MarkerLabel({label, x, y, isFormer = false}: {label: PlacedLabel; x: nu
         fontSize={LABEL_FONT}
         fontWeight={label.isSelected ? 700 : 600}>
         {label.text}
-        {label.extra > 0 && (
-          <tspan fontWeight={600} fill="var(--color-text-secondary)">
-            {label.extra === 1 ? ` & ${label.second}` : ` +${label.extra}`}
-          </tspan>
-        )}
       </text>
+      {label.extra > 0 && (
+        <text
+          x={label.x - x}
+          y={label.y - y + SUFFIX_DY}
+          textAnchor={label.anchor}
+          dominantBaseline="central"
+          className="city-label city-label-suffix"
+          fontSize={SUFFIX_FONT}
+          fontWeight={600}>
+          {label.extra === 1 ? `& ${label.second}` : `+${label.extra}`}
+        </text>
+      )}
     </>
   );
 }
@@ -1266,13 +1275,22 @@ interface PlacedLabel {
   second: string;
   x: number;
   y: number;
-  anchor: 'start' | 'end' | 'middle';
+  anchor: 'start' | 'end';
   isSelected: boolean;
   box: Box;
 }
 
 /** Greedy label placement: most important clusters first, four candidate positions each. */
-function placeLabels(clusters: Cluster[], selectedId: string | null, size: Size | null): {labels: PlacedLabel[]; boxes: Box[]} {
+/** The grey "& Guelph" / "+3" line under a merged cluster's name: its size and offset. */
+const SUFFIX_FONT = 11;
+const SUFFIX_DY = 14;
+
+/**
+ * Names go only to the right or left of their dot, never above or below, and keep the side
+ * they had last time (`sides`, updated here) so they don't flip back and forth as you zoom.
+ * A merged cluster's other cities go on a grey second line, aligned with the main name.
+ */
+function placeLabels(clusters: Cluster[], selectedId: string | null, size: Size | null, sides: Map<string, 'start' | 'end'>): {labels: PlacedLabel[]; boxes: Box[]} {
   const markerBoxes: Box[] = clusters.map((c) => ({x0: c.x - c.r - 4, y0: c.y - c.r - 4, x1: c.x + c.r + 4, y1: c.y + c.r + 4}));
   const labelBoxes: Box[] = [];
   const ordered = clusters
@@ -1282,28 +1300,18 @@ function placeLabels(clusters: Cluster[], selectedId: string | null, size: Size 
   const out: PlacedLabel[] = [];
   for (const {c, i} of ordered) {
     if (size && (c.x < -c.r || c.x > size.w + c.r || c.y < -c.r || c.y > size.h + c.r)) continue;
+    const id = c.head.city.id;
     const text = c.head.city.name;
     const extra = c.members.length - 1;
     const second = c.members[1]?.city.name ?? '';
-    const suffix = extra === 1 ? ` & ${second}` : extra > 1 ? ` +${extra}` : '';
-    const w = (text.length + suffix.length) * LABEL_FONT * 0.58 + 6;
+    const suffix = extra === 1 ? `& ${second}` : extra > 1 ? `+${extra}` : '';
+    const w = Math.max(text.length * LABEL_FONT * 0.58, suffix.length * SUFFIX_FONT * 0.58) + 6;
     const h = LABEL_FONT + 4;
+    const below = suffix ? SUFFIX_DY : 0;
     const gap = c.r + 6;
-    const candidates: {x: number; y: number; anchor: PlacedLabel['anchor']; box: Box}[] = [
-      {x: c.x + gap, y: c.y, anchor: 'start', box: {x0: c.x + gap, y0: c.y - h / 2, x1: c.x + gap + w, y1: c.y + h / 2}},
-      {x: c.x - gap, y: c.y, anchor: 'end', box: {x0: c.x - gap - w, y0: c.y - h / 2, x1: c.x - gap, y1: c.y + h / 2}},
-      {x: c.x, y: c.y - gap - h / 2, anchor: 'middle', box: {x0: c.x - w / 2, y0: c.y - gap - h, x1: c.x + w / 2, y1: c.y - gap}},
-      {x: c.x, y: c.y + gap + h / 2, anchor: 'middle', box: {x0: c.x - w / 2, y0: c.y + gap, x1: c.x + w / 2, y1: c.y + gap + h}},
-    ];
-    if (size) {
-      // Let centred labels slide sideways to stay on screen.
-      for (const cand of candidates) {
-        if (cand.anchor !== 'middle') continue;
-        const shift = cand.box.x0 < 2 ? 2 - cand.box.x0 : cand.box.x1 > size.w - 2 ? size.w - 2 - cand.box.x1 : 0;
-        cand.box = {...cand.box, x0: cand.box.x0 + shift, x1: cand.box.x1 + shift};
-        cand.x += shift;
-      }
-    }
+    const right = {x: c.x + gap, anchor: 'start' as const, box: {x0: c.x + gap, y0: c.y - h / 2, x1: c.x + gap + w, y1: c.y + h / 2 + below}};
+    const left = {x: c.x - gap, anchor: 'end' as const, box: {x0: c.x - gap - w, y0: c.y - h / 2, x1: c.x - gap, y1: c.y + h / 2 + below}};
+    const candidates = sides.get(id) === 'end' ? [left, right] : [right, left];
     const fit = candidates.find(
       (cand) =>
         (!size || (cand.box.x0 >= 2 && cand.box.x1 <= size.w - 2 && cand.box.y0 >= 2 && cand.box.y1 <= size.h - 2)) &&
@@ -1311,8 +1319,9 @@ function placeLabels(clusters: Cluster[], selectedId: string | null, size: Size 
         !labelBoxes.some((b) => overlaps(b, cand.box)),
     );
     if (fit) {
+      sides.set(id, fit.anchor);
       labelBoxes.push(fit.box);
-      out.push({id: c.head.city.id, text, extra, second, x: fit.x, y: fit.y, anchor: fit.anchor, isSelected: c.containsSelected, box: fit.box});
+      out.push({id, text, extra, second, x: fit.x, y: c.y, anchor: fit.anchor, isSelected: c.containsSelected, box: fit.box});
     }
   }
   return {labels: out, boxes: [...markerBoxes, ...labelBoxes]};

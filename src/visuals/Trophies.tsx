@@ -45,68 +45,72 @@ function StanleyCup() {
 }
 
 function LarryOBrien() {
-  // A gold basketball dropping through a gold hoop and net, on a square base.
+  // A gold basketball dropping into a gold hoop: the ball sits tilted and off-centre, its lower
+  // half already through the rim, above a tapered net and a square base.
+  const rim = {cx: 31, cy: 38, rx: 13, ry: 3.4};
   return (
     <g stroke="rgb(90 60 10 / 0.45)" strokeWidth={0.5} strokeLinejoin="round">
-      <path d="M14 81 L17.5 77.5 H42.5 L46 81 Z" fill={G.gold} />
-      <rect x="14" y="81" width="32" height="12" rx="0.8" fill={G.goldDark} />
-      <path d="M17.5 30 C18.5 46 22 62 25 77.5 H35 C38 62 41.5 46 42.5 30 Z" fill={G.gold} />
+      <path d="M13 83 L16.5 79.5 H45.5 L49 83 Z" fill={G.gold} />
+      <rect x="13" y="83" width="36" height="10" rx="0.8" fill={G.goldDark} />
+      <path d="M17 86.5 H45" stroke="rgb(255 240 190 / 0.35)" strokeWidth={0.6} />
+      <path d={`M${rim.cx - rim.rx} ${rim.cy} C${rim.cx - rim.rx + 1} 54 ${rim.cx - 6} 68 ${rim.cx - 4.6} 79.5 H${rim.cx + 4.6} C${rim.cx + 6} 68 ${rim.cx + rim.rx - 1} 54 ${rim.cx + rim.rx} ${rim.cy} Z`} fill={G.gold} />
       <path
-        d="M19 33 L33 77 M24 31 L37 70 M30 30.5 L39.5 58 M36 31 L41 44 M41 33 L27 77 M36 31 L23 70 M30 30.5 L20.5 58 M24 31 L19 44"
+        d="M19.5 41 L33.5 79 M24.5 41.5 L36 72 M30 41.8 L37.6 62 M35.5 41.6 L39.6 52 M42.5 41 L28.5 79 M37.5 41.5 L26 72 M32 41.8 L24.4 62 M26.5 41.6 L22.4 52"
         stroke="rgb(120 80 10 / 0.42)"
         strokeWidth={0.6}
         fill="none"
       />
-      <path d="M21 34 C21.5 48 24 62 26.5 75" stroke="rgb(255 245 200 / 0.75)" strokeWidth={1.2} fill="none" />
-      <path d="M17.5 30 A12.5 2.4 0 0 0 42.5 30" fill="none" stroke={G.goldDark} strokeWidth={1.4} />
-      <circle cx="30" cy="17.5" r="11.6" fill={G.gold} />
-      <g stroke="rgb(110 70 10 / 0.55)" strokeWidth={0.7} fill="none">
-        <path d="M18.4 17.5 H41.6" />
-        <path d="M30 5.9 V29.1" />
-        <path d="M22 9 C26.6 13 26.6 22 22 26" />
-        <path d="M38 9 C33.4 13 33.4 22 38 26" />
+      <path d="M21 43 C21.6 56 24.4 68 27 77" stroke="rgb(255 245 200 / 0.7)" strokeWidth={1.2} fill="none" />
+      {/* The back of the rim, behind the ball. */}
+      <path d={`M${rim.cx - rim.rx} ${rim.cy} A${rim.rx} ${rim.ry} 0 0 1 ${rim.cx + rim.rx} ${rim.cy}`} fill="none" stroke={G.goldDark} strokeWidth={1.6} />
+      <g transform="translate(0 4.5) rotate(-24 27.5 27)">
+        <circle cx="27.5" cy="27" r="12.4" fill={G.gold} />
+        <g stroke="rgb(110 70 10 / 0.6)" strokeWidth={0.75} fill="none">
+          <path d="M15.1 27 H39.9" />
+          <path d="M27.5 14.6 V39.4" />
+          <path d="M19 17.8 C24 22 24 32 19 36.2" />
+          <path d="M36 17.8 C31 22 31 32 36 36.2" />
+        </g>
+        <ellipse cx="22.5" cy="20.5" rx="4" ry="2.4" fill="rgb(255 250 220 / 0.55)" stroke="none" />
       </g>
-      <ellipse cx="25" cy="11.5" rx="3.6" ry="2.2" fill="rgb(255 250 220 / 0.6)" stroke="none" />
-      <path d="M17.5 30 A12.5 2.4 0 0 1 42.5 30" fill="none" stroke={G.gold} strokeWidth={1.2} />
+      {/* The front of the rim, over the ball's lower half. */}
+      <path d={`M${rim.cx - rim.rx} ${rim.cy} A${rim.rx} ${rim.ry} 0 0 0 ${rim.cx + rim.rx} ${rim.cy}`} fill="none" stroke={G.gold} strokeWidth={1.8} />
+      <path d={`M${rim.cx - rim.rx + 2} ${rim.cy + 1.6} A${rim.rx} ${rim.ry} 0 0 0 ${rim.cx + 4} ${rim.cy + 3}`} fill="none" stroke="rgb(255 245 200 / 0.7)" strokeWidth={0.6} />
     </g>
   );
 }
 
 function CommissionersTrophy() {
-  // Thirty gold flags ring a silver baseball, rising from a black base with a silver band.
-  const poles = Array.from({length: 16}, (_, i) => {
-    const a = (i / 16) * Math.PI * 2;
-    return {x: 30 + 16 * Math.cos(a), depth: Math.sin(a), a};
+  // Thirty slim silver flagpoles stand in a ring on a round base, each topped with a gold
+  // pennant; the pennants trace a ring that tilts up toward the back.
+  const N = 30;
+  const poles = Array.from({length: N}, (_, i) => {
+    const a = (i / N) * Math.PI * 2;
+    const x = 30 + 14.5 * Math.cos(a);
+    const depth = Math.sin(a); // 1 = nearest the viewer
+    // The top ring tilts: high at the back left, low at the front right.
+    const top = 24 + 8 * (0.8 * depth + 0.6 * Math.cos(a));
+    return {x, depth, top, base: 76 + 2.6 * depth, dir: Math.cos(a) >= 0 ? 1 : -1};
   });
-  const pole = (p: {x: number; depth: number}, key: number) => {
-    const top = 13 + 4 * p.depth;
-    const bottom = 76 + 2.2 * p.depth;
-    const dir = p.x < 30 ? -1 : 1;
-    return (
-      <g key={key} opacity={p.depth < 0 ? 0.6 : 1}>
-        <rect x={p.x - 0.55} y={top} width={1.1} height={bottom - top} fill={G.gold} stroke="none" />
-        <path
-          d={`M${p.x} ${top} q ${2.8 * dir} -1.6 ${5.6 * dir} 0.6 l 0 8 q ${-2.8 * dir} -1.8 ${-5.6 * dir} -0.6 Z`}
-          fill={G.gold}
-          stroke="rgb(110 70 10 / 0.5)"
-          strokeWidth={0.4}
-        />
-      </g>
-    );
-  };
+  const pole = (p: (typeof poles)[number], key: number) => (
+    <g key={key} opacity={p.depth < 0 ? 0.7 : 1}>
+      <rect x={p.x - 0.55} y={p.top} width={1.1} height={p.base - p.top} fill={G.silver} stroke="none" />
+      <path
+        d={`M${p.x + 0.3} ${p.top - 0.6} q 2.4 -1 4.8 0.4 l -1.2 2.4 l 1.2 2.4 q -2.4 -1.2 -4.8 -0.2 Z`}
+        fill={G.gold}
+        stroke="rgb(110 70 10 / 0.6)"
+        strokeWidth={0.3}
+      />
+    </g>
+  );
   return (
     <g strokeLinejoin="round">
-      <path d="M11 78 H49 L50 93 H10 Z" fill="#17191d" stroke={EDGE} strokeWidth={0.5} />
-      <path d="M11 78 H49 V82.5 H11 Z" fill={G.silver} />
-      <path d="M13 87.5 H47" stroke="rgb(212 175 55 / 0.7)" strokeWidth={0.8} />
-      <ellipse cx="30" cy="78" rx="19" ry="2.4" fill={G.silverDark} />
+      <path d="M10.5 81 C10.5 78.5 49.5 78.5 49.5 81 L50.5 92 C50.5 95 9.5 95 9.5 92 Z" fill="#17191d" stroke={EDGE} strokeWidth={0.5} />
+      <path d="M11.5 86.5 C18 89 42 89 48.5 86.5" stroke="rgb(212 175 55 / 0.75)" strokeWidth={1} fill="none" />
+      <ellipse cx="30" cy="79" rx="19.5" ry="3.4" fill={G.silver} stroke={EDGE} strokeWidth={0.5} />
+      <ellipse cx="30" cy="77.6" rx="16.5" ry="2.8" fill={G.silverDark} stroke={EDGE} strokeWidth={0.4} />
       {poles.filter((p) => p.depth < 0).map((p, i) => pole(p, i))}
-      <circle cx="30" cy="44" r="11" fill={G.silver} stroke={EDGE} strokeWidth={0.5} />
-      <g stroke="rgb(70 76 82 / 0.45)" strokeWidth={0.5} fill="none">
-        <ellipse cx="30" cy="44" rx="4.8" ry="11" />
-        <path d="M19 44 H41 M20.5 38 H39.5 M20.5 50 H39.5" />
-      </g>
-      <path d="M30 55 V76" stroke={G.silverDark} strokeWidth={2.4} />
+      <circle cx="30" cy="73" r="3.6" fill={G.gold} stroke="rgb(110 70 10 / 0.5)" strokeWidth={0.4} />
       {poles.filter((p) => p.depth >= 0).map((p, i) => pole(p, 100 + i))}
     </g>
   );
@@ -136,25 +140,42 @@ function MlsCup() {
 }
 
 function GreyCup() {
-  // A silver cup with looped handles on a tall black cone ringed with silver bands.
-  const at = (y: number) => [21 - ((y - 38) * 12) / 54, 39 + ((y - 38) * 12) / 54];
+  // A silver loving cup with two tall ear handles on a short stem, set on a tall bell-shaped
+  // silver base: tiers of engraved plates between narrow black bands, on a black plinth.
+  const top = 37;
+  const bottom = 90;
+  const half = (y: number) => 9.5 + 11.5 * Math.pow((y - top) / (bottom - top), 1.25);
+  const bands = [top, 44, 52, 61, 71, 81, bottom];
+  const tiers = [];
+  for (let i = 0; i < bands.length - 1; i++) {
+    const y0 = bands[i] + 1.4;
+    const y1 = bands[i + 1];
+    const [a0, a1] = [half(y0), half(y1)];
+    tiers.push(<path key={`t${i}`} d={`M${30 - a0} ${y0} H${30 + a0} L${30 + a1} ${y1} H${30 - a1} Z`} fill={G.silver} />);
+    // Vertical seams between the engraved plates.
+    for (const f of [-0.62, -0.22, 0.22, 0.62]) {
+      tiers.push(<path key={`s${i}${f}`} d={`M${30 + f * a0} ${y0} L${30 + f * a1} ${y1}`} stroke="rgb(0 0 0 / 0.22)" strokeWidth={0.45} />);
+    }
+    const yb = bands[i + 1];
+    tiers.push(<path key={`b${i}`} d={`M${30 - half(yb) - 0.3} ${yb} H${30 + half(yb) + 0.3} V${yb + 1.4} H${30 - half(yb) - 0.3} Z`} fill="#1b1d22" />);
+  }
   return (
     <g stroke={EDGE} strokeWidth={0.5} strokeLinejoin="round">
-      <path d="M21 38 H39 L51 92 H9 Z" fill="#1b1d22" />
-      {[46, 56, 66, 76, 86].map((y) => {
-        const [a, b] = at(y);
-        const [c, d] = at(y + 2.6);
-        return <path key={y} d={`M${a} ${y} H${b} L${d} ${y + 2.6} H${c} Z`} fill={G.silver} />;
-      })}
-      <path d="M30 40 V91 M24 40 L18 91 M36 40 L42 91" stroke="rgb(255 255 255 / 0.1)" strokeWidth={0.6} />
-      <rect x="8.5" y="91.5" width="43" height="3" rx="0.8" fill={G.silverDark} />
-      <ellipse cx="30" cy="38" rx="10" ry="2" fill={G.silver} />
-      <path d="M27.4 31 H32.6 L33.6 38 H26.4 Z" fill={G.silverDark} />
-      <path d="M18 9.5 C8.5 9.5 8.5 25 20 27" fill="none" stroke={G.silverDark} strokeWidth={2.4} />
-      <path d="M42 9.5 C51.5 9.5 51.5 25 40 27" fill="none" stroke={G.silverDark} strokeWidth={2.4} />
-      <path d="M17 6 C17 20 22 31 30 31 C38 31 43 20 43 6 Z" fill={G.silver} />
-      <ellipse cx="30" cy="6" rx="13" ry="2.3" fill={G.silverDark} />
-      <path d="M21 9 C22 19 25 26 28.5 29" stroke="rgb(255 255 255 / 0.8)" strokeWidth={1.1} fill="none" />
+      <path d={`M${30 - half(top) - 0.6} ${top - 1.6} H${30 + half(top) + 0.6} V${top + 1.4} H${30 - half(top) - 0.6} Z`} fill="#1b1d22" />
+      {tiers}
+      <path d={`M${30 - half(top) + 2} ${top + 3} L${30 - half(bottom) + 3} ${bottom - 1}`} stroke="rgb(255 255 255 / 0.65)" strokeWidth={1.4} />
+      <path d="M7.5 91.4 H52.5 V94 H7.5 Z" fill="#1b1d22" />
+      {/* Cup: stem and foot, bowl, ear handles. */}
+      <ellipse cx="30" cy="34.6" rx="7.5" ry="1.6" fill={G.silverDark} />
+      <path d="M28.4 25 H31.6 L32.2 34 H27.8 Z" fill={G.silver} />
+      <ellipse cx="30" cy="28.4" rx="2.6" ry="1.1" fill={G.silverDark} />
+      <path d="M19 9 C11 8 9.5 19 21.5 21.5" fill="none" stroke={G.silverDark} strokeWidth={2.2} strokeLinecap="round" />
+      <path d="M41 9 C49 8 50.5 19 38.5 21.5" fill="none" stroke={G.silverDark} strokeWidth={2.2} strokeLinecap="round" />
+      <path d="M17.5 5.5 C17.5 17 22 24.5 30 25.2 C38 24.5 42.5 17 42.5 5.5 Z" fill={G.silver} />
+      <path d="M16.6 4.8 H43.4 L42.6 6.6 H17.4 Z" fill={G.silverDark} />
+      <ellipse cx="30" cy="5" rx="13.2" ry="1.8" fill={G.silverDark} />
+      <ellipse cx="30" cy="5.1" rx="11" ry="1.1" fill="#6b7279" opacity={0.6} />
+      <path d="M21 9 C21.8 16 24.5 21.5 28 23.6" stroke="rgb(255 255 255 / 0.8)" strokeWidth={1.1} fill="none" />
     </g>
   );
 }
@@ -339,6 +360,47 @@ export function TrophyArt({league, height = 64, isMuted = false, title}: {league
   );
 }
 
+interface ShelfItem {
+  key: string;
+  league: LeagueId;
+  year: number;
+  /** Tooltip and accessible name, e.g. "Stanley Cup 1993, Montréal Canadiens". */
+  label: string;
+}
+
+/**
+ * A trophy cabinet: trophies stand shoulder to shoulder on glass shelves, overlapping a little,
+ * every other one set back a step (smaller, a touch dimmer) for depth. Each year is engraved on
+ * the shelf under its trophy; hovering a trophy brings it forward.
+ */
+function Shelves({items, size, label}: {items: ShelfItem[]; size: number; label: string}) {
+  const width = (size * 60) / 98;
+  // Few trophies spread out; many crowd together so a long dynasty still fits in a few rows.
+  // At least room for its year on the shelf.
+  const step = Math.max(30, Math.round(width * (items.length <= 4 ? 0.9 : items.length <= 12 ? 0.66 : 0.58)));
+  const rowH = Math.round(size + SHELF_H + 6);
+  return (
+    <ul
+      className="trophy-shelves"
+      style={{['--row-h' as string]: `${rowH}px`, ['--shelf-h' as string]: `${SHELF_H}px`, paddingInline: Math.max(0, (width - step) / 2)}}
+      aria-label={label}>
+      {items.map((it, i) => (
+        <li key={it.key} className={i % 2 ? 'trophy-slot trophy-slot-back' : 'trophy-slot'} style={{width: step, height: rowH}} title={it.label}>
+          <span className="trophy-figure" style={{width, height: size}}>
+            <TrophyArt league={it.league} height={size} title={it.label} />
+          </span>
+          <span className="trophy-year" aria-hidden>
+            {it.year}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** Height of the shelf band the years are engraved on. */
+const SHELF_H = 16;
+
 /**
  * Every championship a team has won, one trophy per title with its year,
  * plus an empty silhouette when a team has never won.
@@ -358,20 +420,14 @@ export function TrophyCabinet({team}: {team: Team}) {
       </div>
     );
   }
-  const size = titles.length > 12 ? 52 : titles.length > 4 ? 60 : 76;
+  const size = titles.length > 12 ? 84 : titles.length > 4 ? 96 : 120;
   return (
-    <div className="card-radius bg-[var(--color-background-muted)] p-3">
-      <ul
-        className="grid justify-items-center gap-x-1 gap-y-2"
-        style={{gridTemplateColumns: `repeat(auto-fill, minmax(${Math.round(size * 0.78)}px, 1fr))`}}
-        aria-label={`${titles.length} ${name}${titles.length === 1 ? '' : 's'}`}>
-        {titles.map((year) => (
-          <li key={year} className="flex flex-col items-center gap-0.5">
-            <TrophyArt league={league} height={size} />
-            <span className="text-xs font-semibold tabular-nums text-secondary">{year}</span>
-          </li>
-        ))}
-      </ul>
+    <div className="card-radius trophy-cabinet">
+      <Shelves
+        size={size}
+        label={`${titles.length} ${name}${titles.length === 1 ? '' : 's'}`}
+        items={titles.map((year) => ({key: String(year), league, year, label: `${name} ${year}`}))}
+      />
     </div>
   );
 }
@@ -385,22 +441,14 @@ export function TitleCabinet({teams}: {teams: Team[]}) {
     .flatMap((t) => t.championships.map((year) => ({team: t, year})))
     .sort((a, b) => LEAGUE_ORDER.indexOf(a.team.league) - LEAGUE_ORDER.indexOf(b.team.league) || a.year - b.year);
   if (items.length === 0) return null;
-  const size = items.length > 24 ? 40 : items.length > 10 ? 48 : 60;
+  const size = items.length > 24 ? 72 : items.length > 10 ? 84 : 100;
   return (
-    <div className="card-radius bg-[var(--color-background-muted)] p-3">
-      <ul
-        className="grid justify-items-center gap-x-1 gap-y-2"
-        style={{gridTemplateColumns: `repeat(auto-fill, minmax(${Math.round(size * 0.8)}px, 1fr))`}}
-        aria-label={`${items.length} championship${items.length === 1 ? '' : 's'}`}>
-        {items.map(({team, year}) => (
-          <li key={`${team.id}-${year}`} className="flex flex-col items-center gap-0.5" title={`${TROPHY_NAME[team.league]} ${year} · ${team.name}`}>
-            <TrophyArt league={team.league} height={size} title={`${TROPHY_NAME[team.league]} ${year}, ${team.name}`} />
-            <span className="text-[10px] font-semibold tabular-nums text-secondary" aria-hidden>
-              {year}
-            </span>
-          </li>
-        ))}
-      </ul>
+    <div className="card-radius trophy-cabinet">
+      <Shelves
+        size={size}
+        label={`${items.length} championship${items.length === 1 ? '' : 's'}`}
+        items={items.map(({team, year}) => ({key: `${team.id}-${year}`, league: team.league, year, label: `${TROPHY_NAME[team.league]} ${year}, ${team.name}`}))}
+      />
     </div>
   );
 }
