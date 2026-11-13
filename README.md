@@ -22,11 +22,11 @@ An interactive map of Canadian professional sports: every NHL, NBA, MLB, MLS, CF
 
 ### Map layers
 
-Four round toggles sit beside the league filter, one on at a time. The first three are animated dot patterns that ripple out from each city and twinkle, drawn as part of the map so they move with it, with the dots staying the same small size at every zoom. They hold still if you prefer reduced motion.
+Four round toggles sit beside the league filter, one on at a time. Population and Championships are animated dot patterns that ripple out from each city and twinkle, drawn as part of the map so they move with it, with the dots staying the same small size at every zoom; they hold still if you prefer reduced motion. Closest team draws each team's territory as a flat, translucent wash in its colour.
 
 - **Population**: all 152 of Canada's metro areas and agglomerations, sized by 2021 Census population.
 - **Championships**: gold around each city, sized by the titles its teams have won.
-- **Closest team**: every spot in Canada coloured by its nearest team. Hover or tap for the team and the distance.
+- **Closest team**: every spot in Canada coloured by its nearest team: each team's territory (the area closer to its city than to any other) is a translucent wash in its colour, outlined in it. Hover or tap for the team and the distance.
 - **Drop a pin**: tap anywhere, or use your location, and arcs fly to every city on the map. They're coloured by real distance: green nearby, through yellow, to red from about 4,500 km, so a pin far from Canada turns them all red. A card lists the nearest cities and the farthest one.
 
 | Closest team (NHL) | Population |

@@ -13,7 +13,7 @@ import {Icon} from '@astryxdesign/core/Icon';
 import {CITIES, CITY_BY_ID, LEAGUE_ORDER, VENUE_BY_ID, compareTeams, type City, type LeagueId, type Team} from '../data';
 import {ISOMETRIC_VENUES, isometricThumbUrl, type IsometricArt} from '../data/isometric';
 import {latestEra} from '../lib/venues';
-import {DitherLayer, siteColor, type DitherMode, type Site} from './DitherLayer';
+import {DitherLayer, siteColor, type DitherMode} from './DitherLayer';
 import {distanceKm, formatKm, type LatLon, type PinDistance} from './MapTools';
 import {FitIcon, MinusIcon, PlusIcon} from './icons';
 import {POPULATION} from '../data/population';
@@ -478,7 +478,9 @@ export function SportsMap({
       })
       .filter((s): s is NonNullable<typeof s> => s !== null);
   }, [projection, cities, showClosest]);
-  const closestFieldSites = useMemo<Site[]>(() => closestSites.map(({x, y, rgb}) => ({x, y, rgb})), [closestSites]);
+  // Each closest-team city's territory: the part of the map nearer to it than to any other
+  // (a Voronoi cell, in unzoomed map pixels), drawn as a translucent wash in the team's colour.
+  const territories = useMemo(() => voronoiCells(closestSites.map((s) => [s.x, s.y] as [number, number]), paths?.bounds), [closestSites, paths]);
 
   /** Hover (or tap) readout for the closest-team view. */
   const [probe, setProbe] = useState<{x: number; y: number; text: string; sub: string} | null>(null);
@@ -664,7 +666,7 @@ export function SportsMap({
   // What the dither layer shows: territories, people, or titles (one at a time).
   const ditherMode = useMemo<DitherMode | null>(() => {
     if (takeover) return null;
-    if (showClosest) return closestFieldSites.length ? {kind: 'closest', sites: closestFieldSites} : null;
+    if (showClosest) return null; // drawn as flat territories instead (see `territories`)
     if (view === 'population') return {kind: 'blobs', rgb: [238, 108, 52], radius: popRadius, blobs: popPoints.map((a) => ({x: a.px, y: a.py, value: a.pop}))};
     if (view === 'titles') {
       const blobs = markers
@@ -673,7 +675,7 @@ export function SportsMap({
       return {kind: 'blobs', rgb: [222, 166, 34], radius: titleRadius, sparkle: true, blobs};
     }
     return null;
-  }, [takeover, showClosest, closestFieldSites, view, popPoints, markers]);
+  }, [takeover, showClosest, view, popPoints, markers]);
   // Outlines the dither is clipped to (stable between renders so the field only rebuilds when they change).
   const ditherProvinces = useMemo(
     () => (paths ? (showDetail && detailPaths ? detailPaths.provinces : paths.provinces).map((p) => p.d) : []),
@@ -747,6 +749,13 @@ export function SportsMap({
                 <path key={p.id} d={p.d} />
               ))}
             </clipPath>
+            {showClosest && (
+              <clipPath id={`${clipId}-land`}>
+                {(showDetail && detailPaths ? detailPaths.provinces : paths.provinces).map((p) => (
+                  <path key={p.id} d={p.d} />
+                ))}
+              </clipPath>
+            )}
           </defs>
           <g transform={transform.toString()}>
             {paths.world.map((d, i) => (
@@ -783,6 +792,25 @@ export function SportsMap({
                   pointerEvents="none"
                 />
               ))}
+            {showClosest && !takeover && territories.length > 0 && (
+              <g clipPath={`url(#${clipId}-land)`} aria-hidden="true" pointerEvents="none" className="territories">
+                {territories.map((cell, i) => {
+                  const site = closestSites[i];
+                  if (!site || !cell) return null;
+                  const fill = `rgb(${site.rgb.join(' ')})`;
+                  return (
+                    <g key={site.city.id}>
+                      <clipPath id={`${clipId}-t${i}`}>
+                        <path d={cell} />
+                      </clipPath>
+                      <path d={cell} fill={fill} fillOpacity={0.3} />
+                      {/* The border in the team's colour, kept inside its own cell so neighbours' borders sit side by side. */}
+                      <path d={cell} fill="none" stroke={fill} strokeOpacity={0.85} strokeWidth={3} vectorEffect="non-scaling-stroke" strokeLinejoin="round" clipPath={`url(#${clipId}-t${i})`} />
+                    </g>
+                  );
+                })}
+              </g>
+            )}
             {(takeover ? [] : showDetail && detailPaths ? detailPaths.lakes : paths.lakes).map((d, i) => (
               <path key={`l${i}`} d={d} fill="var(--map-water)" stroke="none" />
             ))}
@@ -1396,4 +1424,49 @@ function stackGeometry(size: Size) {
   const w = cardW + STACK_DEPTH * STACK_STEP + 2;
   const h = cardH + STACK_DEPTH * STACK_STEP + 2;
   return {cardW, cardH, w, h, r: Math.ceil(Math.max(w, h) / 2)};
+}
+
+/**
+ * Voronoi cells for a few points (half-plane clipping: fine for tens of sites), each as an SVG
+ * path in the same coordinates, clipped to `bounds` grown well past the map. Index-aligned
+ * with `points`; null for a point whose cell is empty.
+ */
+function voronoiCells(points: [number, number][], bounds?: [[number, number], [number, number]]): (string | null)[] {
+  if (!points.length || !bounds) return [];
+  const [[x0, y0], [x1, y1]] = bounds;
+  const pad = Math.max(x1 - x0, y1 - y0);
+  const box: [number, number][] = [
+    [x0 - pad, y0 - pad],
+    [x1 + pad, y0 - pad],
+    [x1 + pad, y1 + pad],
+    [x0 - pad, y1 + pad],
+  ];
+  return points.map(([px, py], i) => {
+    let poly = box;
+    for (let j = 0; j < points.length && poly.length; j++) {
+      if (j === i) continue;
+      const [qx, qy] = points[j];
+      // Keep the side of the perpendicular bisector nearer to p: (q - p)·x <= (|q|² - |p|²) / 2.
+      const nx = qx - px;
+      const ny = qy - py;
+      const c = (qx * qx + qy * qy - px * px - py * py) / 2;
+      const inside = ([x, y]: [number, number]) => nx * x + ny * y <= c;
+      const next: [number, number][] = [];
+      for (let k = 0; k < poly.length; k++) {
+        const a = poly[k];
+        const b = poly[(k + 1) % poly.length];
+        const ia = inside(a);
+        const ib = inside(b);
+        if (ia) next.push(a);
+        if (ia !== ib) {
+          const da = nx * a[0] + ny * a[1] - c;
+          const db = nx * b[0] + ny * b[1] - c;
+          const t = da / (da - db);
+          next.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]);
+        }
+      }
+      poly = next;
+    }
+    return poly.length >= 3 ? `M${poly.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join('L')}Z` : null;
+  });
 }

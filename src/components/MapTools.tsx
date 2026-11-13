@@ -83,7 +83,7 @@ export function MapToolToggles({
         className="rounded-full"
         label="Closest team"
         isIconOnly
-        tooltip="Closest team everywhere"
+        tooltip="Closest team"
         icon={<Icon icon={TerritoryIcon} />}
         isPressed={showClosest}
         onPressedChange={onShowClosestChange}
