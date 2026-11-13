@@ -1,6 +1,6 @@
 import {Suspense, lazy, useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState} from 'react';
 import {geoMercator, geoPath} from 'd3-geo';
-import {DESKTOP_QUERY} from '../hooks/useMediaQuery';
+import {DESKTOP_QUERY, TOUCH_QUERY, useMediaQuery} from '../hooks/useMediaQuery';
 import {select} from 'd3-selection';
 import 'd3-transition';
 import {zoom as d3zoom, zoomIdentity, type ZoomBehavior, type ZoomTransform} from 'd3-zoom';
@@ -171,6 +171,7 @@ export function SportsMap({
   showClosest = false,
 }: Props) {
   const clipId = useId();
+  const isTouch = useMediaQuery(TOUCH_QUERY);
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const zoomRef = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null);
@@ -646,8 +647,8 @@ export function SportsMap({
   // thumbnails start at half of the deepest zoom instead.
   const showVenues = pxPerKm > 0 && transform.k * pxPerKm >= Math.min(VENUE_PX_PER_KM, pxPerKm * MAX_ZOOM * 0.5);
   const venueThumbs = useMemo(
-    () => (size && !takeover && showVenues ? placeVenueThumbs(venueSites, transform, size, placed.boxes, topInset, bottomInset, rightInset) : []),
-    [size, takeover, showVenues, venueSites, transform, placed.boxes, topInset, bottomInset, rightInset],
+    () => (size && !takeover && showVenues ? placeVenueThumbs(venueSites, transform, size, placed.boxes, topInset, bottomInset, rightInset, !isTouch) : []),
+    [size, takeover, showVenues, venueSites, transform, placed.boxes, topInset, bottomInset, rightInset, isTouch],
   );
   const [openVenue, setOpenVenue] = useState<{items: {venueId: string; art: IsometricArt}[]; index: number} | null>(null);
 
@@ -967,13 +968,16 @@ export function SportsMap({
         </div>
       )}
 
-      <div className="absolute left-3" style={{bottom: bottomInset + 12, transition: 'bottom 200ms ease'}}>
-        <ButtonGroup label="Map zoom" orientation="vertical" className="glass glass-group rounded-full">
-          <IconButton variant="ghost" className="rounded-full" label="Zoom in" tooltip="Zoom in" icon={<Icon icon={PlusIcon} />} onClick={() => zoomBy(1.6)} />
-          <IconButton variant="ghost" className="rounded-full" label="Zoom out" tooltip="Zoom out" icon={<Icon icon={MinusIcon} />} onClick={() => zoomBy(1 / 1.6)} />
-          <IconButton variant="ghost" className="rounded-full" label="Show all cities" tooltip="Show all cities" icon={<Icon icon={FitIcon} />} onClick={resetZoom} />
-        </ButtonGroup>
-      </div>
+      {/* Touch screens pinch to zoom, so the buttons are for mice and keyboards. */}
+      {!isTouch && (
+        <div className="absolute left-3" style={{bottom: bottomInset + 12, transition: 'bottom 200ms ease'}}>
+          <ButtonGroup label="Map zoom" orientation="vertical" className="glass glass-group rounded-full">
+            <IconButton variant="ghost" className="rounded-full" label="Zoom in" tooltip="Zoom in" icon={<Icon icon={PlusIcon} />} onClick={() => zoomBy(1.6)} />
+            <IconButton variant="ghost" className="rounded-full" label="Zoom out" tooltip="Zoom out" icon={<Icon icon={MinusIcon} />} onClick={() => zoomBy(1 / 1.6)} />
+            <IconButton variant="ghost" className="rounded-full" label="Show all cities" tooltip="Show all cities" icon={<Icon icon={FitIcon} />} onClick={resetZoom} />
+          </ButtonGroup>
+        </div>
+      )}
 
 
     </div>
@@ -1340,6 +1344,7 @@ function placeVenueThumbs(
   topInset: number,
   bottomInset: number,
   rightInset: number,
+  hasZoomButtons: boolean,
 ): VenueThumb[] {
   const w = size.w < 640 ? 72 : 92;
   const h = Math.round((w * 10) / 16);
@@ -1351,8 +1356,8 @@ function placeVenueThumbs(
     .filter((s) => s.ax > bounds.x0 && s.ax < bounds.x1 && s.ay > bounds.y0 && s.ay < bounds.y1)
     .sort((a, b) => a.ay - b.ay || a.ax - b.ax);
   // Keep clear of the zoom buttons in the bottom-left corner too.
-  const zoomButtons = {x0: 0, y0: size.h - bottomInset - 140, x1: 64, y1: size.h - bottomInset};
-  const taken: Box[] = [...obstacles, zoomButtons, ...inView.map((s) => ({x0: s.ax - 5, y0: s.ay - 5, x1: s.ax + 5, y1: s.ay + 5}))];
+  const zoomButtons = hasZoomButtons ? [{x0: 0, y0: size.h - bottomInset - 140, x1: 64, y1: size.h - bottomInset}] : [];
+  const taken: Box[] = [...obstacles, ...zoomButtons, ...inView.map((s) => ({x0: s.ax - 5, y0: s.ay - 5, x1: s.ax + 5, y1: s.ay + 5}))];
   const angles = [-90, -45, -135, 0, 180, 45, 135, 90, -67.5, -112.5, -22.5, -157.5, 22.5, 157.5, 67.5, 112.5];
   const out: VenueThumb[] = [];
   for (const s of inView) {
