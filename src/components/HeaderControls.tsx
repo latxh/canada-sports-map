@@ -15,8 +15,6 @@ import {LeagueLogo} from '../visuals/Logos';
 export type Appearance = 'light' | 'dark' | 'system';
 
 /** What the map shows on top of the sports cities. */
-export type MapView = 'teams' | 'population' | 'titles';
-export const MAP_VIEWS: MapView[] = ['teams', 'population', 'titles'];
 
 
 

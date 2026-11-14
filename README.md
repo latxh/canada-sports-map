@@ -22,18 +22,14 @@ An interactive map of Canadian professional sports: every NHL, NBA, MLB, MLS, CF
 
 ### Map layers
 
-Four round toggles sit beside the league filter, one on at a time. Population and Championships are animated dot patterns that ripple out from each city and twinkle, drawn as part of the map so they move with it, with the dots staying the same small size at every zoom; they hold still if you prefer reduced motion. Closest team draws each team's territory as a flat, translucent wash in its colour.
+Two round toggles sit beside the league filter, one on at a time.
 
-- **Population**: all 152 of Canada's metro areas and agglomerations, sized by 2021 Census population.
-- **Championships**: gold around each city, sized by the titles its teams have won.
-- **Closest team**: every spot in Canada coloured by its nearest team: each team's territory (the area closer to its city than to any other) is a translucent wash in its colour, outlined in it. Hover or tap for the team and the distance.
+- **Closest team**: every spot in Canada coloured by its nearest team: each team's territory (the area closer to its city than to any other) is a translucent wash in its colour, outlined in it.
 - **Drop a pin**: tap anywhere, or use your location, and arcs fly to every city on the map. They're coloured by real distance: green nearby, through yellow, to red from about 4,500 km, so a pin far from Canada turns them all red. A card lists the nearest cities and the farthest one.
 
-| Closest team (NHL) | Population |
+| Closest team (NHL) | Drop a pin |
 | --- | --- |
-| ![Canada coloured by its nearest NHL team](docs/layer-closest.png) | ![Population around each metro area](docs/layer-population.png) |
-| **Championships** | **Drop a pin** |
-| ![Championships around each city](docs/layer-championships.png) | ![Arcs from a pin in Regina to every city](docs/layer-pin.png) |
+| ![Canada coloured by its nearest NHL team](docs/layer-closest.png) | ![Arcs from a pin in Regina to every city](docs/layer-pin.png) |
 
 ### City and team panels
 
@@ -56,7 +52,7 @@ Every venue that still stands, past or present (49 in all), has a pixel-art illu
 
 ### Link-preview cards
 
-Each share link has a card made for it: a team's logo, league, years and trophies beside its territory on the map; a city's teams around a glow on its spot; a league's Canadian teams on its closest-team map; or a full map for each layer.
+Each share link has a card made for it: a team's logo, league, years and trophies beside its territory on the map; a city's teams around a glow on its spot; a league's Canadian teams on its closest-team map; or a full map for the closest-team layer.
 
 | Team | City | League |
 | --- | --- | --- |
@@ -104,7 +100,7 @@ Requires Node 22.13 or later.
 
 ```
 src/
-  data/            # typed dataset: leagues, cities, venues, teams/*.ts, population, media, sportslogos (+ tests)
+  data/            # typed dataset: leagues, cities, venues, teams/*.ts, media, sportslogos (+ tests)
   data/geo/        # simplified Natural Earth TopoJSON (built by scripts/build-geo.mjs)
   components/      # SportsMap (d3-geo + d3-zoom), DitherLayer, map tools, panels, credits
   visuals/         # original SVG illustrations: trophies, badges, uniforms, playing surfaces
@@ -138,7 +134,7 @@ The app's data holds only what it shows. The written research behind it (team su
 
 ### Share links and preview cards
 
-`src/og/manifest.ts` lists every share link. On each build, a small Vite plugin writes a page for each one (`team/<id>/`, `city/<id>/`, `league/<id>/`, `view/<layer>/`) with its preview tags, which sends visitors on to the app (passing through any `utm_` parameters). Preview bots ignore `?` and `#`, which is why these are real paths.
+`src/og/manifest.ts` lists every share link. On each build, a small Vite plugin writes a page for each one (`team/<id>/`, `city/<id>/`, `league/<id>/`, `view/closest/`) with its preview tags, which sends visitors on to the app (passing through any `utm_` parameters). Preview bots ignore `?` and `#`, which is why these are real paths. The retired Population and Championships share links (`view/population/`, `view/championships/`) still serve the home page.
 
 The cards are rendered from the app: open `?og=list` in the dev server to see them all, or `?og=team:toronto-raptors` for one. After changing a card or adding a team, city or league, re-render them (`npm test` fails when one is missing):
 
@@ -161,7 +157,6 @@ npm run og                                          # all cards, or: npm run og 
 - **[Wikipedia](https://en.wikipedia.org/)**: team, venue and championship facts, paraphrased (CC BY-SA 4.0). Every team and venue links to its article.
 - **Logos**: the files each team's and league's Wikipedia article uses. `src/data/logos.ts` and `src/data/media.ts` record each file's page and licence. Most are non-free trademarks, used on Wikipedia under fair use.
 - **[Wikimedia Commons](https://commons.wikimedia.org/)**: team and venue photos, all freely licensed, credited with author and licence in the lightbox and in the app's Credits.
-- **[Statistics Canada](https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=9810000301)**: 2021 Census population for the Population layer.
 - **[Natural Earth](https://www.naturalearthdata.com/)**: countries, provinces, coastlines, lakes, rivers, towns and geography names (public domain).
 - **[Google Earth](https://earth.google.com/)**: the 3D views the venue illustrations are repainted from. Imagery © Google and its data providers, credited per image in the lightbox.
 - **[OpenStreetMap](https://www.openstreetmap.org/copyright)**: venue locations and outlines used to frame each view (© OpenStreetMap contributors, ODbL).

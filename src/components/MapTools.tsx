@@ -5,8 +5,7 @@ import {Text} from '@astryxdesign/core/Text';
 import {ToggleButton} from '@astryxdesign/core/ToggleButton';
 import {VStack} from '@astryxdesign/core/VStack';
 import {HStack} from '@astryxdesign/core/HStack';
-import {LocateIcon, PeopleIcon, PinIcon, TerritoryIcon, TrophyIcon} from './icons';
-import type {MapView} from './HeaderControls';
+import {ClosestIcon, LocateIcon, PinIcon} from './icons';
 
 export interface LatLon {
   lat: number;
@@ -40,20 +39,13 @@ export function formatKm(km: number) {
   return `${Math.round(km).toLocaleString('en-CA')} km`;
 }
 
-/**
- * Map toggles in the top pill. Population, Championships and Closest team are layers (one
- * at a time); the pin works with any of them.
- */
+/** Map toggles in the top pill: Closest team and Drop a pin, one at a time. */
 export function MapToolToggles({
-  view,
-  onViewChange,
   isPinMode,
   onPinModeChange,
   showClosest,
   onShowClosestChange,
 }: {
-  view: MapView;
-  onViewChange: (v: MapView) => void;
   isPinMode: boolean;
   onPinModeChange: (on: boolean) => void;
   showClosest: boolean;
@@ -63,28 +55,10 @@ export function MapToolToggles({
     <>
       <ToggleButton
         className="rounded-full"
-        label="Population"
-        isIconOnly
-        tooltip="Population"
-        icon={<Icon icon={PeopleIcon} />}
-        isPressed={view === 'population'}
-        onPressedChange={(on) => onViewChange(on ? 'population' : 'teams')}
-      />
-      <ToggleButton
-        className="rounded-full"
-        label="Championships"
-        isIconOnly
-        tooltip="Championships"
-        icon={<Icon icon={TrophyIcon} />}
-        isPressed={view === 'titles'}
-        onPressedChange={(on) => onViewChange(on ? 'titles' : 'teams')}
-      />
-      <ToggleButton
-        className="rounded-full"
         label="Closest team"
         isIconOnly
         tooltip="Closest team"
-        icon={<Icon icon={TerritoryIcon} />}
+        icon={<Icon icon={ClosestIcon} />}
         isPressed={showClosest}
         onPressedChange={onShowClosestChange}
       />
