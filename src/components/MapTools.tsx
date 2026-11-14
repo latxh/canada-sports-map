@@ -66,7 +66,7 @@ export function MapToolToggles({
         className="rounded-full"
         label="Drop a pin"
         isIconOnly
-        tooltip="Drop a pin"
+        tooltip="Distance from pin"
         icon={<Icon icon={PinIcon} />}
         isPressed={isPinMode}
         onPressedChange={onPinModeChange}
