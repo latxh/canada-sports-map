@@ -3,6 +3,7 @@ import {geoMercator, geoPath} from 'd3-geo';
 import {DESKTOP_QUERY, TOUCH_QUERY, useMediaQuery} from '../hooks/useMediaQuery';
 import {select} from 'd3-selection';
 import 'd3-transition';
+import {interpolateZoom} from 'd3-interpolate';
 import {zoom as d3zoom, zoomIdentity, type ZoomBehavior, type ZoomTransform} from 'd3-zoom';
 import {feature} from 'topojson-client';
 import type {FeatureCollection, Geometry} from 'geojson';
@@ -142,12 +143,19 @@ interface Size {
   h: number;
 }
 
+/**
+ * Most zoom on a desktop-width map. k = 1 fits Canada to the screen's width, so a phone's k
+ * covers more ground: it gets proportionally more (maxZoomFor).
+ */
 const MAX_ZOOM = 40;
+const maxZoomFor = (size: Size | null) => (size ? MAX_ZOOM * Math.max(1, 1100 / size.w) : MAX_ZOOM);
 const LABEL_FONT = 13;
 /** Zoom (1 = all of Canada) from which the detailed coastline, rivers, towns and geography labels show. */
 const DETAIL_K = 1.9;
 /** Zoom from which a city's dot can become a stack of its venue illustrations. */
 const STACK_MIN_K = 2.5;
+/** Frames sampled when replaying a zoom flight to see where names end up (see stackZoom). */
+const FLIGHT_FRAMES = 14;
 /** The most a "show all cities" view zooms in, so the country never feels cropped. */
 const HOME_MAX_K = 1.3;
 
@@ -171,6 +179,7 @@ export function SportsMap({
   const svgRef = useRef<SVGSVGElement>(null);
   const zoomRef = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   const [size, setSize] = useState<Size | null>(null);
+  const maxZoom = maxZoomFor(size);
   const [transform, setTransform] = useState<ZoomTransform>(zoomIdentity);
   const transformRef = useRef<ZoomTransform>(zoomIdentity);
   const [geo, setGeo] = useState<Geo | null>(null);
@@ -338,7 +347,7 @@ export function SportsMap({
     const minK = Math.max(0.05, Math.min(size.w / (wx1 - wx0), size.h / (wy1 - wy0)));
     const margin = Math.max(size.w, size.h) * 0.1;
     const behavior = d3zoom<SVGSVGElement, unknown>()
-      .scaleExtent([minK, MAX_ZOOM])
+      .scaleExtent([minK, maxZoom])
       .translateExtent([
         [wx0 - margin, wy0 - margin],
         [wx1 + margin, wy1 + margin],
@@ -391,7 +400,13 @@ export function SportsMap({
     animateTo(takeoverId ? mainlandTransform() : homeTransform(), 450);
   }, [animateTo, takeoverId, mainlandTransform, homeTransform]);
 
-  /** Fly to a city, close enough to separate it from its neighbours. */
+  // stackZoom (defined below, once the markers are) for flyToCity.
+  const stackZoomRef = useRef<
+    ((anchor: {px: number; py: number}, candidates: {px: number; py: number}[], baseK: number, selected: string | null) => {k: number; center: [number, number]}) | null
+  >(null);
+  // The clusters on screen (set below), so flying to a city can keep its cluster-mates in view.
+  const clustersRef = useRef<Cluster[]>([]);
+  /** Fly to a city, close enough to separate it from its neighbours and show their venues. */
   const flyToCity = useCallback(
     (cityId: string) => {
       if (!projection || !size) return;
@@ -403,17 +418,22 @@ export function SportsMap({
         p,
         cities.filter((c) => c.city.id !== city.id).map((c) => projection([c.city.lon, c.city.lat])).filter((q): q is [number, number] => !!q),
       );
-      const k = Math.min(MAX_ZOOM, Math.max(transformRef.current.k, Math.min(size.w, size.h) < 600 ? 3 : 4, sep));
+      const base = Math.min(maxZoom, Math.max(transformRef.current.k, Math.min(size.w, size.h) < 600 ? 3 : 4, sep));
+      // On in until the venue stacks of the cities around it all show, keeping in view the cities
+      // it was clustered with (those that fit).
+      const mates = clustersRef.current.find((c) => c.members.some((m) => m.city.id === cityId))?.members ?? [];
+      const anchor = mates.find((m) => m.city.id === cityId) ?? {px: p[0], py: p[1]};
+      const {k, center} = stackZoomRef.current?.(anchor, mates, base, cityId) ?? {k: base, center: [p[0], p[1]] as [number, number]};
       const visibleH = size.h - bottomInset - topInset;
       animateTo(
         zoomIdentity
           .translate((size.w - rightInset) / 2, topInset + visibleH / 2)
           .scale(k)
-          .translate(-p[0], -p[1]),
+          .translate(-center[0], -center[1]),
         700,
       );
     },
-    [projection, size, cities, bottomInset, rightInset, topInset, animateTo],
+    [projection, size, cities, bottomInset, rightInset, topInset, animateTo, maxZoom],
   );
 
   // Where the map should be. Opening a city remembers the view you jumped from, and closing the
@@ -519,34 +539,7 @@ export function SportsMap({
   // Which side of its dot each city's name sat on last time, so names don't flip while zooming.
   const labelSides = useRef(new Map<string, 'start' | 'end'>());
   const placed = useMemo(() => {
-    const stack = size ? stackGeometry(size) : null;
-    const stacks = (id: string) => !!stack && showVenues && !takeover && id !== selectedCityId && venuesByCity.has(id);
-    const items = markers.map((m) => {
-      const x = transform.applyX(m.px);
-      const y = transform.applyY(m.py);
-      const r = markerRadius(m.teams.length);
-      return {...m, x, y, r};
-    });
-    const clusters = makeRoomForNames(clusterMarkers(items, selectedCityId), selectedCityId, size, labelSides.current);
-    // A city's dot becomes its venue stack only where the stack fits clear of every other marker
-    // and name (most important cities first), so crowded areas keep their dots and nothing re-clusters.
-    if (stack) {
-      // Nor may a stack cover another city's name (placed for plain dots, as a dry run).
-      const names = placeLabels(clusters, selectedCityId, size, new Map(labelSides.current)).labels;
-      const taken: Box[] = [];
-      for (const c of clusters) {
-        if (c.members.length !== 1 || !stacks(c.head.city.id)) continue;
-        const box = {x0: c.x - stack.r - 3, y0: c.y - stack.r - 3, x1: c.x + stack.r + 3, y1: c.y + stack.r + 3};
-        const clear =
-          !taken.some((b) => overlaps(b, box)) &&
-          !names.some((l) => l.id !== c.head.city.id && overlaps(l.box, box)) &&
-          !clusters.some((o) => o !== c && !o.isStacked && overlaps(box, {x0: o.x - o.r - 3, y0: o.y - o.r - 3, x1: o.x + o.r + 3, y1: o.y + o.r + 3}));
-        if (!clear) continue;
-        c.r = stack.r;
-        c.isStacked = true;
-        taken.push(box);
-      }
-    }
+    const clusters = layoutMarkers(markers, transform, selectedCityId, size, labelSides.current, showVenues && !takeover ? venuesByCity : null);
     const visibleClusters = takeover && selectedCityId ? clusters.filter((c) => c.containsSelected) : clusters;
     const {labels, boxes} = placeLabels(visibleClusters, selectedCityId, size, labelSides.current);
     const provinceLabels = (takeover ? [] : (paths?.provinces ?? []))
@@ -601,17 +594,116 @@ export function SportsMap({
 
   const labelById = useMemo(() => new Map(placed.labels.map((l) => [l.id, l])), [placed.labels]);
 
+  /** The most zoom that, centred on `center`, keeps every point in view with room for its stack and some of its name. */
+  const fitZoom = useCallback(
+    (center: [number, number], pts: {px: number; py: number}[]) => {
+      if (!size) return maxZoom;
+      const stackR = stackGeometry(size).r;
+      const halfW = Math.max(1, (size.w - rightInset) / 2 - stackR - 40);
+      const halfH = Math.max(1, (size.h - bottomInset - topInset) / 2 - stackR - 16);
+      let k = maxZoom;
+      for (const m of pts) {
+        const dx = Math.abs(m.px - center[0]);
+        const dy = Math.abs(m.py - center[1]);
+        if (dx > 0) k = Math.min(k, halfW / dx);
+        if (dy > 0) k = Math.min(k, halfH / dy);
+      }
+      return k;
+    },
+    [size, maxZoom, rightInset, bottomInset, topInset],
+  );
+
+  /**
+   * Where to fly to show `anchor` and the `candidates` around it: the centre, and the zoom (at
+   * least `baseK`) at which every city in view with venue art shows its stack (`selected` keeps
+   * its dot) while the kept cities stay in view. Steps in until it does; if that never happens,
+   * the first zoom showing the most stacks.
+   *
+   * Names keep the side they had in earlier frames, and a name can block a neighbour's stack, so
+   * a candidate is confirmed by replaying the flight there (d3-zoom's own path and easing).
+   */
+  const stackZoom = useCallback(
+    (anchor: {px: number; py: number}, candidates: {px: number; py: number}[], baseK: number, selected: string | null): {k: number; center: [number, number]} => {
+      // The cities to keep in view: the anchor and, nearest first, each candidate that can still be
+      // told apart from the rest (SEPARATION_PX) at a zoom that fits them all on screen.
+      const bboxCentre = (pts: {px: number; py: number}[]): [number, number] => [
+        (Math.min(...pts.map((m) => m.px)) + Math.max(...pts.map((m) => m.px))) / 2,
+        (Math.min(...pts.map((m) => m.py)) + Math.max(...pts.map((m) => m.py))) / 2,
+      ];
+      const sepK = (pts: {px: number; py: number}[]) => {
+        let minD = Infinity;
+        for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) minD = Math.min(minD, Math.hypot(pts[i].px - pts[j].px, pts[i].py - pts[j].py));
+        return minD === Infinity ? baseK : Math.max(baseK, (SEPARATION_PX / minD) * 1.15);
+      };
+      const dist = (m: {px: number; py: number}) => Math.hypot(m.px - anchor.px, m.py - anchor.py);
+      let keep = [anchor];
+      for (const m of candidates.filter((c) => c !== anchor).sort((a, b) => dist(a) - dist(b))) {
+        const next = [...keep, m];
+        if (fitZoom(bboxCentre(next), next) >= sepK(next)) keep = next;
+      }
+      const center = bboxCentre(keep);
+      const minK = Math.min(maxZoom, sepK(keep));
+      if (!size || takeover) return {k: minK, center};
+      const maxK = Math.max(minK, fitZoom(center, keep));
+      const right = size.w - rightInset;
+      const top = topInset;
+      const bottom = size.h - bottomInset;
+      const target = (k: number) => zoomIdentity.translate(right / 2, top + (bottom - top) / 2).scale(k).translate(-center[0], -center[1]);
+      const missing = (clusters: Cluster[]) => {
+        let n = 0;
+        for (const c of clusters) {
+          if (c.isStacked || c.x < 0 || c.x > right || c.y < top || c.y > bottom) continue;
+          n += c.members.filter((m) => m.city.id !== selected && venuesByCity.has(m.city.id)).length;
+        }
+        return n;
+      };
+      // The flight from where the map is now, as d3-zoom animates it.
+      const from = transformRef.current;
+      const w = Math.max(size.w, size.h);
+      const mid: [number, number] = [size.w / 2, size.h / 2];
+      const view = (t: ZoomTransform): [number, number, number] => [(mid[0] - t.x) / t.k, (mid[1] - t.y) / t.k, w / t.k];
+      const flight = (to: ZoomTransform) => {
+        const sides = new Map(labelSides.current);
+        const path = interpolateZoom(view(from), view(to));
+        let clusters: Cluster[] = [];
+        for (let f = 1; f <= FLIGHT_FRAMES; f++) {
+          const e = f / FLIGHT_FRAMES;
+          const v = path(e < 0.5 ? 4 * e * e * e : 1 - (-2 * e + 2) ** 3 / 2);
+          const k = w / v[2];
+          const t = f === FLIGHT_FRAMES ? to : zoomIdentity.translate(mid[0] - v[0] * k, mid[1] - v[1] * k).scale(k);
+          clusters = layoutMarkers(markers, t, selected, size, sides, venuesByCity);
+          placeLabels(clusters, selected, size, sides);
+        }
+        return missing(clusters);
+      };
+      let best = {k: minK, missing: Infinity};
+      let flights = 0;
+      for (let k = Math.max(minK, STACK_MIN_K); ; k *= 1.15) {
+        const kk = Math.min(k, maxK);
+        const t = target(kk);
+        // A quick look first (names on their current sides); replay the flight only for a likely zoom.
+        const quick = missing(layoutMarkers(markers, t, selected, size, new Map(labelSides.current), venuesByCity));
+        const n = quick === 0 && flights < 8 ? (flights++, flight(t)) : quick;
+        if (n < best.missing) best = {k: kk, missing: n};
+        if (n === 0 || kk >= maxK) break;
+      }
+      return {k: best.k, center};
+    },
+    [size, takeover, maxZoom, rightInset, topInset, bottomInset, markers, venuesByCity, fitZoom],
+  );
+  useLayoutEffect(() => {
+    stackZoomRef.current = stackZoom;
+    clustersRef.current = placed.clusters;
+  }, [stackZoom, placed.clusters]);
+
 
   const zoomToCluster = useCallback(
     (members: {px: number; py: number}[]) => {
       if (!size) return;
-      let minD = Infinity;
-      for (let i = 0; i < members.length; i++)
-        for (let j = i + 1; j < members.length; j++)
-          minD = Math.min(minD, Math.hypot(members[i].px - members[j].px, members[i].py - members[j].py));
-      const k = Math.min(MAX_ZOOM, Math.max(transform.k * 1.5, (SEPARATION_PX / minD) * 1.15));
-      const cx = members.reduce((a, m) => a + m.px, 0) / members.length;
-      const cy = members.reduce((a, m) => a + m.py, 0) / members.length;
+      // Close enough to split the cluster (or as much of it, around its main city, as fits on
+      // screen), then on until every city in view shows its venues.
+      const {k, center} = stackZoom(members[0], members, Math.min(maxZoom, transform.k * 1.5), selectedCityId);
+      const [cx, cy] = center;
       animateTo(
         zoomIdentity
           .translate((size.w - rightInset) / 2, topInset + (size.h - bottomInset - topInset) / 2)
@@ -620,7 +712,7 @@ export function SportsMap({
         600,
       );
     },
-    [size, transform.k, bottomInset, rightInset, topInset, animateTo],
+    [size, transform.k, bottomInset, rightInset, topInset, animateTo, stackZoom, selectedCityId, maxZoom],
   );
 
   const riverRank = transform.k < 3 ? 5 : transform.k < 5 ? 7 : 9;
@@ -1256,6 +1348,53 @@ const STACK_STEP = 5;
 const STACK_DEPTH = 2;
 
 /** The size of a city's venue stack on screen, and the radius it takes up as a marker. */
+/**
+ * Markers at a view: clustered where they'd overlap, names given room, and (when `venues` is
+ * given) each city's dot swapped for its venue stack wherever the stack fits clear of every
+ * other marker and name, most important cities first, so crowded areas keep their dots and
+ * nothing re-clusters. Updates `sides` (each name's last side).
+ */
+function layoutMarkers(
+  markers: Omit<PlacedMarker, 'x' | 'y' | 'r'>[],
+  t: ZoomTransform,
+  selectedId: string | null,
+  size: Size | null,
+  sides: Map<string, 'start' | 'end'>,
+  venues: Map<string, unknown> | null,
+): Cluster[] {
+  const items = markers.map((m) => ({...m, x: t.applyX(m.px), y: t.applyY(m.py), r: markerRadius(m.teams.length)}));
+  const clusters = makeRoomForNames(clusterMarkers(items, selectedId), selectedId, size, sides);
+  const stack = size && venues && t.k >= STACK_MIN_K ? stackGeometry(size) : null;
+  if (!stack || !venues) return clusters;
+  // Nor may a stack cover another city's name (placed for plain dots, as a dry run). A name in
+  // the way may move to the other side of its dot to make room, if it still fits there, so where
+  // stacks show doesn't hang on which side names happened to settle on earlier.
+  let names = placeLabels(clusters, selectedId, size, new Map(sides)).labels;
+  const taken: Box[] = [];
+  for (const c of clusters) {
+    const id = c.head.city.id;
+    if (c.members.length !== 1 || id === selectedId || !venues.has(id)) continue;
+    const box = {x0: c.x - stack.r - 3, y0: c.y - stack.r - 3, x1: c.x + stack.r + 3, y1: c.y + stack.r + 3};
+    if (taken.some((b) => overlaps(b, box))) continue;
+    if (clusters.some((o) => o !== c && !o.isStacked && overlaps(box, {x0: o.x - o.r - 3, y0: o.y - o.r - 3, x1: o.x + o.r + 3, y1: o.y + o.r + 3}))) continue;
+    const blockers = names.filter((l) => l.id !== id && overlaps(l.box, box));
+    if (blockers.length) {
+      const trial = new Map(sides);
+      for (const l of blockers) trial.set(l.id, l.anchor === 'start' ? 'end' : 'start');
+      const retry = placeLabels(clusters, selectedId, size, new Map(trial)).labels;
+      const placedIds = new Set(retry.map((l) => l.id));
+      const ok = !retry.some((l) => l.id !== id && overlaps(l.box, box)) && names.every((l) => placedIds.has(l.id));
+      if (!ok) continue;
+      for (const l of blockers) sides.set(l.id, trial.get(l.id) ?? l.anchor);
+      names = retry;
+    }
+    c.r = stack.r;
+    c.isStacked = true;
+    taken.push(box);
+  }
+  return clusters;
+}
+
 function stackGeometry(size: Size) {
   const cardW = size.w < 640 ? 40 : 50;
   const cardH = Math.round((cardW * 10) / 16);
