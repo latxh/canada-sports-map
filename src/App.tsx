@@ -11,7 +11,7 @@ import {SportsMap, type MapTakeover} from './components/SportsMap';
 import {Skeleton} from '@astryxdesign/core/Skeleton';
 import {VStack} from '@astryxdesign/core/VStack';
 import {loadSportsLogos} from './lib/sportslogos';
-import {LeagueSelect, MAP_VIEWS, SiteMenu, type Appearance, type MapView} from './components/HeaderControls';
+import {LeagueSelect, SiteMenu, type Appearance} from './components/HeaderControls';
 import {MapToolToggles, PinCard, distanceColor, distanceKm, type LatLon, type PinDistance} from './components/MapTools';
 import {DESKTOP_QUERY, TOUCH_QUERY, useMediaQuery} from './hooks/useMediaQuery';
 import {TrophyDefs} from './visuals/TrophyDefs';
@@ -101,11 +101,6 @@ function initialLeague(): LeagueFilter {
   return param && (LEAGUE_ORDER as string[]).includes(param) ? (param as LeagueId) : 'all';
 }
 
-function initialView(): MapView {
-  const param = new URLSearchParams(window.location.search).get('view');
-  return param && (MAP_VIEWS as string[]).includes(param) ? (param as MapView) : 'teams';
-}
-
 function initialPin(): LatLon | null {
   const [lat, lon] = (new URLSearchParams(window.location.search).get('pin') ?? '').split(',').map(Number);
   return Number.isFinite(lat) && Number.isFinite(lon) && Math.abs(lat) <= 90 && Math.abs(lon) <= 180 ? {lat, lon} : null;
@@ -114,15 +109,11 @@ function initialPin(): LatLon | null {
 export function App() {
   const [appearance, setAppearance] = useState<Appearance>(initialAppearance);
   const [league, setLeague] = useState<LeagueFilter>(initialLeague);
-  const [view, setView] = useState<MapView>(initialView);
-  const [pin, setPin] = useState<LatLon | null>(() => (initialView() === 'teams' ? initialPin() : null));
-  // The four map modes (Population, Championships, Closest team, Drop a pin) are exclusive.
-  const [isPinMode, setIsPinMode] = useState(() => initialView() === 'teams' && initialPin() !== null);
+  const [pin, setPin] = useState<LatLon | null>(initialPin);
+  // The two map modes (Closest team, Drop a pin) are exclusive.
+  const [isPinMode, setIsPinMode] = useState(() => initialPin() !== null);
   const [locateError, setLocateError] = useState(false);
-  // Closest team is a layer like Population and Championships: only one shows at a time.
-  const [showClosest, setShowClosest] = useState(
-    () => initialView() === 'teams' && initialPin() === null && new URLSearchParams(window.location.search).get('closest') === '1',
-  );
+  const [showClosest, setShowClosest] = useState(() => initialPin() === null && new URLSearchParams(window.location.search).get('closest') === '1');
   const [isCreditsOpen, setIsCreditsOpen] = useState(false);
   // Credits load the first time they're opened, then stay mounted so the dialog can animate closed.
   const [hasOpenedCredits, setHasOpenedCredits] = useState(false);
@@ -143,8 +134,7 @@ export function App() {
     const params = new URLSearchParams(window.location.search);
     if (league === 'all') params.delete('league');
     else params.set('league', league);
-    if (view === 'teams') params.delete('view');
-    else params.set('view', view);
+    params.delete('view'); // the retired Population and Championships layers
     params.delete('year');
     if (pin) params.set('pin', `${pin.lat.toFixed(3)},${pin.lon.toFixed(3)}`);
     else params.delete('pin');
@@ -152,7 +142,7 @@ export function App() {
     else params.delete('closest');
     const qs = params.toString();
     safely(() => history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}${window.location.hash}`), undefined);
-  }, [league, view, pin, showClosest]);
+  }, [league, pin, showClosest]);
 
   const mapCities = useMemo(() => citiesWithTeams(league), [league]);
 
@@ -167,10 +157,8 @@ export function App() {
   const setPinMode = useCallback((on: boolean) => {
     setIsPinMode(on);
     setLocateError(false);
-    if (on) {
-      setView('teams');
-      setShowClosest(false);
-    } else setPin(null);
+    if (on) setShowClosest(false);
+    else setPin(null);
   }, []);
   const leavePinMode = useCallback(() => {
     setIsPinMode(false);
@@ -200,10 +188,9 @@ export function App() {
         teamId: route.kind === 'team' ? route.id : undefined,
         cityId: route.kind === 'city' ? route.id : undefined,
         league,
-        view,
         showClosest,
       }),
-    [route, league, view, showClosest],
+    [route, league, showClosest],
   );
   useEffect(() => trackPageView(shareEntry.path, shareEntry.title), [shareEntry]);
   // Panels and team pages' SportsLogos.net list: fetch them once the page has settled.
@@ -278,14 +265,14 @@ export function App() {
   // A team page shows its own takeover; otherwise filtering to a one-team league shows that team's.
   const takeover = useMemo(
     () =>
-      view !== 'teams' || isPinMode || showClosest
+      isPinMode || showClosest
         ? null
         : route.kind === 'team'
           ? takeoverFor(TEAM_BY_ID[route.id])
           : league === 'all'
             ? null
             : takeoverFor(soleCurrentTeam(league)),
-    [route, league, view, isPinMode, showClosest],
+    [route, league, isPinMode, showClosest],
   );
 
   return (
@@ -303,7 +290,6 @@ export function App() {
           rightInset={rightInset}
           topInset={CHROME_H - PANEL_GUTTER}
           takeover={takeover}
-          view={view}
           isPinMode={isPinMode}
           pin={pin}
           pinTargets={pinTargets}
@@ -344,15 +330,6 @@ export function App() {
               isCompact={!isDesktop}
             />
             <MapToolToggles
-              view={view}
-              onViewChange={(v) => {
-                setView(v);
-                trackEvent('toggle_layer', {layer: v === 'teams' ? view : v, on: v !== 'teams'});
-                if (v !== 'teams') {
-                  setShowClosest(false);
-                  leavePinMode();
-                }
-              }}
               isPinMode={isPinMode}
               onPinModeChange={(on) => {
                 setPinMode(on);
@@ -362,10 +339,7 @@ export function App() {
               onShowClosestChange={(on) => {
                 setShowClosest(on);
                 trackEvent('toggle_layer', {layer: 'closest', on});
-                if (on) {
-                  setView('teams');
-                  leavePinMode();
-                }
+                if (on) leavePinMode();
               }}
             />
             <SiteMenu

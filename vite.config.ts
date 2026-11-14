@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 /**
  * Share pages: one small page per team, city, league and map layer (team/<id>/, city/<id>/,
- * league/<id>/, view/<layer>/), each with its own link-preview tags, that sends visitors on to
+ * league/<id>/, view/closest/), each with its own link-preview tags, that sends visitors on to
  * the app. Generated from src/og/manifest.ts on every build.
  */
 function sharePages(): Plugin {
@@ -14,10 +14,11 @@ function sharePages(): Plugin {
     async generateBundle() {
       // Loaded through Vite's module runner: the manifest is app TypeScript.
       const {module} = await runnerImport<typeof import('./src/og/manifest')>('/src/og/manifest.ts', {configFile: false, logLevel: 'warn'});
-      const {OG_ENTRIES, sharePageHtml} = module;
+      const {OG_ENTRIES, OG_HOME, RETIRED_SHARE_PATHS, sharePageHtml} = module;
       for (const entry of OG_ENTRIES) {
         if (entry.path) this.emitFile({type: 'asset', fileName: `${entry.path}index.html`, source: sharePageHtml(entry)});
       }
+      for (const path of RETIRED_SHARE_PATHS) this.emitFile({type: 'asset', fileName: `${path}index.html`, source: sharePageHtml(OG_HOME, path)});
     },
   };
 }

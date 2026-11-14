@@ -16,7 +16,7 @@ export const SITE_URL = 'https://latxh.github.io/canada-sports-map/';
 export const SITE_NAME = 'Canadian Sports Atlas';
 
 export type OgKind = 'home' | 'view' | 'league' | 'city' | 'team';
-export type OgView = 'population' | 'championships' | 'closest';
+export type OgView = 'closest';
 
 export interface OgEntry {
   /** `?og=` value that renders this card, e.g. `team:toronto-raptors`. */
@@ -48,18 +48,6 @@ export const OG_VIEWS: {id: OgView; label: string; target: string; description: 
     label: 'Closest team',
     target: '?closest=1',
     description: 'Every spot in Canada coloured by its closest pro sports team. Find yours on the Canadian Sports Atlas.',
-  },
-  {
-    id: 'population',
-    label: 'Population',
-    target: '?view=population',
-    description: "Canada's 152 metro areas by population, beside every pro sports city. On the Canadian Sports Atlas.",
-  },
-  {
-    id: 'championships',
-    label: 'Championships',
-    target: '?view=titles',
-    description: `All ${titleCount(TEAMS)} championships won by Canadian pro teams, mapped by city. On the Canadian Sports Atlas.`,
   },
 ];
 
@@ -153,13 +141,18 @@ export const OG_ENTRIES: OgEntry[] = [
   ...TEAMS.map(teamEntry),
 ];
 
+/**
+ * Share paths of layers that no longer exist (Population, Championships, retired November
+ * 2026): they still serve a page, the home page's, so links already shared keep working.
+ */
+export const RETIRED_SHARE_PATHS = ['view/population/', 'view/championships/'];
+
 export const OG_BY_KEY: Record<string, OgEntry> = Object.fromEntries(OG_ENTRIES.map((e) => [e.key, e]));
 
 export interface ShareState {
   teamId?: string;
   cityId?: string;
   league: LeagueId | 'all';
-  view: 'teams' | 'population' | 'titles';
   showClosest: boolean;
 }
 
@@ -169,15 +162,11 @@ export function shareEntryFor(state: ShareState): OgEntry {
     ? `team:${state.teamId}`
     : state.cityId
       ? `city:${state.cityId}`
-      : state.view === 'population'
-        ? 'view:population'
-        : state.view === 'titles'
-          ? 'view:championships'
-          : state.showClosest
-            ? 'view:closest'
-            : state.league !== 'all'
-              ? `league:${state.league.toLowerCase()}`
-              : 'home';
+      : state.showClosest
+        ? 'view:closest'
+        : state.league !== 'all'
+          ? `league:${state.league.toLowerCase()}`
+          : 'home';
   return OG_BY_KEY[key] ?? OG_HOME;
 }
 
@@ -187,10 +176,11 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').repl
  * A share page: the view's preview tags, then straight on to the app. Any query string on
  * the share link (e.g. utm_source) is passed through.
  */
-export function sharePageHtml(entry: OgEntry): string {
+export function sharePageHtml(entry: OgEntry, at = entry.path): string {
   const url = SITE_URL + entry.path;
   const image = SITE_URL + entry.image;
-  const depth = entry.path.split('/').filter(Boolean).length;
+  // `at` is where the page is served (a retired share path serves the home page's).
+  const depth = at.split('/').filter(Boolean).length;
   const root = '../'.repeat(depth) || './';
   const target = root + entry.target;
   const meta = (attr: 'property' | 'name', key: string, value: string) => `    <meta ${attr}="${key}" content="${esc(value)}" />`;

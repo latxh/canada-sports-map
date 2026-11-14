@@ -45,13 +45,6 @@ export const FitIcon = (p: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-export const TrophyIcon = (p: SVGProps<SVGSVGElement>) => (
-  <svg {...base(p)}>
-    <path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z" />
-    <path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3" />
-  </svg>
-);
-
 export const PinIcon = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}>
     <path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z" />
@@ -90,33 +83,18 @@ export const ExternalIcon = (p: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-export const PeopleIcon = (p: SVGProps<SVGSVGElement>) => (
-  <svg {...base(p)}>
-    <circle cx="9" cy="8" r="3.2" />
-    <path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" />
-    <circle cx="17" cy="9" r="2.4" />
-    <path d="M16.5 14.1c2.6.3 4.5 2.6 4.5 5.4" />
-  </svg>
-);
-
-export const TerritoryIcon = (p: SVGProps<SVGSVGElement>) => (
-  <svg {...base(p)}>
-    <path d="M3 12c3-1 5-4 6-8M21 10c-4 0-7 3-8 11M9 4c2 3 3 5 4 8l8-2" />
-    <g fill="currentColor" stroke="none">
-      <circle cx="5" cy="6" r="1" />
-      <circle cx="7" cy="16" r="1" />
-      <circle cx="4" cy="19" r="1" />
-      <circle cx="17" cy="5" r="1" />
-      <circle cx="18" cy="16" r="1" />
-      <circle cx="15" cy="19" r="1" />
-    </g>
-  </svg>
-);
-
 export const LocateIcon = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base(p)}>
     <circle cx="12" cy="12" r="7" />
     <circle cx="12" cy="12" r="2.5" fill="currentColor" />
     <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
+  </svg>
+);
+
+/** Closest team: a folded map, its panels the teams' territories. */
+export const ClosestIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20z" />
+    <path d="M9 4v13.5M15 6.5V20" />
   </svg>
 );

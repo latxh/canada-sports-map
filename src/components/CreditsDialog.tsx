@@ -26,7 +26,6 @@ const SOURCES = [
   {name: 'Wikipedia', href: 'https://en.wikipedia.org/', note: 'Team, venue and championship facts (CC BY-SA 4.0)'},
   {name: 'SportsLogos.net', href: 'https://www.sportslogos.net/', note: 'Logo, uniform and playing-surface history, used with permission'},
   {name: 'Wikimedia Commons', href: 'https://commons.wikimedia.org/', note: 'Logo files and photos, listed below with their licences'},
-  {name: 'Statistics Canada', href: 'https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=9810000301', note: '2021 Census population'},
   {name: 'Natural Earth', href: 'https://www.naturalearthdata.com/', note: 'Map data (public domain)'},
   {name: 'Google Earth', href: 'https://earth.google.com/', note: '3D views the venue illustrations are repainted from (imagery © Google and its data providers)'},
   {name: 'OpenStreetMap', href: 'https://www.openstreetmap.org/copyright', note: 'Venue locations and outlines used to frame each view (© OpenStreetMap contributors, ODbL)'},

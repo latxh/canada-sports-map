@@ -13,11 +13,9 @@ import {Icon} from '@astryxdesign/core/Icon';
 import {CITIES, CITY_BY_ID, LEAGUE_ORDER, VENUE_BY_ID, compareTeams, type City, type LeagueId, type Team} from '../data';
 import {ISOMETRIC_VENUES, isometricThumbUrl, type IsometricArt} from '../data/isometric';
 import {latestEra} from '../lib/venues';
-import {DitherLayer, siteColor, type DitherMode, type Site} from './DitherLayer';
-import {distanceKm, formatKm, type LatLon, type PinDistance} from './MapTools';
+import {siteColor} from './DitherLayer';
+import {type LatLon, type PinDistance} from './MapTools';
 import {FitIcon, MinusIcon, PlusIcon} from './icons';
-import {POPULATION} from '../data/population';
-import type {MapView} from './HeaderControls';
 
 
 type GeoProps = {name: string; code?: string};
@@ -121,8 +119,6 @@ interface Props {
   topInset?: number;
   /** Fill Canada with a team's logo (the only Canadian team in its league). */
   takeover?: MapTakeover | null;
-  /** Data layer on top of the sports cities ('teams' = none). */
-  view?: MapView;
   /** Pin tool: while on, a click on the map drops (or moves) the pin. */
   isPinMode?: boolean;
   pin?: LatLon | null;
@@ -162,7 +158,6 @@ export function SportsMap({
   rightInset = 0,
   topInset = 0,
   takeover = null,
-  view = 'teams',
   isPinMode = false,
   pin = null,
   pinTargets = [],
@@ -478,54 +473,10 @@ export function SportsMap({
       })
       .filter((s): s is NonNullable<typeof s> => s !== null);
   }, [projection, cities, showClosest]);
-  const closestFieldSites = useMemo<Site[]>(() => closestSites.map(({x, y, rgb}) => ({x, y, rgb})), [closestSites]);
+  // Each closest-team city's territory: the part of the map nearer to it than to any other
+  // (a Voronoi cell, in unzoomed map pixels), drawn as a translucent wash in the team's colour.
+  const territories = useMemo(() => voronoiCells(closestSites.map((s) => [s.x, s.y] as [number, number]), paths?.bounds), [closestSites, paths]);
 
-  /** Hover (or tap) readout for the closest-team view. */
-  const [probe, setProbe] = useState<{x: number; y: number; text: string; sub: string} | null>(null);
-  const probeAt = useCallback(
-    (clientX: number, clientY: number) => {
-      const el = containerRef.current;
-      if (!el || !projection || closestSites.length === 0) return;
-      const rect = el.getBoundingClientRect();
-      const sx = clientX - rect.left;
-      const sy = clientY - rect.top;
-      const [mx, my] = transformRef.current.invert([sx, sy]);
-      const ll = projection.invert?.([mx, my]);
-      if (!ll) return;
-      let best = closestSites[0];
-      let bd = Infinity;
-      for (const site of closestSites) {
-        const d = (site.x - mx) ** 2 + (site.y - my) ** 2;
-        if (d < bd) [best, bd] = [site, d];
-      }
-      const km = distanceKm({lon: ll[0], lat: ll[1]}, best.city);
-      setProbe({
-        x: sx,
-        y: sy,
-        text: best.team.name,
-        sub: `${best.city.name}${best.count > 1 ? ` · +${best.count - 1} more team${best.count > 2 ? 's' : ''}` : ''} · ${formatKm(km)}`,
-      });
-    },
-    [projection, closestSites],
-  );
-  useEffect(() => {
-    if (!showClosest) setProbe(null);
-  }, [showClosest]);
-  // On touch screens the readout from a tap fades after a few seconds.
-  useEffect(() => {
-    if (!probe || window.matchMedia('(hover: hover)').matches) return;
-    const id = window.setTimeout(() => setProbe(null), 3500);
-    return () => window.clearTimeout(id);
-  }, [probe]);
-
-  /** Every metro area in k=1 map pixels, for the population view. */
-  const popPoints = useMemo(() => {
-    if (!projection) return [];
-    return POPULATION.map((a) => {
-      const p = projection([a.lon, a.lat]);
-      return p ? {...a, px: p[0], py: p[1]} : null;
-    }).filter((a): a is NonNullable<typeof a> => a !== null);
-  }, [projection]);
 
   const showDetail = !!detailPaths && !takeover && transform.k >= DETAIL_K;
   const markerById = useMemo(() => new Map(markers.map((m) => [m.city.id, m])), [markers]);
@@ -597,8 +548,7 @@ export function SportsMap({
 
     // Seas, lakes, mountain ranges and islands, most important first.
     const geoLabels: PlacedGeoLabel[] = [];
-    const isDataView = view === 'population' || view === 'titles';
-    if (detailPaths && !takeover && !isDataView) {
+    if (detailPaths && !takeover) {
       for (const l of detailPaths.labels) {
         const minK = l.kind === 'ocean' || l.kind === 'water' ? l.z : Math.max(l.z, DETAIL_K);
         if (transform.k < minK) continue;
@@ -616,7 +566,7 @@ export function SportsMap({
 
     // Towns: Natural Earth's web-map zoom for each place, mapped onto this map's zoom.
     const towns: PlacedTown[] = [];
-    if (detailPaths && showDetail && !isDataView) {
+    if (detailPaths && showDetail) {
       const townZoom = 3.6 + 1.3 * Math.log2(transform.k);
       for (const t of detailPaths.towns) {
         if (t.z > townZoom) continue;
@@ -629,57 +579,11 @@ export function SportsMap({
         towns.push({key: `${t.name}-${t.lon}`, name: t.name, x, y});
       }
     }
-    // Population: one circle per metro area, its area proportional to the people living there.
-    // A value label shows only where it does not cover a city name or another value.
-    const fitsValue = (x: number, y: number, text: string, fontSize: number) => {
-      const w = text.length * fontSize * 0.62;
-      const box = {x0: x - w / 2, y0: y - fontSize * 0.6, x1: x + w / 2, y1: y + fontSize * 0.6};
-      if (!onScreen(box) || taken.some((b) => overlaps(b, box))) return false;
-      taken.push(box);
-      return true;
-    };
-    const popBubbles =
-      view === 'population'
-        ? popPoints
-            .map((a) => ({key: a.name, name: a.name, pop: a.pop, x: transform.applyX(a.px), y: transform.applyY(a.py), r: popRadius(a.pop, transform.k), showValue: false}))
-            .filter((b) => !size || (b.x > -b.r && b.y > -b.r && b.x < size.w + b.r && b.y < size.h + b.r))
-            .map((b) => ({...b, showValue: b.r >= 15 && fitsValue(b.x, b.y + b.r * 0.45, formatPop(b.pop), valueFont(b.r))}))
-        : [];
-
-    // Championships: one circle per city (or merged cluster), its area proportional to the titles won there.
-    const titleBubbles =
-      view === 'titles'
-        ? visibleClusters
-            .map((c) => ({key: c.head.city.id, titles: c.members.reduce((n, m) => n + m.teams.reduce((k, t) => k + t.championships.length, 0), 0), x: c.x, y: c.y}))
-            .filter((b) => b.titles > 0)
-            .map((b) => ({...b, r: titleRadius(b.titles, transform.k)}))
-            .sort((a, b) => b.r - a.r)
-            .map((b) => ({...b, showValue: b.r >= 13 && fitsValue(b.x, b.y + b.r * 0.5, String(b.titles), valueFont(b.r))}))
-        : [];
-    return {clusters: visibleClusters, labels, boxes, provinceLabels, geoLabels, towns, popBubbles, titleBubbles};
-  }, [markers, transform, selectedCityId, size, paths, detailPaths, takeover, showDetail, view, popPoints, showVenues, venuesByCity]);
+    return {clusters: visibleClusters, labels, boxes, provinceLabels, geoLabels, towns};
+  }, [markers, transform, selectedCityId, size, paths, detailPaths, takeover, showDetail, showVenues, venuesByCity]);
 
   const labelById = useMemo(() => new Map(placed.labels.map((l) => [l.id, l])), [placed.labels]);
 
-  // What the dither layer shows: territories, people, or titles (one at a time).
-  const ditherMode = useMemo<DitherMode | null>(() => {
-    if (takeover) return null;
-    if (showClosest) return closestFieldSites.length ? {kind: 'closest', sites: closestFieldSites} : null;
-    if (view === 'population') return {kind: 'blobs', rgb: [238, 108, 52], radius: popRadius, blobs: popPoints.map((a) => ({x: a.px, y: a.py, value: a.pop}))};
-    if (view === 'titles') {
-      const blobs = markers
-        .map((m) => ({x: m.px, y: m.py, value: m.teams.reduce((n, t) => n + t.championships.length, 0)}))
-        .filter((b) => b.value > 0);
-      return {kind: 'blobs', rgb: [222, 166, 34], radius: titleRadius, sparkle: true, blobs};
-    }
-    return null;
-  }, [takeover, showClosest, closestFieldSites, view, popPoints, markers]);
-  // Outlines the dither is clipped to (stable between renders so the field only rebuilds when they change).
-  const ditherProvinces = useMemo(
-    () => (paths ? (showDetail && detailPaths ? detailPaths.provinces : paths.provinces).map((p) => p.d) : []),
-    [paths, detailPaths, showDetail],
-  );
-  const ditherLakes = useMemo(() => (paths ? (showDetail && detailPaths ? detailPaths.lakes : paths.lakes) : []), [paths, detailPaths, showDetail]);
 
   const zoomToCluster = useCallback(
     (members: {px: number; py: number}[]) => {
@@ -708,17 +612,7 @@ export function SportsMap({
     <div
       ref={containerRef}
       className="relative h-full w-full overflow-hidden"
-      style={{background: 'var(--map-water)'}}
-      onPointerMove={(e) => {
-        if (showClosest && e.pointerType === 'mouse' && e.buttons === 0) probeAt(e.clientX, e.clientY);
-      }}
-      onPointerLeave={(e) => {
-        // A finger "leaves" right after every tap; only a mouse leaving should hide the readout.
-        if (e.pointerType === 'mouse') setProbe(null);
-      }}
-      onPointerUp={(e) => {
-        if (showClosest && e.pointerType !== 'mouse' && !isPinMode) probeAt(e.clientX, e.clientY);
-      }}>
+      style={{background: 'var(--map-water)'}}>
       {size && paths && (
         <svg
           ref={svgRef}
@@ -747,6 +641,13 @@ export function SportsMap({
                 <path key={p.id} d={p.d} />
               ))}
             </clipPath>
+            {showClosest && (
+              <clipPath id={`${clipId}-land`}>
+                {(showDetail && detailPaths ? detailPaths.provinces : paths.provinces).map((p) => (
+                  <path key={p.id} d={p.d} />
+                ))}
+              </clipPath>
+            )}
           </defs>
           <g transform={transform.toString()}>
             {paths.world.map((d, i) => (
@@ -783,6 +684,25 @@ export function SportsMap({
                   pointerEvents="none"
                 />
               ))}
+            {showClosest && !takeover && territories.length > 0 && (
+              <g clipPath={`url(#${clipId}-land)`} aria-hidden="true" pointerEvents="none" className="territories">
+                {territories.map((cell, i) => {
+                  const site = closestSites[i];
+                  if (!site || !cell) return null;
+                  const fill = `rgb(${site.rgb.join(' ')})`;
+                  return (
+                    <g key={site.city.id}>
+                      <clipPath id={`${clipId}-t${i}`}>
+                        <path d={cell} />
+                      </clipPath>
+                      <path d={cell} fill={fill} fillOpacity={0.3} />
+                      {/* The border in the team's colour, kept inside its own cell so neighbours' borders sit side by side. */}
+                      <path d={cell} fill="none" stroke={fill} strokeOpacity={0.85} strokeWidth={3} vectorEffect="non-scaling-stroke" strokeLinejoin="round" clipPath={`url(#${clipId}-t${i})`} />
+                    </g>
+                  );
+                })}
+              </g>
+            )}
             {(takeover ? [] : showDetail && detailPaths ? detailPaths.lakes : paths.lakes).map((d, i) => (
               <path key={`l${i}`} d={d} fill="var(--map-water)" stroke="none" />
             ))}
@@ -793,17 +713,6 @@ export function SportsMap({
                   <path key={`r${i}`} d={r.d} fill="none" stroke="var(--map-river)" strokeWidth={r.rank <= 4 ? 1.2 : 0.8} vectorEffect="non-scaling-stroke" strokeLinecap="round" />
                 ))}
           </g>
-
-          {ditherMode && (
-            <DitherLayer
-              width={size.w}
-              height={size.h}
-              transform={transform}
-              mode={ditherMode}
-              provinces={ditherProvinces}
-              lakes={ditherLakes}
-            />
-          )}
 
           {/* Province names: faint, screen-space so they stay readable at any zoom. */}
           <g aria-hidden="true">
@@ -822,30 +731,6 @@ export function SportsMap({
               </text>
             ))}
           </g>
-
-          {/* Data views: drawn under the city markers so the dots stay clickable. */}
-          {placed.popBubbles.length > 0 && (
-            <g aria-hidden="true" pointerEvents="none" className="data-layer">
-              {placed.popBubbles
-                .filter((b) => b.showValue)
-                .map((b) => (
-                  <text key={`t-${b.key}`} x={b.x} y={b.y + b.r * 0.45} textAnchor="middle" dominantBaseline="central" className="bubble-value pop-value" fontSize={valueFont(b.r)}>
-                    {formatPop(b.pop)}
-                  </text>
-                ))}
-            </g>
-          )}
-          {placed.titleBubbles.length > 0 && (
-            <g aria-hidden="true" pointerEvents="none" className="data-layer">
-              {placed.titleBubbles
-                .filter((b) => b.showValue)
-                .map((b) => (
-                  <text key={`t-${b.key}`} x={b.x} y={b.y + b.r * 0.5} textAnchor="middle" dominantBaseline="central" className="bubble-value title-value" fontSize={valueFont(b.r)}>
-                    {b.titles}
-                  </text>
-                ))}
-            </g>
-          )}
 
           {/* Pin arcs: one flight path from the pin to every city on the map, green (near) to red (far). */}
           {pin && pinScreen && (
@@ -966,13 +851,6 @@ export function SportsMap({
         </div>
       )}
 
-      {probe && (
-        <div className="glass glass-strong card-radius pointer-events-none absolute z-10 px-2.5 py-1.5" style={{left: Math.min(probe.x + 14, (size?.w ?? 0) - 240), top: probe.y + 14}}>
-          <div className="text-sm font-semibold text-primary">{probe.text}</div>
-          <div className="text-xs text-secondary tabular-nums">{probe.sub}</div>
-        </div>
-      )}
-
       {/* Touch screens pinch to zoom, so the buttons are for mice and keyboards. */}
       {!isTouch && (
         <div className="absolute left-3" style={{bottom: bottomInset + 12, transition: 'bottom 200ms ease'}}>
@@ -1001,25 +879,6 @@ function arcPath(x0: number, y0: number, x1: number, y1: number) {
   const qx = (x0 + x1) / 2 + nx * h;
   const qy = (y0 + y1) / 2 + ny * h;
   return `M${x0.toFixed(1)} ${y0.toFixed(1)} Q${qx.toFixed(1)} ${qy.toFixed(1)} ${x1.toFixed(1)} ${y1.toFixed(1)}`;
-}
-
-/** Population circle radius in screen pixels: area ∝ people, growing gently with zoom. */
-function popRadius(pop: number, k: number) {
-  return Math.max(1.6, Math.sqrt(pop / 6_200_000) * 44 * Math.pow(k, 0.55));
-}
-
-/** Championship circle radius in screen pixels: area ∝ titles. */
-function titleRadius(titles: number, k: number) {
-  return Math.sqrt(titles) * 6.5 * Math.pow(k, 0.45) + 3;
-}
-
-function valueFont(r: number) {
-  return Math.min(14, 9 + r / 9);
-}
-
-function formatPop(n: number) {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  return `${Math.round(n / 1000)}K`;
 }
 
 function markerRadius(teamCount: number) {
@@ -1396,4 +1255,49 @@ function stackGeometry(size: Size) {
   const w = cardW + STACK_DEPTH * STACK_STEP + 2;
   const h = cardH + STACK_DEPTH * STACK_STEP + 2;
   return {cardW, cardH, w, h, r: Math.ceil(Math.max(w, h) / 2)};
+}
+
+/**
+ * Voronoi cells for a few points (half-plane clipping: fine for tens of sites), each as an SVG
+ * path in the same coordinates, clipped to `bounds` grown well past the map. Index-aligned
+ * with `points`; null for a point whose cell is empty.
+ */
+function voronoiCells(points: [number, number][], bounds?: [[number, number], [number, number]]): (string | null)[] {
+  if (!points.length || !bounds) return [];
+  const [[x0, y0], [x1, y1]] = bounds;
+  const pad = Math.max(x1 - x0, y1 - y0);
+  const box: [number, number][] = [
+    [x0 - pad, y0 - pad],
+    [x1 + pad, y0 - pad],
+    [x1 + pad, y1 + pad],
+    [x0 - pad, y1 + pad],
+  ];
+  return points.map(([px, py], i) => {
+    let poly = box;
+    for (let j = 0; j < points.length && poly.length; j++) {
+      if (j === i) continue;
+      const [qx, qy] = points[j];
+      // Keep the side of the perpendicular bisector nearer to p: (q - p)·x <= (|q|² - |p|²) / 2.
+      const nx = qx - px;
+      const ny = qy - py;
+      const c = (qx * qx + qy * qy - px * px - py * py) / 2;
+      const inside = ([x, y]: [number, number]) => nx * x + ny * y <= c;
+      const next: [number, number][] = [];
+      for (let k = 0; k < poly.length; k++) {
+        const a = poly[k];
+        const b = poly[(k + 1) % poly.length];
+        const ia = inside(a);
+        const ib = inside(b);
+        if (ia) next.push(a);
+        if (ia !== ib) {
+          const da = nx * a[0] + ny * a[1] - c;
+          const db = nx * b[0] + ny * b[1] - c;
+          const t = da / (da - db);
+          next.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]);
+        }
+      }
+      poly = next;
+    }
+    return poly.length >= 3 ? `M${poly.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join('L')}Z` : null;
+  });
 }

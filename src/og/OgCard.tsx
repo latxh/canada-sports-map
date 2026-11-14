@@ -12,7 +12,6 @@ import type {GeoPermissibleObjects} from 'd3-geo';
 import {Theme} from '@astryxdesign/core/theme';
 import {neutralTheme} from '@astryxdesign/theme-neutral/built';
 import {CITY_BY_ID, LEAGUES, LEAGUE_ORDER, PROVINCE_NAMES, TEAMS, TEAM_BY_ID, compareTeams, yearsLabel, isPlayingNow, titleCount, type LeagueId, type Team} from '../data';
-import {POPULATION} from '../data/population';
 import {loadGeo, type Geo} from '../components/SportsMap';
 import {DitherLayer, siteColor, type DitherMode, type Site} from '../components/DitherLayer';
 import {LeagueLogo, TeamLogo} from '../visuals/Logos';
@@ -48,9 +47,7 @@ interface Dot {
 
 type MapSpec =
   | {kind: 'closest'; sites: {cityId: string; rgb: [number, number, number]}[]; reach: number}
-  | {kind: 'glow'; cityId: string; rgb: [number, number, number]}
-  | {kind: 'population'}
-  | {kind: 'championships'; teams: Team[]};
+  | {kind: 'glow'; cityId: string; rgb: [number, number, number]};
 
 /** Canada with a living-dither layer, sized for a card. `frame` crops to the band of cities. */
 function OgMap({geo, width, height, spec, dots, frame = 'canada'}: {geo: Geo; width: number; height: number; spec: MapSpec; dots: Dot[]; frame?: 'canada' | 'band'}) {
@@ -100,35 +97,8 @@ function OgMap({geo, width, height, spec, dots, frame = 'canada'}: {geo: Geo; wi
       });
       return {kind: 'closest', sites, reach: spec.reach};
     }
-    if (spec.kind === 'glow') {
-      const [x, y] = at(spec.cityId);
-      return {kind: 'blobs', rgb: spec.rgb, radius: (r) => r, blobs: [{x, y, value: 120}]};
-    }
-    if (spec.kind === 'population') {
-      return {
-        kind: 'blobs',
-        rgb: [238, 108, 52],
-        radius: (pop) => Math.max(1.4, Math.sqrt(pop / 6_200_000) * 58),
-        blobs: POPULATION.map((a) => {
-          const [x, y] = projection([a.lon, a.lat]) ?? [0, 0];
-          return {x, y, value: a.pop};
-        }),
-      };
-    }
-    const byCity = new Map<string, number>();
-    for (const t of spec.teams) byCity.set(t.cityId, (byCity.get(t.cityId) ?? 0) + t.championships.length);
-    return {
-      kind: 'blobs',
-      rgb: [222, 166, 34],
-      sparkle: true,
-      radius: (n) => Math.sqrt(n) * 9 + 4,
-      blobs: [...byCity]
-        .filter(([, n]) => n > 0)
-        .map(([cityId, n]) => {
-          const [x, y] = at(cityId);
-          return {x, y, value: n};
-        }),
-    };
+    const [x, y] = at(spec.cityId);
+    return {kind: 'blobs', rgb: spec.rgb, radius: (r) => r, blobs: [{x, y, value: 120}]};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spec, projection]);
 
@@ -343,7 +313,7 @@ function LeagueCard({geo, league}: {geo: Geo; league: LeagueId}) {
   );
 }
 
-/** Full-bleed map cards: the home card and the three map layers. */
+/** Full-bleed map cards: the home card and the closest-team layer. */
 function MapCard({geo, entry}: {geo: Geo; entry: OgEntry}) {
   const cities = [...new Set(TEAMS.map((t) => t.cityId))];
   const activeCities = new Set(currentTeams().map((t) => t.cityId));
@@ -354,21 +324,11 @@ function MapCard({geo, entry}: {geo: Geo; entry: OgEntry}) {
   let pills = [`${LEAGUE_ORDER.length} leagues`, `${TEAMS.length} teams`, `${cities.length} cities`, 'Isometric venues'];
   if (entry.key === 'home') {
     spec = {kind: 'closest', sites: currentTeams('NHL').map((t) => ({cityId: t.cityId, rgb: teamRgb(t)})), reach: 70};
-  } else if (entry.id === 'closest') {
+  } else {
     spec = {kind: 'closest', sites: citySites().map((s) => ({cityId: s.cityId, rgb: teamRgb(s.team)})), reach: 60};
-    title = 'Your closest team';
+    title = 'Closest team';
     pitch = 'Every spot in Canada, coloured by its nearest pro team.';
     pills = [`${currentTeams().length} teams today`, `${activeCities.size} cities`, `${LEAGUE_ORDER.length} leagues`];
-  } else if (entry.id === 'population') {
-    spec = {kind: 'population'};
-    title = 'Where Canada lives';
-    pitch = 'Population of all 152 metro areas, beside every pro sports city.';
-    pills = ['2021 Census', '152 metro areas', `${activeCities.size} sports cities`];
-  } else {
-    spec = {kind: 'championships', teams: TEAMS};
-    title = 'Every championship';
-    pitch = 'All the titles Canadian pro teams have won, mapped by city.';
-    pills = [`${titleCount(TEAMS)} titles`, `${LEAGUE_ORDER.length} leagues`, 'Since 1893'];
   }
   return (
     <main className="og-card og-full">

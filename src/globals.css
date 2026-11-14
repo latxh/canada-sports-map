@@ -78,24 +78,7 @@
   .city-dot-selected {
     fill: var(--map-selected);
   }
-  /* Data views. */
-  .bubble-value {
-    font-family: var(--font-family-body, system-ui);
-    font-weight: 700;
-    paint-order: stroke;
-    stroke: var(--map-halo);
-    stroke-width: 3px;
-    stroke-linejoin: round;
-    font-variant-numeric: tabular-nums;
-  }
-  .pop-value {
-    fill: light-dark(#a8400f, #ffb08a);
-  }
-  .title-value {
-    fill: light-dark(#7a5600, #ffd76a);
-  }
-
-  /* Closest-team dither: crisp square dots, fading in. */
+  /* Link-preview card dither: crisp square dots, fading in. */
   .dither-layer {
     display: block;
     image-rendering: pixelated;
