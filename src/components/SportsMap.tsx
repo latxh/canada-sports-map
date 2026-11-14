@@ -14,6 +14,7 @@ import {CITIES, CITY_BY_ID, LEAGUE_ORDER, VENUE_BY_ID, compareTeams, type City, 
 import {ISOMETRIC_VENUES, isometricThumbUrl, type IsometricArt} from '../data/isometric';
 import {latestEra} from '../lib/venues';
 import {siteColor} from './DitherLayer';
+import {territoryShapes, voronoiPolygons, type Pt} from './territories';
 import {type LatLon, type PinDistance} from './MapTools';
 import {FitIcon, MinusIcon, PlusIcon} from './icons';
 
@@ -473,12 +474,28 @@ export function SportsMap({
       })
       .filter((s): s is NonNullable<typeof s> => s !== null);
   }, [projection, cities, showClosest]);
-  // Each closest-team city's territory: the part of the map nearer to it than to any other
-  // (a Voronoi cell, in unzoomed map pixels), drawn as a translucent wash in the team's colour.
-  const territories = useMemo(() => voronoiCells(closestSites.map((s) => [s.x, s.y] as [number, number]), paths?.bounds), [closestSites, paths]);
 
 
   const showDetail = !!detailPaths && !takeover && transform.k >= DETAIL_K;
+  // Each closest-team city's territory: the part of the map nearer to it than to any other
+  // (a Voronoi cell), cut to the land that's drawn, so it needs no clip path while panning.
+  const territoryCells = useMemo(
+    () => (paths && closestSites.length ? voronoiPolygons(closestSites.map((s) => [s.x, s.y] as Pt), paths.bounds as [Pt, Pt]) : null),
+    [closestSites, paths],
+  );
+  // Cut once for the outline land and once (the first time it shows) for the detailed coastline,
+  // so zooming back and forth across DETAIL_K doesn't redo the work.
+  const coarseTerritories = useMemo(
+    () => (territoryCells && paths ? territoryShapes(territoryCells.cells, territoryCells.box, paths.provinces.map((p) => p.d)) : null),
+    [territoryCells, paths],
+  );
+  const [wantsDetailTerritories, setWantsDetailTerritories] = useState(false);
+  if (showDetail && territoryCells && !wantsDetailTerritories) setWantsDetailTerritories(true);
+  const detailTerritories = useMemo(
+    () => (territoryCells && detailPaths && wantsDetailTerritories ? territoryShapes(territoryCells.cells, territoryCells.box, detailPaths.provinces.map((p) => p.d)) : null),
+    [territoryCells, detailPaths, wantsDetailTerritories],
+  );
+  const territories = showDetail && detailTerritories ? detailTerritories : coarseTerritories;
   const markerById = useMemo(() => new Map(markers.map((m) => [m.city.id, m])), [markers]);
   const pinPoint = useMemo(() => (pin && projection ? projection([pin.lon, pin.lat]) : null), [pin, projection]);
   const pinScreen = pinPoint ? ([transform.applyX(pinPoint[0]), transform.applyY(pinPoint[1])] as const) : null;
@@ -641,13 +658,6 @@ export function SportsMap({
                 <path key={p.id} d={p.d} />
               ))}
             </clipPath>
-            {showClosest && (
-              <clipPath id={`${clipId}-land`}>
-                {(showDetail && detailPaths ? detailPaths.provinces : paths.provinces).map((p) => (
-                  <path key={p.id} d={p.d} />
-                ))}
-              </clipPath>
-            )}
           </defs>
           <g transform={transform.toString()}>
             {paths.world.map((d, i) => (
@@ -684,22 +694,19 @@ export function SportsMap({
                   pointerEvents="none"
                 />
               ))}
-            {showClosest && !takeover && territories.length > 0 && (
-              <g clipPath={`url(#${clipId}-land)`} aria-hidden="true" pointerEvents="none" className="territories">
-                {territories.map((cell, i) => {
+            {showClosest && !takeover && territories && (
+              <g aria-hidden="true" pointerEvents="none" className="territories">
+                {territories.fills.map((d, i) => {
                   const site = closestSites[i];
-                  if (!site || !cell) return null;
-                  const fill = `rgb(${site.rgb.join(' ')})`;
-                  return (
-                    <g key={site.city.id}>
-                      <clipPath id={`${clipId}-t${i}`}>
-                        <path d={cell} />
-                      </clipPath>
-                      <path d={cell} fill={fill} fillOpacity={0.3} />
-                      {/* The border in the team's colour, kept inside its own cell so neighbours' borders sit side by side. */}
-                      <path d={cell} fill="none" stroke={fill} strokeOpacity={0.85} strokeWidth={3} vectorEffect="non-scaling-stroke" strokeLinejoin="round" clipPath={`url(#${clipId}-t${i})`} />
-                    </g>
-                  );
+                  return site && d ? <path key={site.city.id} d={d} fill={`rgb(${site.rgb.join(' ')})`} fillOpacity={0.3} /> : null;
+                })}
+                {/* Borders in each team's colour, each drawn just inside its own territory so neighbours' sit side by side. */}
+                {territories.borders.map((pieces, i) => {
+                  const site = closestSites[i];
+                  if (!site || !pieces.length) return null;
+                  const o = 0.75 / transform.k;
+                  const d = pieces.map((b) => `M${b.a[0] + b.n[0] * o},${b.a[1] + b.n[1] * o}L${b.b[0] + b.n[0] * o},${b.b[1] + b.n[1] * o}`).join('');
+                  return <path key={site.city.id} d={d} stroke={`rgb(${site.rgb.join(' ')})`} strokeOpacity={0.85} strokeWidth={1.5} vectorEffect="non-scaling-stroke" strokeLinecap="butt" fill="none" />;
                 })}
               </g>
             )}
@@ -1255,49 +1262,4 @@ function stackGeometry(size: Size) {
   const w = cardW + STACK_DEPTH * STACK_STEP + 2;
   const h = cardH + STACK_DEPTH * STACK_STEP + 2;
   return {cardW, cardH, w, h, r: Math.ceil(Math.max(w, h) / 2)};
-}
-
-/**
- * Voronoi cells for a few points (half-plane clipping: fine for tens of sites), each as an SVG
- * path in the same coordinates, clipped to `bounds` grown well past the map. Index-aligned
- * with `points`; null for a point whose cell is empty.
- */
-function voronoiCells(points: [number, number][], bounds?: [[number, number], [number, number]]): (string | null)[] {
-  if (!points.length || !bounds) return [];
-  const [[x0, y0], [x1, y1]] = bounds;
-  const pad = Math.max(x1 - x0, y1 - y0);
-  const box: [number, number][] = [
-    [x0 - pad, y0 - pad],
-    [x1 + pad, y0 - pad],
-    [x1 + pad, y1 + pad],
-    [x0 - pad, y1 + pad],
-  ];
-  return points.map(([px, py], i) => {
-    let poly = box;
-    for (let j = 0; j < points.length && poly.length; j++) {
-      if (j === i) continue;
-      const [qx, qy] = points[j];
-      // Keep the side of the perpendicular bisector nearer to p: (q - p)·x <= (|q|² - |p|²) / 2.
-      const nx = qx - px;
-      const ny = qy - py;
-      const c = (qx * qx + qy * qy - px * px - py * py) / 2;
-      const inside = ([x, y]: [number, number]) => nx * x + ny * y <= c;
-      const next: [number, number][] = [];
-      for (let k = 0; k < poly.length; k++) {
-        const a = poly[k];
-        const b = poly[(k + 1) % poly.length];
-        const ia = inside(a);
-        const ib = inside(b);
-        if (ia) next.push(a);
-        if (ia !== ib) {
-          const da = nx * a[0] + ny * a[1] - c;
-          const db = nx * b[0] + ny * b[1] - c;
-          const t = da / (da - db);
-          next.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]);
-        }
-      }
-      poly = next;
-    }
-    return poly.length >= 3 ? `M${poly.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join('L')}Z` : null;
-  });
 }
